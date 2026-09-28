@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --color-bg-base: #f7f7f4;
+    --color-bg-subtle: #f2f1ec;
+    --color-bg-card: #ffffff;
+    --color-text-main: #171717;
+    --color-text-muted: #525252;
+    --color-text-subtle: #737373;
+    --color-brand: #0f4c42;
+    --color-brand-hover: #0a362f;
+    --color-brand-light: #166557;
+    --color-brand-tint: #e8f3f1;
+    --color-border: #e4e2dd;
+    --color-border-subtle: #eceae5;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-base);
+    color: var(--color-text-main);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-main);
+    min-height: 100vh;
+  }
+
+  /* Accessibility focus rings */
+  :focus-visible {
+    outline: 2px solid #0f4c42;
+    outline-offset: 2px;
+  }
+}
+
+/* Custom Healthcare Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f2f1ec;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1cfc7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a69e;
+}
+
+/* Utilities */
+.bg-med-warm {
+  background-color: #f7f7f4;
+}
+
+.bg-med-subtle {
+  background-color: #f2f1ec;
+}
+
+.border-med {
+  border-color: #e4e2dd;
+}
+
+.border-med-subtle {
+  border-color: #eceae5;
+}
+
+.text-med-main {
+  color: #171717;
+}
+
+.text-med-muted {
+  color: #525252;
+}
+
+.text-med-subtle {
+  color: #737373;
+}
+
+.text-med-brand {
+  color: #0f4c42;
+}
+
+.bg-med-brand {
+  background-color: #0f4c42;
+}
+
+.bg-med-brand:hover {
+  background-color: #0a362f;
+}
+
+.bg-med-brand-tint {
+  background-color: #e8f3f1;
+}
+
+.border-med-brand {
+  border-color: #0f4c42;
+}
+
+.border-med-brand-tint {
+  border-color: #c4ded9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

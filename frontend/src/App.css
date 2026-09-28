@@ -1,0 +1,29 @@
+/* App-wide utility styles for MEDISAVE */
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Subtle pulse animation for medical skeleton loader */
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
