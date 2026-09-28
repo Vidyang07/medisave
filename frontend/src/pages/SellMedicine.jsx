@@ -454,6 +454,13 @@ export default function SellMedicine() {
                   </div>
                 </div>
 
+                {/* AI Assistant Explanation Banner */}
+                <div className="p-3 bg-white/80 rounded-xl border border-[#c4ded9] text-xs text-[#0a362f] leading-relaxed">
+                  <p className="font-medium">
+                    MEDISAVE uses AI to help identify medicine details and suggest a community price. Final listings remain subject to expiry, pricing, prescription and admin verification rules.
+                  </p>
+                </div>
+
                 {/* AI Search & Trigger Input Bar */}
                 <div className="flex flex-col sm:flex-row gap-2 pt-1">
                   <div className="relative flex-1">
@@ -512,15 +519,15 @@ export default function SellMedicine() {
                           AI Identification & Reference Data
                         </span>
                       </div>
-                      <span className="text-[11px] font-medium text-[#525252] bg-[#f0f9f8] border border-[#c4ded9] px-2 py-0.5 rounded-full">
-                        AI Assistant
+                      <span className="text-[11px] font-semibold text-[#0f4c42] bg-[#f0f9f8] border border-[#c4ded9] px-2.5 py-0.5 rounded-full">
+                        AI-assisted · Seller confirmation required
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
                       <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                        <span className="text-[10px] text-[#737373] block uppercase font-medium">Estimated MRP</span>
-                        <span className="text-sm font-bold text-[#171717]">₹{aiSuggestion.originalMrp}</span>
+                        <span className="text-[10px] text-[#737373] block uppercase font-medium">Catalog MRP Ref</span>
+                        <span className="text-sm font-bold text-[#171717]">₹{aiSuggestion.originalMrp || "—"}</span>
                       </div>
                       <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200">
                         <span className="text-[10px] text-emerald-800 block uppercase font-bold">Standard Pack Qty</span>
@@ -549,13 +556,47 @@ export default function SellMedicine() {
                           </span>
                         </div>
                         <p className="text-[11px] text-[#525252] pt-1 border-t border-[#e4e2dd]/60">
-                          ℹ️ <em>AI provides guidance only. Your entered physical printed MRP and MEDISAVE community pricing rules determine the final price.</em>
+                          ℹ️ <em>AI-generated information is reference assistance only and not medically verified. Please review and confirm your actual physical medicine details below.</em>
                         </p>
                       </div>
                     )}
                   </div>
                 )}
               </div>
+
+              {/* 3-WAY TRANSPARENT BREAKDOWN CARD: AI Suggestion vs Seller-Confirmed vs Policy Price */}
+              {formData.originalMrp > 0 && (
+                <div className="p-4 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] space-y-3 text-left">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#e4e2dd]">
+                    <span className="text-xs font-bold text-[#171717] uppercase tracking-wider">
+                      Price Transparency: AI vs Seller vs Policy
+                    </span>
+                    <span className="text-[10px] font-bold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded">
+                      AI-assisted, policy-constrained
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3 bg-white rounded-lg border border-[#e4e2dd] space-y-1">
+                      <span className="text-[10px] font-bold text-[#737373] uppercase block">1. AI Reference Suggestion</span>
+                      <p className="text-xs text-[#171717] font-semibold">{formData.brandName || "Medicine"} ({formData.dosageForm || "Tablet"})</p>
+                      <p className="text-[11px] text-[#737373]">Identifies salt, typical packaging & catalog MRP.</p>
+                    </div>
+
+                    <div className="p-3 bg-white rounded-lg border border-[#e4e2dd] space-y-1">
+                      <span className="text-[10px] font-bold text-[#737373] uppercase block">2. Seller-Confirmed Info</span>
+                      <p className="text-xs text-[#171717] font-semibold">Printed MRP: ₹{formData.originalMrp} • {formData.packageCondition.split(" ")[0]}</p>
+                      <p className="text-[11px] text-[#737373]">Expiry: {formData.expiryDate || "Not set"}</p>
+                    </div>
+
+                    <div className="p-3 bg-[#e8f3f1] rounded-lg border border-[#c4ded9] space-y-1">
+                      <span className="text-[10px] font-bold text-[#0f4c42] uppercase block">3. Final Policy-Constrained Price</span>
+                      <p className="text-sm font-bold text-[#0f4c42] font-mono">Suggested: ₹{pricingEval.suggestedPrice || "—"}</p>
+                      <p className="text-[11px] text-[#0a362f]">Hard Cap: ₹{pricingEval.maxAllowedPrice || "—"} (Max 85% MRP)</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* SECTION 1: Medicine Identification */}
               <div className="space-y-4">
@@ -909,6 +950,51 @@ export default function SellMedicine() {
                     </div>
                   </div>
                 )}
+
+                {/* HOW IS THE COMMUNITY PRICE CALCULATED? EXPLANATORY SECTION */}
+                <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd] space-y-2.5 text-xs text-left">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-[#e4e2dd]">
+                    <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wider flex items-center gap-1.5">
+                      <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                      How is the community price calculated?
+                    </h4>
+                    <span className="text-[10px] font-semibold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded">
+                      Deterministic Formula
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-[#525252] leading-relaxed">
+                    MEDISAVE uses an <strong>AI-assisted, policy-constrained</strong> deterministic pricing formula. The physical printed MRP on your pack is the authoritative base, and community discounts are applied based on remaining shelf life:
+                  </p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
+                      <span className="font-bold text-[#171717] block">12+ Months</span>
+                      <span className="text-[11px] text-emerald-700 font-semibold">40% Discount</span>
+                      <span className="text-[10px] text-[#737373] block">60% of MRP</span>
+                    </div>
+                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
+                      <span className="font-bold text-[#171717] block">6–12 Months</span>
+                      <span className="text-[11px] text-emerald-700 font-semibold">50% Discount</span>
+                      <span className="text-[10px] text-[#737373] block">50% of MRP</span>
+                    </div>
+                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
+                      <span className="font-bold text-[#171717] block">3–6 Months</span>
+                      <span className="text-[11px] text-emerald-700 font-semibold">65% Discount</span>
+                      <span className="text-[10px] text-[#737373] block">35% of MRP</span>
+                    </div>
+                    <div className="p-2 bg-rose-50 rounded border border-rose-200">
+                      <span className="font-bold text-rose-900 block">&lt; 90 Days</span>
+                      <span className="text-[11px] text-rose-700 font-semibold">Rejected</span>
+                      <span className="text-[10px] text-rose-600 block">Safety Cutoff</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-[#e4e2dd] text-[11px] text-[#737373] flex flex-col sm:flex-row justify-between gap-1">
+                    <span>• <strong>Condition factor:</strong> Sealed blister packs retain 100% rate.</span>
+                    <span>• <strong>Hard price cap:</strong> Offered price cannot exceed <strong>85% of MRP</strong>.</span>
+                  </div>
+                </div>
               </div>
 
               {/* SECTION 5: Community Handover (Pune Locality & Non-Logistics Model) */}

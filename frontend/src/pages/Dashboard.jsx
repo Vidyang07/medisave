@@ -1020,17 +1020,15 @@ export default function Dashboard() {
                           </div>
                         </div>
 
-                        {/* Order Lifecycle Progress Bar */}
+                        {/* Order Lifecycle Progress Bar: Realistic Community Handover Model */}
                         {!isCancelled && (
-                          <div className="py-2 px-1">
-                            <div className="flex items-center justify-between text-[11px] font-semibold text-[#737373] mb-1">
-                              <span className={currentIdx >= 0 ? "text-[#0f4c42]" : ""}>Placed</span>
-                              <span className={currentIdx >= 1 ? "text-[#0f4c42]" : ""}>Confirmed</span>
-                              <span className={currentIdx >= 2 ? "text-[#0f4c42]" : ""}>Processing</span>
-                              <span className={currentIdx >= 3 ? "text-[#0f4c42]" : ""}>Dispatched</span>
-                              <span className={currentIdx >= 4 ? "text-emerald-700 font-bold" : ""}>
-                                Delivered
-                              </span>
+                          <div className="py-2.5 px-3 bg-white rounded-lg border border-[#e4e2dd] space-y-2">
+                            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-[#737373] tracking-tight">
+                              <span className={currentIdx >= 0 ? "text-[#0f4c42]" : ""}>1. ORDER PLACED</span>
+                              <span className={currentIdx >= 1 ? "text-[#0f4c42]" : ""}>2. SELLER CONFIRMS</span>
+                              <span className={currentIdx >= 2 ? "text-[#0f4c42]" : ""}>3. READY FOR HANDOVER</span>
+                              <span className={currentIdx >= 3 ? "text-[#0f4c42]" : ""}>4. BUYER + SELLER COORDINATE</span>
+                              <span className={currentIdx >= 4 ? "text-emerald-700" : ""}>5. HANDOVER COMPLETED</span>
                             </div>
                             <div className="w-full bg-[#e4e2dd] h-2 rounded-full overflow-hidden flex">
                               <div
@@ -1044,6 +1042,9 @@ export default function Dashboard() {
                                 }}
                               />
                             </div>
+                            <p className="text-[10px] text-[#737373] italic">
+                              Handover method: Community pickup / mutually agreed location
+                            </p>
                           </div>
                         )}
 

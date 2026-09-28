@@ -1,252 +1,129 @@
-# MEDISAVE — Presentation Q&A & Technical Defense Guide
+# MEDISAVE — Presentation Q&A & Faculty Defense Guide
 
-This document contains technically honest, implementation-verified answers to anticipated questions from faculty, technical judges, and community reviewers during the **Community Engagement Program (CEP)** evaluation.
-
----
-
-## 1. What problem does MEDISAVE solve?
-**Answer:**
-In urban communities like Pune, households frequently purchase full strips or bottles of prescribed medicines, use only a portion during treatment, and store the remaining unexpired medicines in medicine boxes until they expire and get discarded into household waste (causing chemical waste and financial loss). Concurrently, low-income patients, students, daily wage earners, and elderly residents often struggle to afford ongoing essential medications.
-
-MEDISAVE bridges this gap by providing a **digitally moderated, community-governed peer-to-peer redistribution platform**. It establishes verified identity checks, mandatory administrative inspection of medicine packaging, automated shelf-life validation, prescription compliance checks, and proximity-based local matching to enable safe, dignified, and hyper-local medicine redistribution.
+> **Project Positioning**: "Verified community medicine redistribution and local handover platform."  
+> *Developed as a Community Engagement Program (CEP) prototype at Pune Institute of Computer Technology (PICT).*
 
 ---
 
-## 2. Why would someone use MEDISAVE instead of a pharmacy?
-**Answer:**
-1. **Affordability for Buyers:** Genuine unexpired medicines are made available at community discounts between **40% and 65% off MRP** based on verifiable remaining shelf life, offering substantial relief for economically constrained individuals.
-2. **Waste Reduction for Sellers:** Community members holding surplus unexpired medicines can safely donate or recover a nominal token amount rather than letting good medicines expire in drawers.
-3. **Hyper-Local Availability:** In dense neighborhoods, finding specific formulations during off-hours or stockouts at local retail shops is facilitated through local community inventory visibility.
-4. **Social & Ecological Responsibility:** It prevents active pharmaceutical compounds from entering municipal water tables through improper household disposal.
-
-*Note: MEDISAVE does not replace licensed retail pharmacies or emergency hospital dispensaries. It is a secondary community exchange layer designed for non-emergency redistribution of unexpired, sealed medicines.*
+### 1. What problem does MEDISAVE solve?
+Every year, thousands of households accumulate unexpired, unopened surplus medications after recovery or prescription changes and eventually discard them into domestic trash. Concurrently, students and low-income community members face recurring expenses for essential medications. MEDISAVE connects donors with local recipients to safely redistribute unexpired surplus medicines at non-profit community rates (40%–65% below MRP), preventing environmental pharmaceutical waste while improving healthcare accessibility.
 
 ---
 
-## 3. What happens if buyer and seller are far apart?
-**Answer:**
-MEDISAVE uses deterministic **Haversine geospatial distance calculation** at the query layer. Listings are categorized into 4 distinct proximity tiers:
-- **0.0 – 5.0 km:** `Nearby` (Green badge) — Prioritized at the top of the marketplace feed.
-- **5.0 – 15.0 km:** `Local Area` (Teal badge) — Secondary priority for standard cross-neighborhood exchanges.
-- **15.0 – 30.0 km:** `Extended Area` / `Far from you` (Amber badge) — Deprioritized with explicit distance advisory.
-- **> 30.0 km:** `Distant Area` (Rose/Red badge) — Bottom rank with an explicit warning advising against remote travel.
-
-If a buyer and seller are far apart, the UI clearly displays the calculated distance (e.g., `Far from you · ~20.4 km`) and suggests searching for nearby alternatives. Handover coordination is always at the mutual discretion of the parties; the platform does not force or artificially disguise remote transactions.
+### 2. Why not just use a pharmacy?
+Commercial pharmacies sell newly manufactured inventory at full retail MRP and cannot legally or logistically buy back opened or individual surplus strips from households. MEDISAVE is **not** a commercial pharmacy; it is a peer-to-peer community exchange platform that matches surplus medicine holders with nearby recipients under strict quality, expiry, and prescription guardrails.
 
 ---
 
-## 4. How do you solve Katraj vs Hinjewadi?
-**Answer:**
-- **Calculated Distance:** The distance between Katraj ($18.4529^\circ\text{N}, 73.8652^\circ\text{E}$) and Hinjewadi ($18.5913^\circ\text{N}, 73.7389^\circ\text{E}$) is **20.4 km**.
-- **System Behavior:** When a buyer in Hinjewadi views a listing posted by a seller in Katraj, the marketplace attaches a clear warning: `Far from you · 20.4 km`.
-- **Marketplace Ranking:** If another seller in Wakad ($2.8\text{ km}$) or Baner ($6.1\text{ km}$) lists the same medicine, their listings are sorted ahead of the Katraj listing.
-- **No False Delivery Promises:** The checkout screen informs the Hinjewadi buyer that this is a remote community exchange requiring self-coordinated handover or mutual agreement at a designated partner hub, preventing unrealistic logistics expectations.
+### 3. How do you handle Katraj vs Hinjewadi?
+MEDISAVE uses deterministic **Haversine spherical distance calculations** between Pune localities.
+- **Katraj vs Hinjewadi** is ~20.4 km apart $\implies$ marked with a warning badge: **`Far from you · 20.4 km`**.
+- **Katraj vs Bibvewadi** is ~2.1 km apart $\implies$ marked: **`Nearby · 2.1 km`**.
+- In the marketplace, when sorted by **"Nearby First (Closest Handover)"**, close listings are prioritized. Distant listings are not hidden, but buyers are transparently informed of the distance so they can coordinate practical handovers.
 
 ---
 
-## 5. Who delivers the medicine?
-**Answer:**
-MEDISAVE is an **identity-verified matching and safety verification platform, NOT a commercial logistics company**.
-In our current community prototype, fulfillment operates via:
-1. **Community Self-Pickup:** Buyer and seller coordinate a mutual handover at a safe public location (e.g., college gate, residential society clubhouse, local NGO kiosk).
-2. **Institutional Drop-off / Collection Point:** In our campus deployment model, the PICT campus dispensary or NSS student volunteer desk acts as an intermediary verification and collection hub.
-3. **Future Extension:** Integration with localized hyper-local couriers (Dunzo, Porter, India Post) via webhooks is architected for Phase 2, but is deliberately not simulated as active today.
+### 4. Who delivers the medicine?
+**MEDISAVE does NOT operate an internal delivery fleet.** Fulfillment is handled via **community pickup and mutual coordination** at public landmarks (e.g., *Katraj Chowk PMT Stop*, *Vanaz Metro Station*, *College Main Gate*). The platform provides the order lifecycle workflow (`ORDER PLACED` $\rightarrow$ `SELLER CONFIRMS` $\rightarrow$ `READY FOR HANDOVER` $\rightarrow$ `BUYER + SELLER COORDINATE` $\rightarrow$ `HANDOVER COMPLETED`). Physical handover allows both parties to inspect blister seal integrity before final exchange.
 
 ---
 
-## 6. How do you calculate price?
-**Answer:**
-Pricing is governed by a **strict deterministic formula (`pricingService.js`)**, calculated mathematically from the manufacturer's printed MRP and verified remaining shelf life:
-
-$$\text{Shelf Life Remaining} = \text{Expiry Date} - \text{Current Date}$$
-
-- **$\ge 12$ Months Remaining:** $40\%$ discount $\rightarrow$ Price $= \text{MRP} \times 0.60$
-- **$6 - 12$ Months Remaining:** $50\%$ discount $\rightarrow$ Price $= \text{MRP} \times 0.50$
-- **$3 - 6$ Months Remaining:** $65\%$ discount $\rightarrow$ Price $= \text{MRP} \times 0.35$
-- **$< 90$ Days ($< 3$ Months):** **REJECTED BY SYSTEM** (Zero tolerance for short-dated medicines).
-- **Hard Price Ceiling:** A seller can set a lower or free price (₹0 donation), but the server forcefully enforces:
-
-$$\text{Final Price} \le \min(\text{Seller Listed Price}, \text{MRP} \times 0.85, \text{Policy Suggested Price})$$
+### 5. How is the price calculated?
+Pricing is calculated **deterministically** based on the seller's verified **physical printed MRP**, packaging condition, and remaining shelf life:
+- **12+ months remaining shelf life**: $40\%$ discount ($60\%$ of MRP)
+- **6–12 months remaining shelf life**: $50\%$ discount ($50\%$ of MRP)
+- **3–6 months remaining shelf life**: $65\%$ discount ($35\%$ of MRP)
+- **$< 90$ days remaining**: Rejected by safety policy (ineligible)
+- **Hard Price Ceiling**: The backend strictly rejects any listing price exceeding **85% of MRP** to prevent profiteering.
 
 ---
 
-## 7. Why use AI for pricing?
-**Answer:**
-AI (via OpenRouter Meta-Llama 3.3 70B Instruct) is used **only as an assistive knowledge engine**, performing:
-1. **Composition Extraction:** Parsing brand names (e.g., "Dolomide", "Augmentin 625 Duo") into standard active salts (e.g., "Paracetamol 650mg + Domperidone 10mg", "Amoxicillin + Clavulanic Acid").
-2. **Category & Form Identification:** Classifying therapeutic category (Analgesic, Antibiotic, Antidiabetic) and dosage form (Strip of Tablets, Syrup, Ointment).
-3. **Reference MRP Benchmark:** Providing standard market price benchmarks to assist sellers who may not have the original box packaging.
-4. **Prescription Requirement Flagging:** Indicating whether the active molecule is a Schedule H/H1/X drug requiring a doctor's prescription.
-
-**Key Distinction:** The AI never sets the final database price. The deterministic pricing engine takes the AI's reference data, verifies it against server rules, and applies the mathematical shelf-life discount policy.
+### 6. Does AI decide the final price?
+**No. AI does NOT decide the final price.** The pricing architecture is:
+$$\text{Medicine Identification (AI-assisted)} \longrightarrow \text{Physical Printed MRP} \longrightarrow \text{Shelf Life} \longrightarrow \text{Condition} \longrightarrow \text{Deterministic Policy} \longrightarrow \text{Max Price Validation (85\% Cap)}$$
+AI only assists with identifying the medicine name and reference parameters. The final price is **policy-constrained and mathematically calculated on the backend**.
 
 ---
 
-## 8. Can AI make a wrong recommendation?
-**Answer:**
-Yes, LLMs can hallucinate or misread packaging text. We designed a multi-layer defense:
-1. **Strict JSON Schema Validation:** The AI response must parse against strict schema types with numerical ranges.
-2. **Deterministic Bounding:** The server clamps any AI suggested price to the hard formula: $\text{Price} \le \text{MRP} \times 0.85$.
-3. **Mandatory Human-in-the-Loop Admin Moderation:** Every listing generated with AI assistance enters `status: 'pending'` and must be physically reviewed by an authorized administrator (who compares the uploaded packaging photo against the entered composition and MRP).
-4. **Zero Auto-Publishing:** AI output never bypasses the moderation queue.
+### 7. What happens if OpenRouter goes down?
+The application **does not crash or break**. The backend employs a 3-tier fallback architecture:
+1. **Tier 1**: OpenRouter API call with strict 12-second timeout.
+2. **Tier 2 (Fallback)**: Local offline pharmaceutical knowledge base (`PHARMA_KNOWLEDGE_BASE`) covering standard Indian formulations (*Dolo 650, Dolomide, Augmentin 625, Pan-D, Pantocid 40, Shelcal 500, Azee 500, Telma 40, Montair LC*).
+3. **Tier 3 (Heuristic Engine)**: Algorithmic dosage and category extractor based on title strings.
+4. **Manual Override**: The seller can always fill in or edit all fields manually.
 
 ---
 
-## 9. What happens if OpenRouter is unavailable?
-**Answer:**
-MEDISAVE implements an **embedded Offline Pharmaceutical Knowledge Base (`backend/services/aiMedicineService.js`)**.
-If the OpenRouter API times out, returns HTTP 5xx, or reaches rate limits:
-1. The service intercepts the error gracefully without crashing.
-2. It queries a local curated dictionary of common generic and branded pharmaceuticals (Paracetamol, Amoxicillin, Metformin, Cetirizine, Azithromycin, Pantoprazole, Dolo 650, etc.).
-3. If matched, it returns verified compositions, categories, and standard MRPs with the flag `source: 'local_knowledge_base'`.
-4. If unmatched, it defaults to a safe fallback template requiring manual seller input and prompts the admin for verification.
-5. **Listing creation never fails due to external AI downtime.**
+### 8. Can AI hallucinate medicine information?
+Because AI estimates can occasionally vary, MEDISAVE enforces:
+- Subtle labeling: **`AI-assisted · Seller confirmation required`**.
+- All AI-suggested fields (brand name, salt composition, manufacturer, dosage, quantity, printed MRP) are completely editable by the seller.
+- AI-generated information is explicitly disclaimed as **guidance only**, not medically verified advice.
+- All listings must undergo **human coordinator moderation** before going live.
 
 ---
 
-## 10. Can a seller manipulate the price?
-**Answer:**
-**No.** Price integrity is enforced on the backend:
-1. When a seller submits a price during listing creation, the backend `medicineController.js` passes the payload through `calculatePricingPolicy(mrp, expiryDate)`.
-2. Even if an attacker intercepts the HTTP request and sends `price: 99999` with `mrp: 100`, the server overrides the value and saves `price: 60`.
-3. If a seller submits a listing with $<90$ days to expiry, the server throws HTTP 400 (`"Medicine is expired or within 90-day safety margin"`).
-4. Admin moderation verifies that the user-submitted MRP matches the photo of the blister pack.
+### 9. How do you prevent expired medicines?
+- **Server-side Date Validation**: The backend checks `expiryDate` against the current server timestamp.
+- **90-Day Safety Buffer**: Any medicine with less than 90 days of remaining shelf life is automatically rejected during listing creation and updates.
+- **Physical Verification on Handover**: Both parties visually confirm the printed expiry date stamped on the foil strip during in-person pickup.
 
 ---
 
-## 11. How do you prevent expired medicine?
-**Answer:**
-We employ a **three-tier temporal defense**:
-1. **Frontend Pre-Validation:** Datepicker disables selection of dates within 90 days from today and calculates real-time shelf life.
-2. **Backend Mongoose & Controller Enforcement:** Listing creation rejects any expiry date where $\text{expiryDate} < \text{Date.now}() + 90\text{ days}$.
-3. **Physical Packaging Verification:** Admin inspects the high-resolution photo showing the manufacturer's printed batch number and expiry date before moving `status` from `pending` to `approved`.
-4. **Dynamic Marketplace Filter:** Marketplace queries include `{ expiryDate: { $gt: new Date(Date.now() + 90*24*60*60*1000) } }`, automatically suppressing any listing that crosses the threshold while listed.
+### 10. How are prescriptions verified?
+- **Schedule H / H1 Flagging**: Medicines categorized as prescription-only require an approved doctor prescription before checkout.
+- **Prescription Upload**: Buyers upload a scanned prescription document (PDF/JPG/PNG) including patient name, doctor name, and registration number.
+- **Coordinator Moderation**: Admin/coordinators review the document in the Admin Console, verify doctor credentials against medical registry standards, and mark it **Approved** or **Rejected** with specific reasons.
+- **Atomic Checkout Enforcement**: The checkout API strictly rejects orders containing Rx items unless bound to an approved, unexpired prescription ID belonging to that user.
 
 ---
 
-## 12. How do you verify prescriptions?
-**Answer:**
-1. **Seller/AI Classification:** If a medicine has `requiresPrescription: true` (Schedule H/H1/Rx), the cart and checkout controllers enforce mandatory prescription validation.
-2. **Secure Upload:** The buyer uploads a valid prescription (PDF, JPG, PNG under 10MB) via `POST /api/prescriptions/upload`.
-3. **Admin Verification Queue:** Admin inspects the prescription document, patient name, doctor's registration number, issue date, and prescribed drug names.
-4. **Status Transitions:** Admin marks the prescription as `APPROVED` or `REJECTED` with review notes.
-5. **Checkout Blockade:** The order placement endpoint (`POST /api/orders`) checks the database: if any cart item requires a prescription, it queries for a valid, `APPROVED` prescription belonging to the authenticated buyer. If missing or `PENDING`, checkout is rejected with HTTP 400.
+### 11. Can users access another person's prescription?
+**No. Prescription documents are protected against Insecure Direct Object References (IDOR).**
+- Prescription documents are stored outside the public web root in a private server directory.
+- Access is gated behind authenticated Express endpoints (`GET /api/prescriptions/:id/document`).
+- The server verifies that `req.user._id` matches the prescription owner's ID or that `req.user.role === 'admin'`. Unauthorized users receive HTTP 403 Forbidden.
 
 ---
 
-## 13. Can one user access another user's prescription?
-**Answer:**
-**No.** All prescription documents are protected against unauthorized access and IDOR (Insecure Direct Object References):
-1. **Private Storage:** Prescription files are stored outside the public static directory in `backend/uploads/prescriptions/` with randomized, hashed filenames (`crypto.randomBytes(16)`).
-2. **No Public URL:** There is no static Express route serving `/uploads/prescriptions/` directly.
-3. **Protected Streaming Endpoint:** Files are accessed exclusively via `GET /api/prescriptions/document/:id` or `GET /api/prescriptions/:id/file`.
-4. **RBAC Ownership Verification:**
-   ```javascript
-   if (req.user.role !== 'admin' && prescription.userId.toString() !== req.user._id.toString()) {
-     return res.status(403).json({ message: 'Forbidden: Access to this prescription is restricted.' });
-   }
-   ```
-5. **Path Traversal Shield:** `path.basename()` and directory sanitization prevent `../` directory traversal attacks.
+### 12. How does admin moderation work?
+- All newly created medicine listings start with `status: "pending"`.
+- Listings are not visible in the public marketplace until approved by a platform coordinator in the Admin Console.
+- Admins can inspect the medicine image, batch number, expiry date, printed MRP, and offered price.
+- Admins can **Approve**, **Reject with a specific explanation**, or **Delete** listings violating safety guidelines.
 
 ---
 
-## 14. How does admin moderation work?
-**Answer:**
-The platform implements a **two-tier RBAC system (`admin` vs `buyer`/`seller`)**:
-- **Medicine Moderation:**
-  - When submitted, `medicine.status = 'pending'`.
-  - Pending medicines are excluded from all public marketplace search queries (`{ status: 'approved' }`).
-  - Admins inspect the listing queue in the Admin Dashboard (`/admin`), review photo packaging, batch number, salt, and MRP, and invoke `PUT /api/admin/medicines/:id/status` to transition status to `approved` or `rejected`.
-- **Prescription Moderation:**
-  - Admins review uploaded medical certificates at `PUT /api/admin/prescriptions/:id/review`.
-- **Non-Admin Isolation:** Regular users hitting `/api/admin/*` receive HTTP 403 Forbidden.
+### 13. How does the system scale?
+- **Current MVP**: Express.js REST API with indexed MongoDB collections, Haversine distance matching across 18 Pune localities, and local document streaming.
+- **Future Scalability Path**:
+  - Cloud Object Storage (AWS S3 / GCP Cloud Storage) with time-limited pre-signed URLs for prescription files.
+  - Redis caching for marketplace queries and locality coordinates.
+  - Geospatial MongoDB / PostGIS spatial queries for multi-city coverage.
+  - Integration with licensed NGO collection kiosks and verified student delivery volunteers.
 
 ---
 
-## 15. How do you prevent fake medicine listings?
-**Answer:**
-1. **Mandatory Photographic Proof:** Clear photos of the blister pack/bottle showing manufacturer, batch number, manufacturing license, and expiry date are required.
-2. **Salt Composition Extraction:** AI and admin verify that the entered brand name corresponds to recognized generic salt formulations.
-3. **Seller Accountability:** Listings are permanently linked to authenticated user accounts with email, phone, and geographic coordinates.
-4. **Physical Inspection at Handover:** Buyers are instructed to verify seal integrity and batch matching before confirming receipt.
-5. **Community Reporting & Ban Mechanism:** Admin has one-click capability to reject listings and suspend fraudulent accounts.
+### 14. What are MEDISAVE's current limitations?
+1. **Geographic Distance**: Uses straight-line Haversine distance rather than real-time road traffic routing.
+2. **Delivery Fleet**: Does not operate its own delivery fleet; handovers rely on mutual coordination.
+3. **Prescription Review**: Prescription review is currently an administrative simulation workflow and requires licensed pharmacists in real deployments.
+4. **Regulatory Framework**: Real-world commercial deployment requires formal licensing under Indian Drugs and Cosmetics Act / CDSCO guidelines.
+5. **AI Suggestions**: AI-generated medicine information is non-clinical and requires seller verification.
 
 ---
 
-## 16. How does scalability work?
-**Answer:**
-The system is built with a **stateless micro-ready architecture**:
-- **Stateless Authentication:** JSON Web Tokens (JWT) eliminate server-side session memory, allowing horizontal scaling across multiple Node.js instances behind an Nginx or AWS ALB load balancer.
-- **MongoDB Database Indexing:** High-frequency query fields are indexed:
-  - `status`, `category`, `requiresPrescription`, `expiryDate`
-  - `userId`, `sellerId`, `buyerId`
-- **Decoupled AI Layer:** AI enrichment runs asynchronously without blocking database transactions.
-- **Low Footprint Assets:** Static frontend assets are pre-bundled with Vite and can be distributed via CDN (Cloudflare / AWS CloudFront).
+### 15. What would be required before real-world deployment?
+1. **Regulatory Clearances & NGO/Pharmacy Partnerships**: Partnering with licensed registered pharmacies or Jan Aushadhi Kendras for physical batch inspections.
+2. **Physical Collection / Drop-off Kiosks**: Placing designated medicine collection kiosks at college health centers and RWAs.
+3. **Identity Verification (KYC)**: Verifying donor identities via Aadhaar/DigiLocker.
+4. **Automated OCR Scanning**: Using computer vision to cross-verify physical batch numbers and expiry stamps directly from uploaded package photographs.
+5. **Cold-Chain Prohibitions**: Continued strict ban on temperature-sensitive biologics (e.g., insulin) that require continuous refrigeration.
 
 ---
 
-## 17. What happens when thousands of users use the platform?
-**Answer:**
-For high-concurrency production scaling, the roadmap includes:
-1. **Geospatial 2dsphere Indexing:** Utilizing MongoDB's native `$nearSphere` and `$geoWithin` for sub-millisecond distance sorting across millions of coordinates.
-2. **Cloud Object Storage (S3 / GCS):** Transitioning local `backend/uploads/prescriptions/` to AWS S3 with time-limited pre-signed URLs.
-3. **Redis Caching:** Caching the approved marketplace catalogue and locality coordinates with a 5-minute TTL.
-4. **Queue Workers (BullMQ / RabbitMQ):** Offloading AI metadata queries, email notifications, and automated expiry sweeps to background worker threads.
-5. **Database Sharding:** Sharding MongoDB clusters by geographic region (e.g., Pune-East, Pune-West, Mumbai).
-
----
-
-## 18. How is user privacy protected?
-**Answer:**
-1. **Coarse Locality Display:** The public marketplace displays only the neighborhood/area name (e.g., "Katraj", "Bibvewadi", "Kothrud") and relative distance ("2.1 km away"). Exact street address, flat numbers, and GPS coordinates are **never exposed publicly**.
-2. **Private Prescription Storage:** Medical prescriptions contain sensitive personal health information (PHI) and are restricted exclusively to the uploading patient and verified platform administrators.
-3. **Password Hashing:** Passwords are salted and hashed using `bcryptjs` (10 rounds); plaintext passwords are never logged or stored.
-4. **Secure Token Handling:** JWTs are scoped with expiration and validated on every sensitive route.
-
----
-
-## 19. What is the role of MEDISAVE in delivery?
-**Answer:**
-MEDISAVE is the **digital governance, trust, and verification infrastructure**.
-- It provides: Medicine verification, pricing regulation, prescription validation, proximity matching, and order tracking.
-- It does not: Employ delivery drivers, operate courier fleets, or hold centralized physical drug inventories.
-- Delivery is explicitly framed as **Community Coordination / Pickup Hub Handover**.
-
----
-
-## 20. What are the current limitations?
-**Answer:**
-As an academic Community Engagement prototype:
-1. **Local Disk Document Storage:** Prescriptions and photos are stored on the server's local file system rather than a cloud S3 bucket.
-2. **In-Memory Haversine Math:** Distance calculations are executed in application memory across active listings rather than MongoDB native `$geoNear` indexes.
-3. **Asynchronous Manual Verification:** Admin moderation requires human review, introducing latency between listing submission and marketplace appearance.
-4. **Cold-Chain Medicines:** We currently exclude temperature-sensitive pharmaceuticals (e.g., Insulin, biological vaccines) due to lack of verified cold-chain logistics.
-
----
-
-## 21. How would you deploy this for a real community?
-**Answer:**
-A realistic phased rollout for Pune:
-1. **Phase 1 — Campus & College Pilot:** Deploy at PICT with NSS/Rotaract student volunteers managing the Admin Moderation desk. Campus dispensary serves as the designated physical handover point.
-2. **Phase 2 — NGO Partnership:** Partner with local healthcare NGOs (e.g., Seva Sahayog Foundation, Jan Swasthya Manch) to deploy 3 verified pickup kiosks in Katraj, Kothrud, and Hadapsar.
-3. **Phase 3 — Pharmacist Advisory Board:** Involve registered volunteer pharmacists to supervise prescription approval and physical packaging inspections.
-4. **Phase 4 — Cloud Hardening:** Migrate database to MongoDB Atlas, document storage to AWS S3, and domain to a secure HTTPS host with Cloudflare DDoS protection.
-
----
-
-## 22. How does this create actual community engagement?
-**Answer:**
-- **Promotes Civic Responsibility:** Encourages households to responsibly check home medicine cabinets and redistribute surplus unexpired medicines rather than disposing of them.
-- **Fosters Neighborhood Solidarity:** Connects college students, senior citizens, and neighborhood residents through mutual assistance.
-- **Supports Environmental Sustainability:** Directly reduces chemical contamination of soil and water systems caused by discarded medications.
-- **Empowers Student Volunteers:** Provides student community service groups (NSS/Rotaract) with a structured digital platform to run health awareness and medicine donation drives.
-
----
-
-## 23. What would you improve next?
-**Answer:**
-1. **OCR / Vision Model Integration:** Real-time optical character recognition (OCR) on packaging photos to automatically read batch numbers and expiry dates directly from the blister foil.
-2. **Doctor / Pharmacist Portal:** Dedicated role-based access for registered medical professionals to review and approve prescriptions with digital signatures.
-3. **Automated Expiry Cron Sweeper:** Automated daily background worker to transition listings with $<90$ days remaining to `archived` status automatically.
-4. **WhatsApp / SMS Gateway:** Twilio or Gupshup notification integration for instant order status alerts and handover pin codes.
-5. **Multilingual Support:** Localizing the user interface into Marathi and Hindi to maximize accessibility among grassroots community members.
+### 16. How does this qualify as a Community Engagement Program?
+MEDISAVE addresses two core United Nations Sustainable Development Goals:
+- **SDG 3 (Good Health and Well-Being)**: Lowers financial barriers to essential medications for students and low-income residents.
+- **SDG 12 (Responsible Consumption and Production)**: Prevents chemical pharmaceutical waste from entering Pune's waterways and landfills.
+- **Community Impact**: Directly pilots localized redistribution on college campuses and residential neighborhoods (Katraj, Kothrud, Hinjewadi) where students and residents can safely exchange verified surplus medicines.

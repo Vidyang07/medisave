@@ -350,26 +350,43 @@ node scratch/test_prescription_checkout_security.js
 
 ---
 
-## 📊 Project Status: Implemented vs Future Scope
+## 📊 Prototype Status, Limitations & Future Deployment
 
-### ✅ Implemented (MVP Presentation-Ready)
-- [x] JWT Authentication & Protected Buyer/Seller/Admin Routes
-- [x] Medicine Marketplace with Search, Category/Dosage Filters, and Sorting
-- [x] Pune Locality Distance Calculation & Proximity Badges (Haversine)
-- [x] "Nearby First" Marketplace Sorting
-- [x] Deterministic MEDISAVE Community Pricing Engine with 85% MRP Cap
-- [x] OpenRouter AI Integration with Offline Pharmaceutical Knowledge Base Fallback
-- [x] Schedule H Prescription Upload & Admin Approval/Rejection Workflow
-- [x] Multi-Seller Cart, Checkout, and Handover Preference Selection
-- [x] Seller Order Management & Lifecycle Tracking
-- [x] Admin Listing Moderation & User Management Dashboard
+### Current Prototype
 
-### 🔮 Future Scope (Planned)
-- [ ] Integration with verified campus / community delivery volunteers (hyper-local student couriers).
-- [ ] Physical one-time password (OTP) verification upon in-person medicine handover.
-- [ ] Optical Character Recognition (OCR) for automatic batch number & expiry extraction from package photographs.
-- [ ] Multi-city locality expansion beyond Pune.
-- [ ] Cloud object storage integration (S3/GCS) for high-scale document uploads.
+MEDISAVE currently demonstrates:
+
+* verified community members
+* medicine listing moderation
+* expiry validation
+* locality-based matching
+* deterministic community pricing
+* AI-assisted medicine information
+* prescription verification
+* secure prescription access
+* order and handover workflow
+
+### Current Limitations
+
+* Geographic distance is currently used rather than live road routing.
+* MEDISAVE does not operate its own delivery fleet.
+* Prescription verification is an administrative workflow and should be handled by appropriately qualified personnel in a real deployment.
+* Medicine redistribution would require compliance with applicable Indian pharmaceutical regulations before real-world operation.
+* AI-generated medicine information requires seller/user confirmation.
+
+### Future Deployment
+
+Potential future integrations:
+
+* community/NGO collection points
+* licensed pharmacy/healthcare partners
+* external logistics providers
+* geospatial/road-distance services
+* OCR for batch and expiry verification
+* stronger identity verification
+* production cloud storage and monitoring
+
+Do not claim these future features already exist.
 
 ---
 

@@ -406,6 +406,142 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 10. Prototype Status, Limitations & Future Scope */}
+      <section className="bg-white py-14 sm:py-16 text-left border-t border-[#e4e2dd]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+              Project Transparency & Research Scope
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#171717] tracking-tight">
+              Current Prototype & Future Deployment
+            </h2>
+            <p className="text-xs sm:text-sm text-[#525252]">
+              Honest technical breakdown of implemented capabilities versus research limitations and real-world deployment prerequisites.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Box 1: Current Prototype */}
+            <div className="bg-[#f7f7f4] rounded-2xl border border-[#e4e2dd] p-6 space-y-3.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                <h3 className="font-bold text-[#171717] text-base">Current Prototype</h3>
+              </div>
+              <p className="text-xs text-[#525252]">MEDISAVE currently demonstrates:</p>
+              <ul className="space-y-1.5 text-xs text-[#525252]">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>verified community members</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>medicine listing moderation</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>expiry validation</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>locality-based matching</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>deterministic community pricing</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>AI-assisted medicine information</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>prescription verification</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>secure prescription access</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-700 font-bold">✓</span>
+                  <span>order and handover workflow</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Box 2: Current Limitations */}
+            <div className="bg-[#fffbeb] rounded-2xl border border-[#fde68a] p-6 space-y-3.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <h3 className="font-bold text-[#92400e] text-base">Current Limitations</h3>
+              </div>
+              <p className="text-xs text-[#78350f]">Prototype constraints & boundaries:</p>
+              <ul className="space-y-2 text-xs text-[#78350f]">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-700 font-bold">•</span>
+                  <span>Geographic distance is currently used rather than live road routing.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-700 font-bold">•</span>
+                  <span>MEDISAVE does not operate its own delivery fleet.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-700 font-bold">•</span>
+                  <span>Prescription verification is an administrative workflow and should be handled by appropriately qualified personnel in a real deployment.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-700 font-bold">•</span>
+                  <span>Medicine redistribution would require compliance with applicable Indian pharmaceutical regulations before real-world operation.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-700 font-bold">•</span>
+                  <span>AI-generated medicine information requires seller/user confirmation.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Box 3: Future Deployment */}
+            <div className="bg-[#f0f9f8] rounded-2xl border border-[#c4ded9] p-6 space-y-3.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0f4c42]"></span>
+                <h3 className="font-bold text-[#0f4c42] text-base">Future Deployment</h3>
+              </div>
+              <p className="text-xs text-[#0a362f]">Potential future integrations:</p>
+              <ul className="space-y-2 text-xs text-[#0a362f]">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>community/NGO collection points</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>licensed pharmacy/healthcare partners</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>external logistics providers</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>geospatial/road-distance services</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>OCR for batch and expiry verification</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>stronger identity verification</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0f4c42] font-bold">→</span>
+                  <span>production cloud storage and monitoring</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
