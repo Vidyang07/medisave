@@ -1,45 +1,38 @@
 import { Link } from "react-router-dom";
-import { PillIcon, ShieldCheckIcon, MailIcon, MapPinIcon } from "./common/Icons";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#171717] text-[#d4d4d4] border-t border-[#262626] text-xs sm:text-sm text-left">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+    <footer className="bg-[#141416] text-[#d4d4d8] border-t-2 border-[#27272a] text-xs font-mono text-left">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand Column */}
+          {/* Brand & Mission */}
           <div className="lg:col-span-2 space-y-3">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#0f4c42] text-[#a7f3d0] flex items-center justify-center">
-                <PillIcon className="w-3.5 h-3.5 transform -rotate-45" />
+              <div className="w-6 h-6 bg-[#166534] text-white flex items-center justify-center font-bold text-xs">
+                +
               </div>
-              <span className="text-base font-bold tracking-tight text-white">
-                MEDI<span className="text-[#a7f3d0]">SAVE</span>
+              <span className="text-base font-bold font-heading tracking-tight text-white">
+                MEDI<span className="text-[#22c55e]">SAVE</span>
               </span>
             </Link>
-            <p className="text-[#a3a3a3] text-xs leading-relaxed max-w-sm">
-              A community initiative connecting individuals with surplus,
-              unexpired, and verified sealed medicines to make essential healthcare accessible and reduce pharmaceutical waste.
+            <p className="text-[#a1a1aa] text-xs font-sans leading-relaxed max-w-sm">
+              A community engagement initiative indexing unexpired, sealed surplus medicines across Pune neighborhoods to improve healthcare affordability and prevent pharmaceutical waste.
             </p>
-            <div className="flex items-center gap-2 text-xs text-[#a7f3d0] font-medium pt-1">
-              <ShieldCheckIcon className="w-3.5 h-3.5" />
-              <span>College Community Health Engagement Initiative</span>
+            <div className="flex items-center gap-2 pt-1 text-[11px] text-[#22c55e]">
+              <span className="stamp-green text-[9px]">PICT CEP PROJECT</span>
+              <span>Pune Community Registry</span>
             </div>
           </div>
 
-          {/* Product Links */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Marketplace
+          {/* Quick Index */}
+          <div className="space-y-2">
+            <h4 className="font-bold text-white uppercase text-xs">
+              Price Sheet
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
+            <ul className="space-y-1 text-xs text-[#a1a1aa]">
               <li>
                 <Link to="/buy" className="hover:text-white transition">
-                  Browse Medicines
-                </Link>
-              </li>
-              <li>
-                <Link to="/sell" className="hover:text-white transition">
-                  List Unused Medicine
+                  Browse All Listings
                 </Link>
               </li>
               <li>
@@ -53,27 +46,27 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/buy?category=Vitamins+%26+Supplements" className="hover:text-white transition">
-                  Vitamins & Supplements
+                <Link to="/buy?category=Diabetes+Care" className="hover:text-white transition">
+                  Diabetes Care
+                </Link>
+              </li>
+              <li>
+                <Link to="/sell" className="hover:text-white transition">
+                  List Unused Medicine
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Community & Account Links */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Account & Portal
+          {/* Account Portal */}
+          <div className="space-y-2">
+            <h4 className="font-bold text-white uppercase text-xs">
+              Portal
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
+            <ul className="space-y-1 text-xs text-[#a1a1aa]">
               <li>
                 <Link to="/dashboard" className="hover:text-white transition">
                   Member Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="hover:text-white transition">
-                  Profile & Settings
                 </Link>
               </li>
               <li>
@@ -83,45 +76,45 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/signup" className="hover:text-white transition">
-                  Join Community
+                  Register Donor
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin" className="hover:text-white transition">
+                  Admin Console
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact & Initiative Info */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Initiative Info
+          {/* Pune Hubs */}
+          <div className="space-y-2">
+            <h4 className="font-bold text-white uppercase text-xs">
+              Pune Exchange Hubs
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
-              <li className="flex items-center gap-2">
-                <MapPinIcon className="w-3.5 h-3.5 text-[#a7f3d0] shrink-0" />
-                <span>Pune, Maharashtra, India</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <MailIcon className="w-3.5 h-3.5 text-[#a7f3d0] shrink-0" />
-                <span>support@medisave.org</span>
-              </li>
-              <li className="pt-1 text-[11px] text-[#737373]">
-                Operating under Community Verification Guidelines.
-              </li>
+            <ul className="space-y-1 text-[11px] text-[#a1a1aa]">
+              <li>• Katraj Chowk (PMT Depot)</li>
+              <li>• Kothrud (Vanaz Metro)</li>
+              <li>• Hinjewadi (Phase 1 Circle)</li>
+              <li>• Baner (High Street Junction)</li>
+              <li>• Swargate (ST Stand Gate)</li>
+              <li>• PICT Campus Dispensary</li>
             </ul>
           </div>
         </div>
 
         {/* Academic & Regulatory Safety Disclaimer */}
-        <div className="mt-10 pt-5 border-t border-[#262626] text-[11px] text-[#737373] leading-relaxed space-y-3">
+        <div className="mt-8 pt-5 border-t border-[#27272a] text-[11px] text-[#71717a] leading-relaxed space-y-2">
           <p>
-            <strong className="text-[#a3a3a3]">Academic Project Disclaimer:</strong> MEDISAVE is a student engagement initiative developed for community health awareness and responsible medicine disposal research. It does not replace medical advice from licensed physicians or registered pharmacists. Always consult a qualified medical professional before taking any medication.
+            <strong className="text-[#a1a1aa]">Academic Research Project:</strong> MEDISAVE is developed for the Community Engagement Program (CEP) by students of Pune Institute of Computer Technology (PICT), Pune. It demonstrates safe peer-to-peer surplus medicine matching and does not operate as a licensed commercial pharmacy or emergency logistics provider.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-between text-[#737373] text-[11px] pt-3 border-t border-[#262626] gap-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between text-[#71717a] text-[10px] pt-2 border-t border-[#27272a] gap-2">
             <div>
-              © 2026 MEDISAVE Project. All rights reserved.
+              © 2026 MEDISAVE · Division SY 2, Batch H2 · PICT Pune
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Link to="/terms" className="hover:text-white transition">
-                Terms of Service
+                Terms of Use
               </Link>
               <span>•</span>
               <Link to="/privacy" className="hover:text-white transition">

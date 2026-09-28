@@ -8,6 +8,7 @@ import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import { EmptyState } from "../components/common/EmptyState";
 import { Modal } from "../components/common/Modal";
+import HandoverSlipModal from "../components/HandoverSlipModal";
 import {
   PackageIcon,
   ShieldCheckIcon,
@@ -17,6 +18,7 @@ import {
   TrashIcon,
   FileTextIcon,
   UploadIcon,
+  PrinterIcon,
 } from "../components/common/Icons";
 
 export default function Dashboard() {
@@ -63,6 +65,10 @@ export default function Dashboard() {
   const [previewRx, setPreviewRx] = useState(null);
   const [previewBlobUrl, setPreviewBlobUrl] = useState(null);
   const [isLoadingDoc, setIsLoadingDoc] = useState(false);
+
+  // Printable Handover Slip State
+  const [isDocketOpen, setIsDocketOpen] = useState(false);
+  const [docketOrder, setDocketOrder] = useState(null);
 
   const fetchListings = () => {
     setIsLoadingListings(true);
@@ -1084,10 +1090,22 @@ export default function Dashboard() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                            <span className="text-sm font-bold text-[#0f4c42] font-mono">
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <span className="text-sm font-bold text-[#166534] font-mono">
                               Total: ₹{order.totalAmount}
                             </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDocketOrder(order);
+                                setIsDocketOpen(true);
+                              }}
+                              className="px-2.5 py-1 bg-[#f0eee7] hover:bg-[#e4e2d8] text-[#141416] border border-[#27272a] text-xs font-mono font-bold flex items-center gap-1 cursor-pointer"
+                              title="Print Handover Docket"
+                            >
+                              <PrinterIcon className="w-3.5 h-3.5" />
+                              <span>Slip</span>
+                            </button>
                             {isCancellable && (
                               <Button
                                 variant="outline"
@@ -1096,7 +1114,7 @@ export default function Dashboard() {
                                 disabled={cancellingOrderId === orderId}
                                 className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
                               >
-                                {cancellingOrderId === orderId ? "Cancelling..." : "Cancel Order"}
+                                {cancellingOrderId === orderId ? "Cancelling..." : "Cancel"}
                               </Button>
                             )}
                           </div>
@@ -1458,6 +1476,13 @@ export default function Dashboard() {
           </div>
         </div>
       </Modal>
+
+      {/* Printable Handover Slip Modal */}
+      <HandoverSlipModal
+        isOpen={isDocketOpen}
+        onClose={() => setIsDocketOpen(false)}
+        order={docketOrder}
+      />
     </div>
   );
 }

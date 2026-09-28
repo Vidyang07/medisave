@@ -4,19 +4,14 @@ import api from "../api/axios";
 import { useCart } from "../context/useCart";
 import { useToast } from "../context/useToast";
 import { Breadcrumb } from "../components/common/Breadcrumb";
-import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
 import MedicineCard from "../components/MedicineCard";
 import {
-  ShieldCheckIcon,
-  ClockIcon,
   ShoppingBagIcon,
-  PackageIcon,
-  AlertCircleIcon,
   CheckIcon,
   PlusIcon,
   MinusIcon,
-  FileTextIcon,
+  MapPinIcon,
 } from "../components/common/Icons";
 
 export default function MedicineDetails() {
@@ -64,7 +59,7 @@ export default function MedicineDetails() {
       })
       .catch((err) => {
         if (isMounted) {
-          setError(err.response?.data?.message || "Medicine listing not found");
+          setError(err.response?.data?.message || "Medicine listing not found in register");
           setIsLoading(false);
         }
       });
@@ -76,11 +71,11 @@ export default function MedicineDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] bg-[#f7f7f4] flex items-center justify-center py-16">
+      <div className="min-h-[70vh] bg-[#f8f7f4] flex items-center justify-center py-16 font-mono">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-[#737373]">
-            Loading medicine specifications...
+          <div className="w-8 h-8 border-3 border-[#166534] border-t-transparent animate-spin"></div>
+          <span className="text-xs font-bold text-[#52525b]">
+            LOADING SPECIFICATIONS FROM PUNE REGISTER...
           </span>
         </div>
       </div>
@@ -89,22 +84,24 @@ export default function MedicineDetails() {
 
   if (error || !medicine) {
     return (
-      <div className="min-h-[70vh] bg-[#f7f7f4] flex items-center justify-center px-4 py-16">
-        <div className="bg-white rounded-xl border border-[#e4e2dd] p-8 max-w-md text-center shadow-2xs">
-          <div className="w-12 h-12 bg-[#fff1f2] text-[#be123c] rounded-full flex items-center justify-center mx-auto mb-3.5 border border-[#fecdd3]">
-            <AlertCircleIcon className="w-6 h-6" />
+      <div className="min-h-[70vh] bg-[#f8f7f4] flex items-center justify-center px-4 py-16 text-left font-mono">
+        <div className="bg-white border-2 border-[#27272a] p-6 max-w-md text-left space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="stamp-rx text-xs font-bold">404 NOT FOUND</span>
           </div>
-          <h2 className="text-lg font-bold text-[#171717] mb-1.5">
-            Medicine Listing Not Found
+          <h2 className="text-base font-bold text-[#141416] font-heading">
+            Medicine Listing Not Registered
           </h2>
-          <p className="text-xs text-[#525252] mb-5 leading-relaxed">
-            The requested medicine listing may have been reserved, fulfilled, or removed from the community catalogue.
+          <p className="text-xs text-[#52525b] font-sans leading-relaxed">
+            The requested medication listing is either archived, already fulfilled, or currently under coordinator moderation.
           </p>
-          <Link to="/buy">
-            <Button variant="primary" size="md">
-              Browse Available Medicines
-            </Button>
-          </Link>
+          <div className="pt-2">
+            <Link to="/buy">
+              <Button variant="primary" size="md">
+                Return to Chemist Price Sheet
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -115,12 +112,13 @@ export default function MedicineDetails() {
   const generic = medicine.genericName || medicine.medicineName || medicine.name;
   const price = medicine.price !== undefined ? medicine.price : 0;
   const originalMrp = medicine.originalMrp || price;
-  const availableQty = medicine.quantity || 1;
-  const unit = medicine.unit || "1 pack";
+  const availableQty = medicine.quantity !== undefined ? medicine.quantity : 1;
+  const unit = medicine.unit || "units";
   const image = medicine.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80";
-  const sellerName = medicine.seller?.name || "Community Donor";
+  const sellerName = medicine.seller?.name || "Verified Community Member";
   const sellerLocation = medicine.seller?.address || medicine.seller?.location || "Pune, Maharashtra";
-  const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Valid");
+  const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "Valid");
+  const isRx = Boolean(medicine.isPrescriptionRequired);
 
   const discountPercent = originalMrp > price
     ? Math.round(((originalMrp - price) / originalMrp) * 100)
@@ -138,11 +136,13 @@ export default function MedicineDetails() {
         price,
         originalMrp,
         image,
-        isPrescriptionRequired: Boolean(medicine.isPrescriptionRequired),
+        isPrescriptionRequired: isRx,
+        locality: medicine.locality || "Pune",
+        handoverPoint: medicine.handoverPoint || medicine.locality || "Pune Handover Point",
       },
       quantity
     );
-    showToast(`Added ${quantity} pack(s) of ${title} to cart`, "success");
+    showToast(`Added ${quantity} pack(s) of ${title} to request list`, "success");
   };
 
   const handleBuyNow = () => {
@@ -157,7 +157,9 @@ export default function MedicineDetails() {
         price,
         originalMrp,
         image,
-        isPrescriptionRequired: Boolean(medicine.isPrescriptionRequired),
+        isPrescriptionRequired: isRx,
+        locality: medicine.locality || "Pune",
+        handoverPoint: medicine.handoverPoint || medicine.locality || "Pune Handover Point",
       },
       quantity
     );
@@ -165,349 +167,299 @@ export default function MedicineDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-8">
+    <div className="min-h-screen bg-[#f8f7f4] py-6 sm:py-8 text-left font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Navigation */}
         <Breadcrumb
           items={[
             { label: "Home", to: "/" },
-            { label: "Browse Medicines", to: "/buy" },
+            { label: "Chemist Price Sheet", to: "/buy" },
             { label: medicine.category || "General", to: `/buy?category=${encodeURIComponent(medicine.category || "")}` },
             { label: title },
           ]}
         />
 
         {/* Main Product Showcase Box */}
-        <div className="bg-white rounded-xl border border-[#e4e2dd] shadow-2xs overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-6 sm:p-8">
+        <div className={`bg-white border-2 border-[#27272a] overflow-hidden ${isRx ? "rx-stripe-top" : "border-t-2 border-t-[#27272a]"}`}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-5 sm:p-7">
             {/* Left Column: Product Photography & Packaging Badges (5 cols) */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="relative rounded-lg overflow-hidden bg-[#f7f7f4] border border-[#e4e2dd] aspect-4/3">
+            <div className="lg:col-span-5 space-y-3">
+              <div className="relative bg-[#f8f7f4] border-2 border-[#27272a] aspect-4/3 overflow-hidden">
                 <img
                   src={image}
                   alt={title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover grayscale-15 contrast-105"
                 />
 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
-                  <Badge variant="verified" size="md">
-                    <ShieldCheckIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
-                    Verified Genuine
-                  </Badge>
-                  {medicine.isPrescriptionRequired && (
-                    <Badge variant="prescription" size="sm">
-                      Prescription (Rx) Required
-                    </Badge>
+                {/* Stamped Badges */}
+                <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+                  <span className="stamp-green text-[10px]">PACKAGING VERIFIED</span>
+                  {isRx && (
+                    <span className="stamp-rx text-[10px]">Schedule H / Rx Required</span>
                   )}
                 </div>
 
-                <div className="absolute bottom-3 right-3">
-                  <span className="inline-flex items-center gap-1.5 bg-[#171717]/85 backdrop-blur-2xs text-white text-xs font-semibold px-2.5 py-1 rounded-md">
-                    <ClockIcon className="w-3.5 h-3.5 text-[#a7f3d0]" />
-                    Expiry: {expiryDisplay}
+                <div className="absolute bottom-2.5 right-2.5">
+                  <span className="stamp-box text-[10px] text-[#b91c1c] border-[#b91c1c] bg-white">
+                    EXP: {expiryDisplay}
                   </span>
                 </div>
               </div>
 
               {/* Physical Condition Callout Box */}
-              <div className="bg-[#fafaf7] rounded-lg p-3.5 border border-[#e4e2dd] space-y-1.5 text-xs text-left">
-                <div className="flex items-center justify-between text-[#171717] font-semibold">
-                  <span className="flex items-center gap-1.5">
-                    <PackageIcon className="w-4 h-4 text-[#0f4c42]" />
-                    Physical Package Condition:
-                  </span>
-                  <span className="text-[#065f46] font-bold bg-[#ecfdf5] px-2 py-0.5 rounded border border-[#a7f3d0]">
+              <div className="bg-[#f8f7f4] border border-[#27272a] p-3 space-y-1 font-mono text-xs">
+                <div className="flex items-center justify-between text-[#141416]">
+                  <span className="font-bold text-[11px] uppercase">Condition:</span>
+                  <span className="stamp-box text-[10px] text-[#166534] border-[#166534]">
                     {medicine.packageCondition || "Intact Sealed Blister Pack"}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#525252] leading-normal">
-                  Inspected to guarantee unpunctured blister foil, undamaged manufacturer labeling, and tamper seal verification.
+                <p className="text-[11px] text-[#52525b] font-sans">
+                  Inspected by coordinators. Intact aluminum foil backing with legible manufacturer stamping.
                 </p>
               </div>
             </div>
 
             {/* Right Column: Specification & Purchasing Controls (7 cols) */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-5 text-left">
+            <div className="lg:col-span-7 flex flex-col justify-between space-y-4 text-left font-mono">
               <div>
                 {/* Category & Manufacturer Tag */}
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="default" size="sm">
-                    {medicine.category}
-                  </Badge>
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <span className="stamp-box text-[10px]">{medicine.category}</span>
                   {medicine.dosageForm && (
-                    <span className="text-xs text-[#737373] font-medium">
-                      • {medicine.dosageForm}
+                    <span className="text-xs text-[#52525b] font-mono">
+                      Formulation: {medicine.dosageForm}
                     </span>
                   )}
                 </div>
 
                 {/* Primary Brand Name & Generic Formulation */}
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#171717] tracking-tight leading-snug">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold font-heading text-[#141416] tracking-tight leading-snug">
                   {title}
                 </h1>
-                <p className="text-xs sm:text-sm font-medium text-[#525252] mt-1">
-                  Formula: <span className="text-[#171717] font-semibold">{generic}</span>
+                <p className="text-xs sm:text-sm font-mono text-[#52525b] mt-0.5">
+                  Salt: <strong className="text-[#141416] font-sans">{generic}</strong>
                 </p>
-                <p className="text-xs text-[#737373] mt-0.5">
-                  Manufactured by <strong className="text-[#525252]">{medicine.company}</strong>
+                <p className="text-xs text-[#71737c] font-mono mt-0.5">
+                  Manufacturer: {medicine.company}
                 </p>
 
                 {/* Pricing & MRP Discount Showcase */}
-                <div className="mt-5 p-4 rounded-lg bg-[#e8f3f1] border border-[#c4ded9] flex items-center justify-between">
+                <div className="mt-4 p-3.5 bg-[#f0eee7] border-2 border-[#27272a] flex items-center justify-between">
                   <div>
-                    <div className="flex items-baseline gap-2.5">
-                      <span className="text-2xl sm:text-3xl font-bold text-[#0f4c42]">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl sm:text-3xl font-bold font-mono text-[#141416]">
                         ₹{price}
                       </span>
                       {originalMrp > price && (
-                        <span className="text-xs sm:text-sm text-[#737373] line-through">
+                        <span className="text-xs sm:text-sm text-[#71737c] line-through font-mono">
                           MRP ₹{originalMrp}
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-[#525252]">
-                      MEDISAVE Community Fair Resale Rate
+                    <span className="text-[10px] font-mono text-[#52525b] uppercase block">
+                      Deterministic Community Rate
                     </span>
                   </div>
 
                   {discountPercent > 0 && (
                     <div className="text-right">
-                      <span className="inline-block bg-[#0f4c42] text-white font-bold text-xs px-2.5 py-1 rounded-md">
+                      <span className="stamp-green text-xs font-bold">
                         {discountPercent}% OFF MRP
                       </span>
-                      <p className="text-[11px] font-semibold text-[#065f46] mt-0.5">
-                        Save ₹{originalMrp - price} vs retail
+                      <p className="text-[10px] text-[#166534] font-mono font-bold mt-0.5">
+                        Save ₹{originalMrp - price} vs Pharmacy MRP
                       </p>
                     </div>
                   )}
                 </div>
 
-                {/* COMMUNITY HANDOVER SPECIFICATION CARD */}
-                <div className="mt-4 p-4 rounded-xl bg-amber-50/80 border border-amber-200 space-y-2.5 text-xs text-left">
-                  <div className="flex items-center justify-between">
-                    <strong className="text-amber-950 font-bold flex items-center gap-1.5">
-                      <PackageIcon className="w-4 h-4 text-amber-800" />
-                      Community Handover Point:
-                    </strong>
-                    <span className="font-semibold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded border border-[#c4ded9]">
-                      {medicine.locality || "Pune"}
-                    </span>
+                {/* Pune Handover Landmark Box */}
+                <div className="mt-3 p-3 bg-white border border-[#27272a] space-y-1 text-xs">
+                  <div className="font-bold text-[#141416] uppercase text-[11px] flex items-center gap-1">
+                    <MapPinIcon className="w-3.5 h-3.5 text-[#166534]" />
+                    <span>Designated Pune Handover Point:</span>
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-[#525252] bg-white/80 p-2.5 rounded-lg border border-amber-200/60">
-                    <div>
-                      <span className="text-[#737373] block">Preferred Handover:</span>
-                      <strong className="text-[#171717]">{medicine.handoverPoint || "Mutually agreed landmark"}</strong>
-                    </div>
-                    <div>
-                      <span className="text-[#737373] block">Locality & PIN:</span>
-                      <strong className="text-[#171717]">{medicine.locality || "Pune"} {medicine.pinCode ? `(${medicine.pinCode})` : ""}</strong>
-                    </div>
+                  <div className="text-[#141416] font-bold text-xs pl-4">
+                    {medicine.handoverPoint || "Katraj Chowk, near PMT Bus Stop, Pune"}
                   </div>
-
-                  <p className="text-[10px] text-amber-900/90 leading-relaxed italic border-t border-amber-200/60 pt-1.5">
-                    💡 <em>MEDISAVE is designed for community-based handover. Buyers and sellers agree on a convenient handover point. MEDISAVE does not currently operate its own delivery network.</em>
-                  </p>
+                  <div className="text-[10px] text-[#52525b] pl-4">
+                    Locality: {medicine.locality || "Pune"} {medicine.pinCode ? `(PIN: ${medicine.pinCode})` : ""}
+                  </div>
                 </div>
 
                 {/* Key Technical Highlights Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-4 text-xs">
-                  <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                    <span className="text-[#737373] block text-[11px]">Strength</span>
-                    <span className="font-bold text-[#171717] font-mono text-xs">
-                      {medicine.strength || "Standard"}
-                    </span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 text-xs font-mono">
+                  <div className="p-2 bg-[#f8f7f4] border border-[#d4d4d8]">
+                    <span className="text-[#71737c] block text-[10px] uppercase">Strength</span>
+                    <strong className="text-[#141416] text-xs truncate block">{medicine.strength || "Standard"}</strong>
                   </div>
-                  <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                    <span className="text-[#737373] block text-[11px]">Batch Number</span>
-                    <span className="font-bold text-[#171717] font-mono text-xs">
-                      {medicine.batchNumber || "VERIFIED"}
-                    </span>
+                  <div className="p-2 bg-[#f8f7f4] border border-[#d4d4d8]">
+                    <span className="text-[#71737c] block text-[10px] uppercase">Batch Number</span>
+                    <strong className="text-[#141416] text-xs truncate block">{medicine.batchNumber || "VERIFIED-BATCH"}</strong>
                   </div>
-                  <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                    <span className="text-[#737373] block text-[11px]">Available Stock</span>
-                    <span className="font-bold text-[#065f46] text-xs">
-                      {availableQty} {unit}
-                    </span>
+                  <div className="p-2 bg-[#f8f7f4] border border-[#d4d4d8]">
+                    <span className="text-[#71737c] block text-[10px] uppercase">Available Stock</span>
+                    <strong className="text-[#166534] text-xs block">{availableQty} {unit}</strong>
                   </div>
                 </div>
 
                 {/* Storage Instructions Callout */}
-                <div className="mt-3.5 flex items-start gap-2 p-2.5 bg-[#f7f7f4] rounded-lg border border-[#e4e2dd] text-xs text-[#525252]">
-                  <FileTextIcon className="w-4 h-4 text-[#737373] shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="text-[#171717]">Storage Guideline:</strong>{" "}
-                    {medicine.storageCondition || "Store in cool, dry place away from sunlight (<25°C)"}
-                  </div>
+                <div className="mt-2.5 p-2 bg-[#f8f7f4] border border-[#d4d4d8] text-[11px] text-[#52525b]">
+                  <strong>Storage:</strong> {medicine.storageCondition || "Store in cool, dry place away from sunlight (<25°C)"}
                 </div>
 
-                {/* Pricing Policy Rationale Callout */}
+                {/* Pricing Policy Rationale */}
                 {medicine.pricingRationale && (
-                  <div className="mt-2.5 p-3 bg-[#f0f9f8] rounded-lg border border-[#c4ded9] text-[11px] text-[#0a362f]">
-                    <strong>MEDISAVE Community Pricing Rationale:</strong> {medicine.pricingRationale}
+                  <div className="mt-2 p-2 bg-[#f0fdf4] border border-[#166534] text-[10px] text-[#166534]">
+                    <strong>Policy Rationale:</strong> {medicine.pricingRationale}
                   </div>
                 )}
               </div>
 
               {/* Quantity Picker & Action Buttons */}
-              <div className="pt-4 border-t border-[#e4e2dd] space-y-3.5">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-[#171717] uppercase tracking-wider">
+              <div className="pt-3 border-t-2 border-[#27272a] space-y-3 font-mono">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold uppercase text-[#141416]">
                     Quantity:
                   </span>
-                  <div className="flex items-center border border-[#e4e2dd] rounded-lg bg-white overflow-hidden shadow-2xs">
+                  <div className="flex items-center border border-[#27272a] bg-white">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                       disabled={quantity <= 1}
-                      className="px-2.5 py-1 text-[#525252] hover:bg-[#f2f1ec] disabled:opacity-40 transition cursor-pointer"
+                      className="px-2.5 py-0.5 text-[#141416] hover:bg-[#e4e4e7] disabled:opacity-40 cursor-pointer"
                     >
-                      <MinusIcon className="w-3.5 h-3.5" />
+                      <MinusIcon className="w-3 h-3" />
                     </button>
-                    <span className="px-3 text-xs font-bold text-[#171717]">
+                    <span className="px-3 text-xs font-bold text-[#141416]">
                       {quantity}
                     </span>
                     <button
-                      onClick={() =>
-                        setQuantity((q) => Math.min(availableQty, q + 1))
-                      }
+                      onClick={() => setQuantity((q) => Math.min(availableQty, q + 1))}
                       disabled={quantity >= availableQty}
-                      className="px-2.5 py-1 text-[#525252] hover:bg-[#f2f1ec] disabled:opacity-40 transition cursor-pointer"
+                      className="px-2.5 py-0.5 text-[#141416] hover:bg-[#e4e4e7] disabled:opacity-40 cursor-pointer"
                     >
-                      <PlusIcon className="w-3.5 h-3.5" />
+                      <PlusIcon className="w-3 h-3" />
                     </button>
                   </div>
-                  <span className="text-xs text-[#737373]">
-                    (Max {availableQty} packs available)
+                  <span className="text-[11px] text-[#52525b]">
+                    (Max {availableQty} units available)
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <Button
                     variant="secondary"
-                    size="lg"
+                    size="md"
                     onClick={handleAddToCart}
                     className="w-full"
                   >
                     <ShoppingBagIcon className="w-4 h-4" />
-                    Add to Request
+                    + Add to Request List
                   </Button>
                   <Button
                     variant="primary"
-                    size="lg"
+                    size="md"
                     onClick={handleBuyNow}
                     className="w-full"
                   >
-                    Request Now (₹{price * quantity})
+                    Request Order (₹{price * quantity})
                   </Button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Tabbed In-Depth Information Section */}
-          <div className="border-t border-[#e4e2dd] bg-[#fafaf7]">
-            {/* Tabs Header */}
-            <div className="flex border-b border-[#e4e2dd] px-6 sm:px-8 overflow-x-auto">
+          {/* In-Depth Information Section */}
+          <div className="border-t-2 border-[#27272a] bg-[#f8f7f4]">
+            <div className="flex border-b border-[#27272a] px-5 sm:px-7 font-mono text-xs overflow-x-auto">
               <button
                 onClick={() => setActiveTab("info")}
-                className={`py-3.5 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                className={`py-2.5 px-4 font-bold border-b-2 cursor-pointer whitespace-nowrap ${
                   activeTab === "info"
-                    ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                    : "border-transparent text-[#737373] hover:text-[#171717]"
+                    ? "border-[#166534] text-[#166534] bg-white"
+                    : "border-transparent text-[#52525b] hover:text-[#141416]"
                 }`}
               >
-                Medicine Information
+                Formulation & Details
               </button>
               <button
                 onClick={() => setActiveTab("seller")}
-                className={`py-3.5 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                className={`py-2.5 px-4 font-bold border-b-2 cursor-pointer whitespace-nowrap ${
                   activeTab === "seller"
-                    ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                    : "border-transparent text-[#737373] hover:text-[#171717]"
+                    ? "border-[#166534] text-[#166534] bg-white"
+                    : "border-transparent text-[#52525b] hover:text-[#141416]"
                 }`}
               >
-                Donor & Verification
+                Donor Profile & Locality
               </button>
               <button
                 onClick={() => setActiveTab("safety")}
-                className={`py-3.5 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                className={`py-2.5 px-4 font-bold border-b-2 cursor-pointer whitespace-nowrap ${
                   activeTab === "safety"
-                    ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                    : "border-transparent text-[#737373] hover:text-[#171717]"
+                    ? "border-[#166534] text-[#166534] bg-white"
+                    : "border-transparent text-[#52525b] hover:text-[#141416]"
                 }`}
               >
-                Safety Compliance
+                Safety & Quality Criteria
               </button>
             </div>
 
-            {/* Tab Contents */}
-            <div className="p-6 sm:p-8 bg-white text-xs sm:text-sm text-[#525252] leading-relaxed">
+            <div className="p-5 sm:p-7 bg-white text-xs text-[#52525b] leading-relaxed">
               {activeTab === "info" && (
-                <div className="space-y-3.5 max-w-3xl text-left">
-                  <h3 className="text-sm sm:text-base font-bold text-[#171717]">
+                <div className="space-y-3 max-w-3xl text-left">
+                  <h3 className="text-sm font-bold font-heading text-[#141416]">
                     Therapeutic & Formulation Details
                   </h3>
-                  <p>{medicine.description || "Verified unexpired medication in undamaged sealed packaging."}</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <div className="p-3 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                      <span className="text-[11px] text-[#737373] block font-medium">Active Ingredients:</span>
-                      <span className="font-bold text-[#171717] text-xs">{generic}</span>
+                  <p className="font-sans">{medicine.description || "Verified unexpired medication in undamaged sealed blister packaging."}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 font-mono">
+                    <div className="p-2.5 bg-[#f8f7f4] border border-[#d4d4d8]">
+                      <span className="text-[10px] text-[#71737c] block uppercase">Active Chemical Composition:</span>
+                      <strong className="text-[#141416] text-xs font-sans">{generic}</strong>
                     </div>
-                    <div className="p-3 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                      <span className="text-[11px] text-[#737373] block font-medium">Manufacturer:</span>
-                      <span className="font-bold text-[#171717] text-xs">{medicine.company}</span>
+                    <div className="p-2.5 bg-[#f8f7f4] border border-[#d4d4d8]">
+                      <span className="text-[10px] text-[#71737c] block uppercase">Manufacturer:</span>
+                      <strong className="text-[#141416] text-xs font-sans">{medicine.company}</strong>
                     </div>
                   </div>
                 </div>
               )}
 
               {activeTab === "seller" && (
-                <div className="space-y-3.5 max-w-3xl text-left">
-                  <h3 className="text-sm sm:text-base font-bold text-[#171717]">
+                <div className="space-y-3 max-w-3xl text-left font-mono">
+                  <h3 className="text-sm font-bold font-heading text-[#141416]">
                     Community Donor Profile
                   </h3>
-                  <div className="flex items-center gap-3.5 p-3.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                    <div className="w-10 h-10 rounded-full bg-[#0f4c42] text-[#a7f3d0] flex items-center justify-center font-bold text-sm">
-                      {sellerName.charAt(0).toUpperCase()}
-                    </div>
+                  <div className="p-3 bg-[#f8f7f4] border border-[#27272a] flex items-center justify-between">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-[#171717] text-sm">
-                          {sellerName}
-                        </h4>
-                        <Badge variant="verified" size="sm">
-                          Verified Donor
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-[#737373] mt-0.5">
-                        Location: {sellerLocation}
-                      </p>
+                      <strong className="text-sm text-[#141416] font-sans block">{sellerName}</strong>
+                      <span className="text-xs text-[#52525b]">Location: {sellerLocation}</span>
                     </div>
+                    <span className="stamp-green text-[10px]">VERIFIED DONOR</span>
                   </div>
-                  <p className="text-xs text-[#737373]">
+                  <p className="text-xs text-[#52525b] font-sans">
                     Listing verified and cleared for community exchange following coordinator review of packaging and batch details.
                   </p>
                 </div>
               )}
 
               {activeTab === "safety" && (
-                <div className="space-y-3.5 max-w-3xl text-left">
-                  <h3 className="text-sm sm:text-base font-bold text-[#171717]">
-                    MEDISAVE Quality & Handling Protocols
+                <div className="space-y-3 max-w-3xl text-left font-mono">
+                  <h3 className="text-sm font-bold font-heading text-[#141416]">
+                    MEDISAVE Quality & Handling Standards
                   </h3>
-                  <ul className="space-y-2 text-xs text-[#525252]">
-                    <li className="flex items-start gap-2">
-                      <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
-                      <span><strong>Minimum Expiry Window:</strong> All medicines listed on MEDISAVE have a minimum 90-day safety buffer remaining.</span>
+                  <ul className="space-y-1.5 text-xs text-[#4b4d52] font-sans">
+                    <li className="flex items-start gap-1.5">
+                      <CheckIcon className="w-4 h-4 text-[#166534] shrink-0 mt-0.5" />
+                      <span><strong>Minimum 90-Day Expiry Window:</strong> All medicines have verified safety buffers remaining.</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
-                      <span><strong>Sealed Packaging Standard:</strong> Opened bottles, cut blister packs, and broken tamper seals are strictly rejected.</span>
+                    <li className="flex items-start gap-1.5">
+                      <CheckIcon className="w-4 h-4 text-[#166534] shrink-0 mt-0.5" />
+                      <span><strong>Hermetically Sealed Blister Standard:</strong> Cut strips or opened bottles are strictly rejected.</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
-                      <span><strong>Prescription Verification:</strong> Schedule H and H1 medications require physical or digital doctor prescription approval before checkout.</span>
+                    <li className="flex items-start gap-1.5">
+                      <CheckIcon className="w-4 h-4 text-[#166534] shrink-0 mt-0.5" />
+                      <span><strong>Doctor Prescription Verification:</strong> Schedule H medications require approved doctor prescription.</span>
                     </li>
                   </ul>
                 </div>
@@ -518,11 +470,11 @@ export default function MedicineDetails() {
 
         {/* Related Medicines Grid */}
         {relatedMedicines.length > 0 && (
-          <div className="mt-12 text-left space-y-4">
-            <h3 className="text-lg sm:text-xl font-bold text-[#171717]">
-              Other medicines in {medicine.category}
+          <div className="mt-8 text-left space-y-3">
+            <h3 className="text-base font-bold font-heading text-[#141416]">
+              Other Medicines in {medicine.category}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {relatedMedicines.map((item) => (
                 <MedicineCard key={item._id || item.id} medicine={item} />
               ))}

@@ -2,120 +2,177 @@
 
 @layer base {
   :root {
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --color-bg-base: #f7f7f4;
-    --color-bg-subtle: #f2f1ec;
-    --color-bg-card: #ffffff;
-    --color-text-main: #171717;
-    --color-text-muted: #525252;
-    --color-text-subtle: #737373;
-    --color-brand: #0f4c42;
-    --color-brand-hover: #0a362f;
-    --color-brand-light: #166557;
-    --color-brand-tint: #e8f3f1;
-    --color-border: #e4e2dd;
-    --color-border-subtle: #eceae5;
+    --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Domain Palette: Off-white Paper, Blister-Foil Grey, Pharmacy Green, Rx Red */
+    --color-paper-base: #f8f7f4;
+    --color-paper-subtle: #f0eee7;
+    --color-paper-card: #ffffff;
+    --color-paper-edge: #ded9cf;
+    
+    --color-ink-primary: #141416;
+    --color-ink-muted: #4b4d52;
+    --color-ink-dim: #71737c;
+    
+    --color-foil-grey: #e2e5eb;
+    --color-foil-dark: #cbd0d9;
+    --color-foil-stripe: #949ca9;
+    
+    --color-rx-red: #b91c1c;
+    --color-rx-tint: #fef2f2;
+    --color-rx-border: #fca5a5;
+    
+    --color-pharmacy-green: #166534;
+    --color-pharmacy-dark: #14532d;
+    --color-pharmacy-tint: #f0fdf4;
+    --color-pharmacy-border: #bbf7d0;
+
+    --color-border-main: #d4d4d8;
+    --color-border-strong: #27272a;
   }
 
   html {
     font-family: var(--font-sans);
-    background-color: var(--color-bg-base);
-    color: var(--color-text-main);
+    background-color: var(--color-paper-base);
+    color: var(--color-ink-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
   }
 
   body {
-    background-color: var(--color-bg-base);
-    color: var(--color-text-main);
+    background-color: var(--color-paper-base);
+    color: var(--color-ink-primary);
     min-height: 100vh;
   }
 
-  /* Accessibility focus rings */
+  h1, h2, h3, h4, .font-grotesk {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+
+  code, kbd, samp, pre, .font-mono, .stamp-text {
+    font-family: var(--font-mono);
+  }
+
+  /* Focus ring */
   :focus-visible {
-    outline: 2px solid #0f4c42;
-    outline-offset: 2px;
+    outline: 2px solid #166534;
+    outline-offset: 1px;
   }
 }
 
-/* Custom Healthcare Scrollbar */
+/* Domain-Derived Clinical & Ledger Styling */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-technical {
+  font-family: var(--font-mono);
+}
+
+/* Stamped Ledger Elements */
+.stamp-box {
+  border: 1.5px solid #27272a;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  background-color: #ffffff;
+}
+
+.stamp-rx {
+  border: 1.5px solid #b91c1c;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+}
+
+.stamp-green {
+  border: 1.5px solid #166534;
+  color: #166534;
+  background-color: #f0fdf4;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+}
+
+.stamp-foil {
+  border: 1.5px solid #64748b;
+  color: #334155;
+  background-color: #f1f5f9;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 1px 6px;
+}
+
+/* Red Rx Warning Strip */
+.rx-stripe-top {
+  border-top: 3px solid #b91c1c;
+}
+
+.rx-stripe-left {
+  border-left: 3px solid #b91c1c;
+}
+
+.pharmacy-stripe-left {
+  border-left: 3px solid #166534;
+}
+
+/* Blister foil texture effect */
+.blister-foil-bg {
+  background-color: #eef1f6;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Crisp Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f2f1ec;
+  background: #f0eee7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1cfc7;
-  border-radius: 4px;
+  background: #a1a1aa;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a69e;
+  background: #71717a;
 }
 
-/* Utilities */
-.bg-med-warm {
-  background-color: #f7f7f4;
-}
-
-.bg-med-subtle {
-  background-color: #f2f1ec;
-}
-
-.border-med {
-  border-color: #e4e2dd;
-}
-
-.border-med-subtle {
-  border-color: #eceae5;
-}
-
-.text-med-main {
-  color: #171717;
-}
-
-.text-med-muted {
-  color: #525252;
-}
-
-.text-med-subtle {
-  color: #737373;
-}
-
-.text-med-brand {
-  color: #0f4c42;
-}
-
-.bg-med-brand {
-  background-color: #0f4c42;
-}
-
-.bg-med-brand:hover {
-  background-color: #0a362f;
-}
-
-.bg-med-brand-tint {
-  background-color: #e8f3f1;
-}
-
-.border-med-brand {
-  border-color: #0f4c42;
-}
-
-.border-med-brand-tint {
-  border-color: #c4ded9;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+/* Print Styles for Handover Slip / Docket */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, footer, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-docket {
+    border: 2px solid #000000 !important;
+    padding: 16px !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
   }
 }

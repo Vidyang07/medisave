@@ -432,27 +432,21 @@ export default function SellMedicine() {
               )}
 
               {/* AI SMART AUTO-FILL & PHARMACEUTICAL ASSISTANT BANNER */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4c42]/10 via-[#0f4c42]/5 to-amber-500/10 border border-[#0f4c42]/20 p-5 sm:p-6 shadow-xs space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center shadow-xs">
-                      <SparklesIcon className="w-5 h-5 text-amber-300" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-sm sm:text-base font-bold text-[#171717]">
-                          AI Medicine Identification Assistant
-                        </h2>
-                        <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#0f4c42] text-white">
-                          OpenRouter AI
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#525252] mt-0.5">
-                        Type any medicine name — AI assists with generic salt identification, manufacturer, and standard packaging details.
-                      </p>
-                    </div>
+              <div className="border-2 border-[#27272a] bg-[#f8f7f4] p-4 sm:p-5 space-y-3.5 font-mono text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#27272a] pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="stamp-box text-[10px]">AI ASSIST</span>
+                    <h2 className="text-sm font-bold font-heading text-[#141416]">
+                      Pharmaceutical Identification & Formulation Assistant
+                    </h2>
                   </div>
+                  <span className="stamp-green text-[10px]">
+                    OPENROUTER ENGINE
+                  </span>
                 </div>
+                <p className="text-xs text-[#52525b] font-sans">
+                  Type any medicine brand or composition — AI identifies active salts, standard dosage forms, and reference market MRP.
+                </p>
 
                 {/* AI Search & Trigger Input Bar */}
                 <div className="flex flex-col sm:flex-row gap-2 pt-1">
