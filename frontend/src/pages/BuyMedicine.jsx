@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import MedicineCard from "../components/MedicineCard";
 import { CATEGORIES, DOSAGE_FORMS } from "../data/mockData";
 import { Breadcrumb } from "../components/common/Breadcrumb";
 import { MedicineCardSkeleton } from "../components/common/LoadingSkeleton";
 import { EmptyState } from "../components/common/EmptyState";
-import { useCart } from "../context/useCart";
-import { useToast } from "../context/useToast";
 import {
   SearchIcon,
   FilterIcon,
@@ -18,12 +16,10 @@ import {
 import { PUNE_LOCALITIES } from "../utils/localityConstants";
 
 export default function BuyMedicine() {
-  const { addToCart } = useCart();
-  const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlSearch = searchParams.get("search") || "";
   const urlCategory = searchParams.get("category") || "All Categories";
-  const urlLocality = searchParams.get("locality") || "Katraj";
+  const urlLocality = searchParams.get("locality") || "Kothrud";
 
   const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [selectedCategory, setSelectedCategory] = useState(urlCategory);
@@ -32,15 +28,14 @@ export default function BuyMedicine() {
   const [rxFilter, setRxFilter] = useState("all"); // 'all', 'otc', 'rx'
   const [sortBy, setSortBy] = useState("nearby");
   const [buyerLocality, setBuyerLocality] = useState(urlLocality);
-  const [viewMode, setViewMode] = useState("ledger"); // 'ledger' (Chemist sheet) vs 'grid' (Card tags)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [medicines, setMedicines] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 1 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 9, total: 0, pages: 1 });
   const [error, setError] = useState(null);
 
-  const itemsPerPage = 12;
+  const itemsPerPage = 9;
 
   const effectiveSearch = searchQuery.trim() || urlSearch.trim();
   const effectiveCategory =
@@ -94,7 +89,7 @@ export default function BuyMedicine() {
       })
       .catch((err) => {
         if (isMounted) {
-          setError(err.response?.data?.message || "Failed to query medicine database.");
+          setError(err.response?.data?.message || "Failed to load medicines from database.");
           setIsLoading(false);
         }
       });
@@ -142,29 +137,6 @@ export default function BuyMedicine() {
     setSearchParams({});
   };
 
-  const handleTableQuickAdd = (med) => {
-    const medId = med._id || med.id;
-    const title = med.brandName || med.medicineName || med.name || "Medicine";
-    addToCart(
-      {
-        ...med,
-        id: medId,
-        name: title,
-        brandName: title,
-        company: med.company || "Standard Manufacturer",
-        strength: med.strength || "",
-        price: med.price !== undefined ? med.price : 0,
-        originalMrp: med.originalMrp || med.price,
-        image: med.image,
-        isPrescriptionRequired: Boolean(med.isPrescriptionRequired),
-        locality: med.locality || "Pune",
-        handoverPoint: med.handoverPoint || med.locality || "Pune Handover Hub",
-      },
-      1
-    );
-    showToast(`Added ${title} to order request`, "success");
-  };
-
   const activeFilterCount =
     (selectedCategory !== "All Categories" ? 1 : 0) +
     (selectedForm !== "All Forms" ? 1 : 0) +
@@ -173,75 +145,72 @@ export default function BuyMedicine() {
     (searchQuery.trim() ? 1 : 0);
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] py-6 sm:py-8 text-left">
+    <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Navigation */}
-        <Breadcrumb items={[{ label: "Home", to: "/" }, { label: "Pune Medicine Register" }]} />
+        <Breadcrumb items={[{ label: "Home", to: "/" }, { label: "Browse Medicines" }]} />
 
         {/* Header Title & Subtitle */}
-        <div className="border-b-2 border-[#27272a] pb-5">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="stamp-box text-[11px]">PUNE SECTOR REGISTRY</span>
-                <span className="stamp-green text-[11px]">LIVE VERIFIED INVENTORY</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#141416] font-heading tracking-tight mt-1.5">
-                Chemist's Community Price Sheet & Register
-              </h1>
-              <p className="text-xs sm:text-sm text-[#4b4d52] mt-1 max-w-2xl leading-relaxed">
-                Indexed surplus medications from verified Pune donors. All listings enforce 40%–65% community pricing and require sealed packaging with minimum 90-day remaining shelf life.
-              </p>
-            </div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#e4e2dd] pb-5 text-left">
+          <div>
+            <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+              Pune Community Exchange
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#171717] tracking-tight mt-1">
+              Find medicines in your community
+            </h1>
+            <p className="text-xs sm:text-sm text-[#525252] mt-1 max-w-2xl leading-relaxed">
+              Browse genuine surplus medications from verified community donors. MEDISAVE prioritizes nearby listings with convenient physical handover points across Pune.
+            </p>
+          </div>
 
-            {/* Quick Search Field in Header */}
-            <div className="w-full md:w-80">
-              <div className="relative">
-                <SearchIcon className="w-4 h-4 text-[#71737c] absolute left-3 top-2.5 pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => {
+          {/* Quick Search Field in Header */}
+          <div className="w-full md:w-80">
+            <div className="relative">
+              <SearchIcon className="w-4 h-4 text-[#737373] absolute left-3 top-2.5 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setIsLoading(true);
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search brand, salt, locality, or handover..."
+                className="w-full bg-white border border-[#e4e2dd] rounded-lg pl-9 pr-8 py-2 text-xs sm:text-sm text-[#171717] placeholder-[#737373] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:border-[#0f4c42] transition shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
                     setIsLoading(true);
-                    setSearchQuery(e.target.value);
+                    setSearchQuery("");
                     setCurrentPage(1);
                   }}
-                  placeholder="Search brand, salt, locality..."
-                  className="w-full bg-white border-2 border-[#27272a] pl-9 pr-8 py-2 text-xs sm:text-sm text-[#141416] placeholder-[#71737c] focus:outline-none focus:ring-2 focus:ring-[#166534] font-mono"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setIsLoading(true);
-                      setSearchQuery("");
-                      setCurrentPage(1);
-                    }}
-                    className="absolute right-2.5 top-2.5 text-[#71737c] hover:text-[#141416] cursor-pointer"
-                    aria-label="Clear search"
-                  >
-                    <XIcon className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+                  className="absolute right-2.5 top-2.5 text-[#737373] hover:text-[#171717] cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <XIcon className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* BUYER LOCALITY SELECTOR & LOGISTICS CLARITY STRIP */}
-        <div className="bg-white border-2 border-[#27272a] p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#166534] text-white flex items-center justify-center shrink-0">
-              <MapPinIcon className="w-4 h-4" />
+        {/* BUYER LOCALITY SELECTOR & HANDOVER DISCLAIMER BANNER */}
+        <div className="bg-white rounded-xl border border-[#c4ded9] p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs text-left">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#0f4c42] text-white flex items-center justify-center shrink-0">
+              <MapPinIcon className="w-4 h-4 text-amber-300" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-mono font-bold text-[#141416] uppercase">
-                  Current Recipient Locality:
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-[#171717]">
+                  Your Location in Pune:
                 </span>
                 <select
                   value={buyerLocality}
                   onChange={(e) => handleLocalityChange(e.target.value)}
-                  className="bg-[#f8f7f4] border-2 border-[#27272a] text-[#141416] font-mono font-bold text-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#166534] cursor-pointer"
+                  className="bg-[#f0f9f8] border border-[#c4ded9] text-[#0f4c42] font-bold text-xs rounded-md px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-[#0f4c42] cursor-pointer"
                 >
                   {PUNE_LOCALITIES.map((loc) => (
                     <option key={loc.name} value={loc.name}>
@@ -250,27 +219,27 @@ export default function BuyMedicine() {
                   ))}
                 </select>
               </div>
-              <p className="text-[11px] font-mono text-[#52525b] mt-0.5">
-                Proximity computed from <strong>{buyerLocality}</strong>. Handover is coordinated directly between buyer and donor at verified pickup points.
+              <p className="text-[11px] text-[#525252] mt-0.5">
+                MEDISAVE prioritizes nearby community listings and uses mutually agreed handover points instead of operating its own delivery fleet.
               </p>
             </div>
           </div>
 
-          <div className="text-xs font-mono bg-[#f0eee7] px-3 py-1.5 border border-[#d4d4d8] shrink-0 text-[#27272a]">
-            Sorting: <strong>Haversine Proximity</strong>
+          <div className="text-xs text-[#0f4c42] font-medium bg-[#e8f3f1] px-3 py-1.5 rounded-lg border border-[#c4ded9] shrink-0">
+            📍 Calculating distances from <strong>{buyerLocality}</strong>
           </div>
         </div>
 
         {/* Quick Filter Horizontal Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs font-mono">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs text-left">
           {CATEGORIES.slice(0, 8).map((cat) => (
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-3 py-1 font-mono font-bold transition cursor-pointer whitespace-nowrap border border-[#27272a] ${
+              className={`px-3 py-1 rounded-md font-medium transition cursor-pointer whitespace-nowrap ${
                 selectedCategory === cat
-                  ? "bg-[#166534] text-white"
-                  : "bg-white text-[#27272a] hover:bg-[#f0eee7]"
+                  ? "bg-[#0f4c42] text-white font-semibold shadow-2xs"
+                  : "bg-white border border-[#e4e2dd] text-[#525252] hover:bg-[#f2f1ec] hover:text-[#171717]"
               }`}
             >
               {cat}
@@ -281,41 +250,41 @@ export default function BuyMedicine() {
         {/* Two-Column Marketplace Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* Left Desktop Sidebar Filters (3 cols) */}
-          <aside className="hidden lg:block lg:col-span-3 bg-white border-2 border-[#27272a] p-4 sm:p-5 space-y-5 text-left">
-            <div className="flex items-center justify-between pb-3 border-b border-[#27272a]">
+          <aside className="hidden lg:block lg:col-span-3 bg-white rounded-xl border border-[#e4e2dd] p-4 sm:p-5 shadow-2xs space-y-5 text-left">
+            <div className="flex items-center justify-between pb-3 border-b border-[#eceae5]">
               <div className="flex items-center gap-2">
-                <FilterIcon className="w-4 h-4 text-[#166534]" />
-                <h2 className="text-xs sm:text-sm font-bold font-mono text-[#141416] uppercase">Filter Registry</h2>
+                <FilterIcon className="w-4 h-4 text-[#0f4c42]" />
+                <h2 className="text-xs sm:text-sm font-bold text-[#171717]">Filters</h2>
               </div>
               {activeFilterCount > 0 && (
                 <button
                   onClick={handleClearAllFilters}
-                  className="text-xs font-mono text-[#b91c1c] hover:underline font-bold cursor-pointer"
+                  className="text-xs text-[#0f4c42] hover:underline font-semibold cursor-pointer"
                 >
-                  Reset
+                  Reset all
                 </button>
               )}
             </div>
 
             {/* Category Filter List */}
             <div className="space-y-1.5">
-              <label className="block text-[11px] font-mono font-bold text-[#141416] uppercase tracking-wider">
-                Therapeutic Class
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider">
+                Category
               </label>
               <div className="space-y-0.5 max-h-52 overflow-y-auto pr-1">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => handleCategoryChange(cat)}
-                    className={`w-full text-left px-2 py-1 text-xs font-mono transition cursor-pointer flex items-center justify-between ${
+                    className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition cursor-pointer flex items-center justify-between ${
                       selectedCategory === cat
-                        ? "bg-[#166534] text-white font-bold"
-                        : "text-[#4b4d52] hover:bg-[#f8f7f4] hover:text-[#141416]"
+                        ? "bg-[#e8f3f1] text-[#0f4c42] font-bold border border-[#c4ded9]"
+                        : "text-[#525252] hover:bg-[#f7f7f4] hover:text-[#171717]"
                     }`}
                   >
                     <span>{cat}</span>
                     {selectedCategory === cat && (
-                      <span className="text-[10px]">●</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#0f4c42]" />
                     )}
                   </button>
                 ))}
@@ -323,9 +292,9 @@ export default function BuyMedicine() {
             </div>
 
             {/* Dosage Form Filter */}
-            <div className="space-y-1.5 pt-3 border-t border-[#d4d4d8]">
-              <label className="block text-[11px] font-mono font-bold text-[#141416] uppercase tracking-wider">
-                Dosage Formulation
+            <div className="space-y-1.5 pt-3 border-t border-[#eceae5]">
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider">
+                Dosage Form
               </label>
               <select
                 value={selectedForm}
@@ -334,7 +303,7 @@ export default function BuyMedicine() {
                   setSelectedForm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full bg-[#f8f7f4] border border-[#27272a] px-2.5 py-1.5 text-xs text-[#141416] font-mono focus:outline-none focus:ring-2 focus:ring-[#166534]"
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-2.5 py-1.5 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
               >
                 {DOSAGE_FORMS.map((form) => (
                   <option key={form} value={form}>
@@ -345,12 +314,12 @@ export default function BuyMedicine() {
             </div>
 
             {/* Price Range Slider */}
-            <div className="space-y-2 pt-3 border-t border-[#d4d4d8]">
-              <div className="flex justify-between items-center text-xs font-mono">
-                <label className="font-bold text-[#141416] uppercase">
-                  Price Ceiling
+            <div className="space-y-2 pt-3 border-t border-[#eceae5]">
+              <div className="flex justify-between items-center text-xs">
+                <label className="font-bold text-[#171717] uppercase tracking-wider">
+                  Max Price
                 </label>
-                <span className="font-bold text-[#166534] bg-[#f0fdf4] border border-[#166534] px-1.5 py-0.5">
+                <span className="font-mono font-bold text-[#0f4c42] bg-[#f2f1ec] px-2 py-0.5 rounded">
                   ₹{maxPrice}
                 </span>
               </div>
@@ -365,21 +334,21 @@ export default function BuyMedicine() {
                   setMaxPrice(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="w-full accent-[#166534] cursor-pointer"
+                className="w-full accent-[#0f4c42] cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-[#71737c] font-mono">
+              <div className="flex justify-between text-[10px] text-[#737373] font-mono">
                 <span>₹20</span>
                 <span>₹250</span>
               </div>
             </div>
 
             {/* Prescription Requirement */}
-            <div className="space-y-1.5 pt-3 border-t border-[#d4d4d8]">
-              <label className="block text-[11px] font-mono font-bold text-[#141416] uppercase tracking-wider">
-                Prescription Classification
+            <div className="space-y-1.5 pt-3 border-t border-[#eceae5]">
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider">
+                Availability Type
               </label>
-              <div className="space-y-1 text-xs font-mono">
-                <label className="flex items-center gap-2 text-[#4b4d52] cursor-pointer">
+              <div className="space-y-1 text-xs">
+                <label className="flex items-center gap-2 text-[#525252] cursor-pointer">
                   <input
                     type="radio"
                     name="rxFilter"
@@ -390,11 +359,11 @@ export default function BuyMedicine() {
                       setRxFilter("all");
                       setCurrentPage(1);
                     }}
-                    className="accent-[#166534]"
+                    className="accent-[#0f4c42]"
                   />
-                  <span>All Registered Items</span>
+                  <span>All Listings</span>
                 </label>
-                <label className="flex items-center gap-2 text-[#4b4d52] cursor-pointer">
+                <label className="flex items-center gap-2 text-[#525252] cursor-pointer">
                   <input
                     type="radio"
                     name="rxFilter"
@@ -405,11 +374,11 @@ export default function BuyMedicine() {
                       setRxFilter("otc");
                       setCurrentPage(1);
                     }}
-                    className="accent-[#166534]"
+                    className="accent-[#0f4c42]"
                   />
-                  <span>OTC General Only</span>
+                  <span>Over the Counter (OTC)</span>
                 </label>
-                <label className="flex items-center gap-2 text-[#4b4d52] cursor-pointer">
+                <label className="flex items-center gap-2 text-[#525252] cursor-pointer">
                   <input
                     type="radio"
                     name="rxFilter"
@@ -420,84 +389,62 @@ export default function BuyMedicine() {
                       setRxFilter("rx");
                       setCurrentPage(1);
                     }}
-                    className="accent-[#b91c1c]"
+                    className="accent-[#0f4c42]"
                   />
-                  <span>Schedule H/Rx Required</span>
+                  <span>Prescription Required (Rx)</span>
                 </label>
               </div>
             </div>
           </aside>
 
-          {/* Right Area: Table / Grid Display (9 cols) */}
+          {/* Right Product Grid Area (9 cols) */}
           <main className="lg:col-span-9 space-y-4 text-left">
-            {/* Action Bar: Count, View Mode Switcher, Sort Dropdown */}
-            <div className="bg-white border-2 border-[#27272a] p-3 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+            {/* Action Bar: Count, Mobile Trigger, Sort Dropdown */}
+            <div className="bg-white rounded-xl border border-[#e4e2dd] p-3 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsMobileFilterOpen(true)}
-                  className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 bg-[#f0eee7] text-[#141416] border border-[#27272a] text-xs font-mono font-bold cursor-pointer"
+                  className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 bg-[#f2f1ec] text-[#171717] rounded-lg text-xs font-semibold hover:bg-[#e8f3f1] transition cursor-pointer"
                 >
                   <FilterIcon className="w-3.5 h-3.5" />
                   Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
                 </button>
 
-                <span className="text-xs font-mono text-[#52525b]">
-                  Showing <strong className="text-[#141416]">{pagination.total}</strong> verified items near <strong>{buyerLocality}</strong>
+                <span className="text-xs text-[#525252]">
+                  Showing{" "}
+                  <strong className="text-[#171717] font-bold">
+                    {pagination.total}
+                  </strong>{" "}
+                  verified medicines near <strong>{buyerLocality}</strong>
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
-                {/* View Switcher: Dense Chemist Sheet vs Grid Cards */}
-                <div className="hidden sm:flex items-center border border-[#27272a] font-mono text-xs">
-                  <button
-                    onClick={() => setViewMode("ledger")}
-                    className={`px-2.5 py-1 font-bold cursor-pointer ${
-                      viewMode === "ledger"
-                        ? "bg-[#166534] text-white"
-                        : "bg-white text-[#27272a] hover:bg-[#f0eee7]"
-                    }`}
-                  >
-                    Price Sheet
-                  </button>
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`px-2.5 py-1 font-bold cursor-pointer ${
-                      viewMode === "grid"
-                        ? "bg-[#166534] text-white"
-                        : "bg-white text-[#27272a] hover:bg-[#f0eee7]"
-                    }`}
-                  >
-                    Shelf Cards
-                  </button>
-                </div>
-
-                {/* Sort selector */}
-                <div className="flex items-center gap-1.5 text-xs font-mono">
-                  <span className="text-[#71737c] hidden md:inline">Sort:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => {
-                      setIsLoading(true);
-                      setSortBy(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="bg-[#f8f7f4] border border-[#27272a] px-2 py-1 text-xs text-[#141416] font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#166534]"
-                  >
-                    <option value="nearby">Proximity: Nearest First</option>
-                    <option value="price-low">Rate: Low to High</option>
-                    <option value="price-high">Rate: High to Low</option>
-                    <option value="expiry-nearest">Expiry: Nearest First</option>
-                    <option value="newest">Newest Listed</option>
-                  </select>
-                </div>
+              {/* Sort selector */}
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-[#737373] hidden sm:inline">Sort by:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => {
+                    setIsLoading(true);
+                    setSortBy(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-2.5 py-1 text-xs text-[#171717] font-medium focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                >
+                  <option value="nearby">📍 Nearby First (Closest Handover)</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="newest">Newest First</option>
+                  <option value="expiry-nearest">Expiry: Nearest First</option>
+                </select>
               </div>
             </div>
 
             {/* Error State Banner */}
             {error && (
-              <div className="p-3 bg-[#fef2f2] border-2 border-[#b91c1c] text-xs font-mono text-[#b91c1c] flex items-center justify-between">
+              <div className="p-3.5 bg-[#fff1f2] border border-[#fecdd3] rounded-xl text-xs text-[#9f1239] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <AlertCircleIcon className="w-4 h-4 shrink-0" />
+                  <AlertCircleIcon className="w-4 h-4 shrink-0 text-[#be123c]" />
                   <span>{error}</span>
                 </div>
                 <button
@@ -505,7 +452,7 @@ export default function BuyMedicine() {
                     setIsLoading(true);
                     setCurrentPage((p) => p);
                   }}
-                  className="font-bold underline cursor-pointer"
+                  className="font-bold underline text-[#9f1239] hover:text-[#881337] cursor-pointer"
                 >
                   Retry
                 </button>
@@ -514,56 +461,56 @@ export default function BuyMedicine() {
 
             {/* Active Filters Tag Strip */}
             {activeFilterCount > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
-                <span className="text-[#71737c] text-[11px]">ACTIVE FILTERS:</span>
+              <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-[#737373] text-[11px]">Active filters:</span>
                 {selectedCategory !== "All Categories" && (
-                  <span className="stamp-box text-[10px]">
+                  <span className="inline-flex items-center gap-1 bg-[#e8f3f1] text-[#0f4c42] border border-[#c4ded9] px-2 py-0.5 rounded-md font-medium">
                     {selectedCategory}
                     <button
                       onClick={() => handleCategoryChange("All Categories")}
-                      className="hover:text-[#b91c1c] cursor-pointer ml-1 font-bold"
+                      className="hover:text-[#9f1239] cursor-pointer ml-0.5"
                     >
                       ✕
                     </button>
                   </span>
                 )}
                 {selectedForm !== "All Forms" && (
-                  <span className="stamp-box text-[10px]">
+                  <span className="inline-flex items-center gap-1 bg-[#e8f3f1] text-[#0f4c42] border border-[#c4ded9] px-2 py-0.5 rounded-md font-medium">
                     {selectedForm}
                     <button
                       onClick={() => {
                         setIsLoading(true);
                         setSelectedForm("All Forms");
                       }}
-                      className="hover:text-[#b91c1c] cursor-pointer ml-1 font-bold"
+                      className="hover:text-[#9f1239] cursor-pointer ml-0.5"
                     >
                       ✕
                     </button>
                   </span>
                 )}
                 {maxPrice < 250 && (
-                  <span className="stamp-box text-[10px]">
-                    ≤ ₹{maxPrice}
+                  <span className="inline-flex items-center gap-1 bg-[#e8f3f1] text-[#0f4c42] border border-[#c4ded9] px-2 py-0.5 rounded-md font-medium">
+                    Under ₹{maxPrice}
                     <button
                       onClick={() => {
                         setIsLoading(true);
                         setMaxPrice(250);
                       }}
-                      className="hover:text-[#b91c1c] cursor-pointer ml-1 font-bold"
+                      className="hover:text-[#9f1239] cursor-pointer ml-0.5"
                     >
                       ✕
                     </button>
                   </span>
                 )}
                 {rxFilter !== "all" && (
-                  <span className={rxFilter === "rx" ? "stamp-rx text-[10px]" : "stamp-box text-[10px]"}>
+                  <span className="inline-flex items-center gap-1 bg-[#e8f3f1] text-[#0f4c42] border border-[#c4ded9] px-2 py-0.5 rounded-md font-medium">
                     {rxFilter === "otc" ? "OTC Only" : "Rx Required"}
                     <button
                       onClick={() => {
                         setIsLoading(true);
                         setRxFilter("all");
                       }}
-                      className="hover:text-[#b91c1c] cursor-pointer ml-1 font-bold"
+                      className="hover:text-[#9f1239] cursor-pointer ml-0.5"
                     >
                       ✕
                     </button>
@@ -571,156 +518,34 @@ export default function BuyMedicine() {
                 )}
                 <button
                   onClick={handleClearAllFilters}
-                  className="text-xs font-mono text-[#b91c1c] underline ml-1 cursor-pointer"
+                  className="text-xs text-[#525252] hover:text-[#171717] underline ml-1 cursor-pointer"
                 >
                   Clear all
                 </button>
               </div>
             )}
 
-            {/* Main Content: Dense Chemist Price Sheet / Ledger Table or Shelf Cards */}
+            {/* Medicine Cards Grid or Loading Skeletons */}
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 {[...Array(6)].map((_, i) => (
                   <MedicineCardSkeleton key={i} />
                 ))}
               </div>
             ) : medicines.length > 0 ? (
-              viewMode === "ledger" ? (
-                /* DENSE CHEMIST PRICE SHEET TABLE */
-                <div className="border-2 border-[#27272a] bg-white overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse min-w-[720px]">
-                    <thead>
-                      <tr className="bg-[#f0eee7] border-b-2 border-[#27272a] font-mono text-[10px] text-[#27272a] uppercase">
-                        <th className="p-2.5 border-r border-[#d4d4d8] w-20">Type</th>
-                        <th className="p-2.5 border-r border-[#d4d4d8]">Brand & Salt Formulation</th>
-                        <th className="p-2.5 border-r border-[#d4d4d8]">Batch / Expiry</th>
-                        <th className="p-2.5 border-r border-[#d4d4d8]">Handover Landmark & Proximity</th>
-                        <th className="p-2.5 border-r border-[#d4d4d8] text-right">Printed MRP</th>
-                        <th className="p-2.5 border-r border-[#d4d4d8] text-right">Community Rate</th>
-                        <th className="p-2.5 text-center w-28">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#d4d4d8] font-mono">
-                      {medicines.map((med) => {
-                        const medId = med._id || med.id;
-                        const title = med.brandName || med.medicineName || med.name;
-                        const generic = med.genericName || med.medicineName || "";
-                        const batch = med.batchNumber || "VERIFIED-BATCH";
-                        const exp = med.expiryText || (med.expiryDate ? new Date(med.expiryDate).toLocaleDateString("en-IN", { month: "2-digit", year: "numeric" }) : "Unexpired");
-                        const originalMrp = med.originalMrp || med.price || 0;
-                        const price = med.price !== undefined ? med.price : 0;
-                        const locality = med.locality || "Pune";
-                        const handover = med.handoverPoint || locality;
-                        const prox = med.proximity;
-                        const isRx = Boolean(med.isPrescriptionRequired);
-
-                        return (
-                          <tr key={medId} className="hover:bg-[#f8f7f4] transition">
-                            {/* Type badge */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top">
-                              {isRx ? (
-                                <span className="stamp-rx text-[9px]">Rx</span>
-                              ) : (
-                                <span className="stamp-box text-[9px]">OTC</span>
-                              )}
-                            </td>
-
-                            {/* Brand & Salt */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top">
-                              <Link
-                                to={`/medicine/${medId}`}
-                                className="font-sans font-bold text-sm text-[#141416] hover:text-[#166534] block leading-tight"
-                              >
-                                {title}
-                              </Link>
-                              <div className="text-[11px] text-[#52525b] mt-0.5 truncate max-w-xs" title={generic}>
-                                {generic}
-                              </div>
-                              <div className="text-[10px] text-[#71737c]">
-                                {med.company} · {med.dosageForm || "Tablet"} {med.strength && `(${med.strength})`}
-                              </div>
-                            </td>
-
-                            {/* Batch & Expiry */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top whitespace-nowrap">
-                              <div className="text-[11px] font-bold text-[#141416]">{batch}</div>
-                              <div className="stamp-box text-[9px] text-[#b91c1c] border-[#b91c1c] bg-[#fef2f2] mt-0.5">
-                                EXP: {exp}
-                              </div>
-                            </td>
-
-                            {/* Handover & Proximity */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top">
-                              <div className="font-bold text-[#141416] text-[11px] truncate max-w-[200px]">
-                                {handover}
-                              </div>
-                              <div className="text-[10px] text-[#52525b] flex items-center gap-1 mt-0.5">
-                                {prox?.distanceKm ? (
-                                  <span className={prox.tier === "nearby" ? "text-[#166534] font-bold" : "text-[#b45309]"}>
-                                    📍 {prox.distanceKm} km ({prox.tier === "nearby" ? "Nearby" : "Local"})
-                                  </span>
-                                ) : (
-                                  <span>{locality}</span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Printed MRP */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top text-right line-through text-[#71737c]">
-                              ₹{originalMrp}
-                            </td>
-
-                            {/* Community Rate */}
-                            <td className="p-2.5 border-r border-[#d4d4d8] align-top text-right">
-                              <div className="font-bold text-sm text-[#166534]">₹{price}</div>
-                              {originalMrp > price && (
-                                <div className="text-[10px] text-[#52525b]">
-                                  -{Math.round(((originalMrp - price) / originalMrp) * 100)}%
-                                </div>
-                              )}
-                            </td>
-
-                            {/* Action Buttons */}
-                            <td className="p-2.5 align-top text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <button
-                                  onClick={() => handleTableQuickAdd(med)}
-                                  className="px-2 py-1 bg-[#f0eee7] hover:bg-[#e4e2d8] text-[#141416] border border-[#27272a] text-[10px] font-bold cursor-pointer transition"
-                                  title="Add to request"
-                                >
-                                  + Order
-                                </button>
-                                <Link
-                                  to={`/medicine/${medId}`}
-                                  className="px-2 py-1 bg-[#166534] hover:bg-[#14532d] text-white border border-[#166534] text-[10px] font-bold transition"
-                                >
-                                  View
-                                </Link>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                /* SHELF CARDS GRID */
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {medicines.map((medicine) => (
-                    <MedicineCard
-                      key={medicine._id || medicine.id}
-                      medicine={medicine}
-                      buyerLocality={buyerLocality}
-                    />
-                  ))}
-                </div>
-              )
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {medicines.map((medicine) => (
+                  <MedicineCard
+                    key={medicine._id || medicine.id}
+                    medicine={medicine}
+                    buyerLocality={buyerLocality}
+                  />
+                ))}
+              </div>
             ) : (
               <EmptyState
-                title={`No unexpired medicines match "${effectiveSearch || selectedCategory}"`}
-                description={`No active listings found in ${buyerLocality} or matching the current filter. Try expanding your search to Bibvewadi or Swargate (within 5 km), or reset your price ceiling.`}
+                title="No medicines match your criteria"
+                description="Try broadening your search term, resetting price limits, or selecting All Categories."
                 actionLabel="Reset All Filters"
                 onAction={handleClearAllFilters}
               />
@@ -728,19 +553,20 @@ export default function BuyMedicine() {
 
             {/* Pagination Controls */}
             {pagination.pages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t-2 border-[#27272a] font-mono text-xs">
-                <span className="text-[#52525b]">
-                  Page <strong>{pagination.page}</strong> of <strong>{pagination.pages}</strong> ({pagination.total} listings)
+              <div className="flex items-center justify-between pt-5 border-t border-[#e4e2dd]">
+                <span className="text-xs text-[#525252]">
+                  Page <strong>{pagination.page}</strong> of{" "}
+                  <strong>{pagination.pages}</strong> ({pagination.total} total listings)
                 </span>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <button
                     disabled={pagination.page <= 1}
                     onClick={() => {
                       setIsLoading(true);
                       setCurrentPage((p) => Math.max(1, p - 1));
                     }}
-                    className="px-3 py-1 bg-white border border-[#27272a] text-[#141416] hover:bg-[#f0eee7] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-bold"
+                    className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#e4e2dd] bg-white text-[#525252] hover:bg-[#f7f7f4] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Previous
                   </button>
@@ -752,10 +578,10 @@ export default function BuyMedicine() {
                         setIsLoading(true);
                         setCurrentPage(i + 1);
                       }}
-                      className={`w-7 h-7 text-xs font-bold border border-[#27272a] cursor-pointer ${
+                      className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer ${
                         currentPage === i + 1
-                          ? "bg-[#166534] text-white"
-                          : "bg-white text-[#141416] hover:bg-[#f0eee7]"
+                          ? "bg-[#0f4c42] text-white"
+                          : "bg-white border border-[#e4e2dd] text-[#525252] hover:bg-[#f7f7f4]"
                       }`}
                     >
                       {i + 1}
@@ -768,7 +594,7 @@ export default function BuyMedicine() {
                       setIsLoading(true);
                       setCurrentPage((p) => Math.min(pagination.pages, p + 1));
                     }}
-                    className="px-3 py-1 bg-white border border-[#27272a] text-[#141416] hover:bg-[#f0eee7] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-bold"
+                    className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#e4e2dd] bg-white text-[#525252] hover:bg-[#f7f7f4] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Next
                   </button>
@@ -783,15 +609,15 @@ export default function BuyMedicine() {
       {isMobileFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-[#171717]/50 backdrop-blur-2xs"
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          <div className="relative ml-auto w-full max-w-xs bg-[#f8f7f4] h-full p-5 overflow-y-auto space-y-5 text-left border-l-2 border-[#27272a]">
-            <div className="flex items-center justify-between pb-3 border-b-2 border-[#27272a]">
-              <h3 className="font-bold font-mono text-[#141416] text-sm uppercase">Filter Registry</h3>
+          <div className="relative ml-auto w-full max-w-xs bg-white h-full shadow-xl p-5 overflow-y-auto space-y-5 text-left border-l border-[#e4e2dd]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#eceae5]">
+              <h3 className="font-bold text-[#171717] text-sm">Filters</h3>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="p-1 text-[#52525b] hover:text-[#141416]"
+                className="p-1 text-[#737373] hover:text-[#171717]"
               >
                 <XIcon className="w-5 h-5" />
               </button>
@@ -799,8 +625,8 @@ export default function BuyMedicine() {
 
             {/* Locality in Mobile */}
             <div>
-              <label className="block text-xs font-mono font-bold text-[#141416] uppercase mb-1.5">
-                Recipient Locality (Pune)
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider mb-2">
+                Your Locality (Pune)
               </label>
               <select
                 value={buyerLocality}
@@ -808,7 +634,7 @@ export default function BuyMedicine() {
                   handleLocalityChange(e.target.value);
                   setIsMobileFilterOpen(false);
                 }}
-                className="w-full bg-white border-2 border-[#27272a] text-[#141416] font-mono font-bold text-xs p-2"
+                className="w-full bg-[#f0f9f8] border border-[#c4ded9] text-[#0f4c42] font-bold text-xs rounded-md px-2.5 py-1.5"
               >
                 {PUNE_LOCALITIES.map((loc) => (
                   <option key={loc.name} value={loc.name}>
@@ -820,20 +646,20 @@ export default function BuyMedicine() {
 
             {/* Category */}
             <div>
-              <label className="block text-xs font-mono font-bold text-[#141416] uppercase mb-1.5">
-                Therapeutic Class
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider mb-2">
+                Category
               </label>
-              <div className="space-y-1 max-h-48 overflow-y-auto">
+              <div className="space-y-1">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => {
                       handleCategoryChange(cat);
                     }}
-                    className={`w-full text-left px-2.5 py-1 text-xs font-mono cursor-pointer ${
+                    className={`w-full text-left px-3 py-1.5 rounded-md text-xs cursor-pointer ${
                       selectedCategory === cat
-                        ? "bg-[#166534] text-white font-bold"
-                        : "text-[#4b4d52] hover:bg-white"
+                        ? "bg-[#0f4c42] text-white font-bold"
+                        : "text-[#525252] hover:bg-[#f7f7f4]"
                     }`}
                   >
                     {cat}
@@ -843,9 +669,9 @@ export default function BuyMedicine() {
             </div>
 
             {/* Price */}
-            <div className="pt-3 border-t border-[#d4d4d8]">
-              <label className="block text-xs font-mono font-bold text-[#141416] uppercase mb-1.5">
-                Max Rate: ₹{maxPrice}
+            <div className="pt-3 border-t border-[#eceae5]">
+              <label className="block text-xs font-bold text-[#171717] uppercase tracking-wider mb-2">
+                Max Price: ₹{maxPrice}
               </label>
               <input
                 type="range"
@@ -857,15 +683,15 @@ export default function BuyMedicine() {
                   setIsLoading(true);
                   setMaxPrice(Number(e.target.value));
                 }}
-                className="w-full accent-[#166534]"
+                className="w-full accent-[#0f4c42]"
               />
             </div>
 
             <button
               onClick={() => setIsMobileFilterOpen(false)}
-              className="w-full py-2.5 bg-[#166534] text-white font-mono font-bold text-xs border border-[#166534] cursor-pointer uppercase"
+              className="w-full py-2.5 bg-[#0f4c42] hover:bg-[#0a362f] text-white font-bold rounded-lg text-xs shadow-2xs cursor-pointer"
             >
-              Apply Filter ({pagination.total} Matches)
+              Apply Filters ({pagination.total})
             </button>
           </div>
         </div>

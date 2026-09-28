@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/useCart";
 import { useToast } from "../context/useToast";
-import { MapPinIcon } from "./common/Icons";
+import {
+  ShieldCheckIcon,
+  ShoppingBagIcon,
+  ClockIcon,
+  MapPinIcon,
+} from "./common/Icons";
 
 export default function MedicineCard({ medicine }) {
   const { addToCart } = useCart();
@@ -12,7 +17,7 @@ export default function MedicineCard({ medicine }) {
   const medId = medicine._id || medicine.id;
   const title = medicine.brandName || medicine.medicineName || medicine.name || "Medicine";
   const generic = medicine.genericName || medicine.medicineName || medicine.name;
-  const company = medicine.company || "Standard Manufacturer";
+  const company = medicine.company || "Verified Manufacturer";
   const strength = medicine.strength || "";
   const dosageForm = medicine.dosageForm || "Tablet";
   const category = medicine.category || "General Health";
@@ -20,7 +25,6 @@ export default function MedicineCard({ medicine }) {
   const originalMrp = medicine.originalMrp || price;
   const image = medicine.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80";
   const isPrescriptionRequired = Boolean(medicine.isPrescriptionRequired);
-  const batchNumber = medicine.batchNumber || "VERIFIED-BATCH";
 
   // Handover and Locality Information
   const locality = medicine.locality || medicine.seller?.address || "Pune";
@@ -28,7 +32,7 @@ export default function MedicineCard({ medicine }) {
   const proximity = medicine.proximity;
 
   // Formatted expiry display
-  const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "Unexpired");
+  const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "");
 
   const discountPercent = originalMrp > price
     ? Math.round(((originalMrp - price) / originalMrp) * 100)
@@ -54,7 +58,7 @@ export default function MedicineCard({ medicine }) {
       },
       1
     );
-    showToast(`Added ${title} to order request`, "success");
+    showToast(`Added ${title} to cart`, "success");
   };
 
   // Proximity tier style helper
@@ -63,115 +67,134 @@ export default function MedicineCard({ medicine }) {
 
     if (proximity.tier === "nearby") {
       return (
-        <span className="stamp-green text-[10px]">
+        <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
+          <MapPinIcon className="w-3 h-3" />
           Nearby · {proximity.distanceKm} km
         </span>
       );
     }
     if (proximity.tier === "extended") {
       return (
-        <span className="stamp-foil text-[10px]">
-          Local · {proximity.distanceKm} km
+        <span className="inline-flex items-center gap-1 bg-slate-700 text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-2xs">
+          <MapPinIcon className="w-3 h-3" />
+          Extended · {proximity.distanceKm} km
         </span>
       );
     }
     return (
-      <span className="stamp-box text-[10px] text-[#92400e] border-[#d97706] bg-[#fffbeb]">
-        Far · {proximity.distanceKm} km
+      <span className="inline-flex items-center gap-1 bg-amber-700 text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-2xs">
+        <MapPinIcon className="w-3 h-3" />
+        Far from you · {proximity.distanceKm} km
       </span>
     );
   };
 
   return (
-    <div className={`bg-white border-2 border-[#27272a] flex flex-col justify-between text-left relative ${isPrescriptionRequired ? "rx-stripe-top" : "border-t-2 border-t-[#27272a]"}`}>
+    <div className="group bg-white rounded-xl border border-[#e4e2dd] hover:border-[#0f4c42] transition-all duration-150 flex flex-col justify-between overflow-hidden shadow-2xs">
       <div>
-        {/* Top Meta Bar */}
-        <div className="flex items-center justify-between p-2.5 border-b border-[#d4d4d8] bg-[#f8f7f4] text-xs font-mono">
-          <div className="flex items-center gap-1.5">
-            {isPrescriptionRequired ? (
-              <span className="stamp-rx text-[10px]">Rx Required</span>
+        {/* Card Header & Product Image */}
+        <div className="relative bg-[#f7f7f4] border-b border-[#eceae5] overflow-hidden aspect-16/10">
+          <img
+            src={image}
+            alt={title}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
+          />
+
+          {/* Top Floating Badges */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+            {proximity ? (
+              getProximityBadge()
             ) : (
-              <span className="stamp-box text-[10px]">OTC</span>
+              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-2xs text-[#0f4c42] text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs border border-[#c4ded9]">
+                <ShieldCheckIcon className="w-3 h-3 text-[#0f4c42]" />
+                Verified Pack
+              </span>
             )}
-            <span className="text-[#52525b] uppercase text-[10px] truncate max-w-[110px]">
-              {category}
-            </span>
+            {isPrescriptionRequired && (
+              <span className="bg-[#5b21b6] text-white text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded shadow-2xs">
+                Rx Required
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-1">
-            {proximity ? getProximityBadge() : (
-              <span className="stamp-box text-[10px]">VERIFIED PACK</span>
-            )}
-          </div>
+          {/* Expiry Pill */}
+          {expiryDisplay && (
+            <div className="absolute bottom-2.5 right-2.5">
+              <span className="inline-flex items-center gap-1 bg-[#171717]/85 backdrop-blur-2xs text-white text-[10px] font-medium px-2 py-0.5 rounded">
+                <ClockIcon className="w-3 h-3 text-[#a7f3d0]" />
+                Exp: {expiryDisplay}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Thumbnail & Identity */}
-        <div className="p-3.5 space-y-2.5">
-          <div className="flex gap-3 items-start">
-            <div className="w-16 h-16 bg-[#eef1f6] border border-[#27272a] shrink-0 overflow-hidden">
-              <img
-                src={image}
-                alt={title}
-                loading="lazy"
-                className="w-full h-full object-cover grayscale-25 contrast-110"
-              />
-            </div>
-            
-            <div className="min-w-0 flex-1 space-y-0.5">
-              <Link
-                to={`/medicine/${medId}`}
-                className="font-heading font-bold text-sm sm:text-base text-[#141416] hover:text-[#166534] block leading-tight truncate"
-              >
-                {title}
-              </Link>
-              <p className="text-xs text-[#52525b] font-mono truncate" title={generic}>
-                {generic}
-              </p>
-              <div className="text-[11px] text-[#71737c] font-mono truncate">
-                {company} · {dosageForm} {strength && `(${strength})`}
-              </div>
-            </div>
+        {/* Card Body */}
+        <div className="p-3.5 sm:p-4 space-y-2 text-left">
+          {/* Category & Dosage Tag */}
+          <div className="flex items-center justify-between text-[11px] text-[#737373]">
+            <span className="font-bold text-[#0f4c42] uppercase tracking-wider text-[10px]">
+              {category}
+            </span>
+            {dosageForm && (
+              <span className="text-[#737373]">{dosageForm}</span>
+            )}
           </div>
 
-          {/* Stamped Batch & Expiry Strip */}
-          <div className="grid grid-cols-2 gap-2 p-2 bg-[#f8f7f4] border border-[#d4d4d8] text-[11px] font-mono">
-            <div>
-              <span className="text-[9px] text-[#71737c] uppercase block">BATCH CODE</span>
-              <span className="font-bold text-[#141416] truncate block">{batchNumber}</span>
-            </div>
-            <div>
-              <span className="text-[9px] text-[#71737c] uppercase block">EXPIRY DATE</span>
-              <span className="font-bold text-[#b91c1c] block">{expiryDisplay}</span>
-            </div>
+          {/* Medicine Title & Generic Name */}
+          <div>
+            <Link
+              to={`/medicine/${medId}`}
+              className="font-bold text-[#171717] text-sm sm:text-base leading-snug group-hover:text-[#0f4c42] transition line-clamp-1"
+            >
+              {title}
+            </Link>
+            <p className="text-xs text-[#525252] truncate mt-0.5" title={generic}>
+              {generic}
+            </p>
           </div>
 
-          {/* Handover Point & Locality in plain Pune copy */}
-          <div className="p-2 border border-[#d4d4d8] text-[11px] font-mono space-y-0.5 bg-white">
-            <div className="flex items-start gap-1 text-[#141416]">
-              <MapPinIcon className="w-3.5 h-3.5 text-[#166534] shrink-0 mt-0.5" />
-              <span className="font-bold truncate">{handoverPoint}</span>
-            </div>
-            <div className="text-[10px] text-[#52525b] pl-4">
-              Pune Locality: {locality}
+          {/* Manufacturer & Strength */}
+          <div className="flex items-center justify-between text-xs text-[#525252] pt-1.5 border-t border-[#eceae5]">
+            <span className="truncate max-w-[140px] font-medium">
+              {company}
+            </span>
+            {strength && (
+              <span className="font-mono text-[11px] bg-[#f2f1ec] px-1.5 py-0.5 rounded text-[#262626] font-semibold">
+                {strength}
+              </span>
+            )}
+          </div>
+
+          {/* Handover Point & Locality */}
+          <div className="flex items-start gap-1 text-[11px] text-[#525252] bg-[#fafaf7] p-2 rounded-lg border border-[#e4e2dd]">
+            <MapPinIcon className="w-3.5 h-3.5 text-[#0f4c42] shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <span className="font-semibold text-[#171717] block truncate">
+                Handover: {handoverPoint}
+              </span>
+              <span className="text-[10px] text-[#737373] block truncate">
+                Locality: {locality}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Card Bottom Pricing & Action Docket Bar */}
-      <div className="p-3 border-t-2 border-[#27272a] bg-[#f8f7f4] flex items-center justify-between gap-2">
-        <div className="font-mono text-left">
+      {/* Card Footer: Pricing & Action CTA */}
+      <div className="p-3.5 sm:p-4 pt-2.5 border-t border-[#eceae5] bg-[#fafaf7] flex items-center justify-between gap-2">
+        <div className="flex flex-col text-left">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-base sm:text-lg font-bold text-[#141416]">₹{price}</span>
+            <span className="text-base sm:text-lg font-bold text-[#171717]">₹{price}</span>
             {originalMrp > price && (
-              <span className="text-xs text-[#71737c] line-through">
+              <span className="text-xs text-[#737373] line-through">
                 ₹{originalMrp}
               </span>
             )}
           </div>
           {discountPercent > 0 && (
-            <span className="text-[10px] font-bold text-[#166534] block">
-              {discountPercent}% below MRP
+            <span className="text-[10px] font-bold text-[#065f46] leading-none">
+              Save {discountPercent}%
             </span>
           )}
         </div>
@@ -179,14 +202,15 @@ export default function MedicineCard({ medicine }) {
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleQuickAdd}
-            className="px-2.5 py-1.5 bg-[#f0eee7] hover:bg-[#e4e2d8] text-[#141416] border border-[#27272a] text-xs font-mono font-bold cursor-pointer transition"
-            title="Add to order request"
+            className="p-2 rounded-lg bg-[#e8f3f1] hover:bg-[#d5ebe7] text-[#0f4c42] border border-[#c4ded9] transition cursor-pointer"
+            title="Add to cart"
+            aria-label="Add to cart"
           >
-            + Request
+            <ShoppingBagIcon className="w-4 h-4" />
           </button>
           <Link
             to={`/medicine/${medId}`}
-            className="px-3 py-1.5 bg-[#166534] hover:bg-[#14532d] text-white text-xs font-mono font-bold border border-[#166534] transition"
+            className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#0f4c42] hover:bg-[#0a362f] text-white transition shadow-2xs"
           >
             Details
           </Link>

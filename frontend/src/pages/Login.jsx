@@ -4,6 +4,8 @@ import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
 import { Button } from "../components/common/Button";
 import {
+  PillIcon,
+  ArrowRightIcon,
   ShieldCheckIcon,
 } from "../components/common/Icons";
 
@@ -46,88 +48,83 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[85vh] bg-[#f8f7f4] flex items-center justify-center px-4 py-12">
-      <div className="bg-white rounded-none border-2 border-[#27272a] max-w-md w-full p-8 sm:p-10 text-left space-y-6">
+    <div className="min-h-[85vh] bg-[#f7f7f4] flex items-center justify-center px-4 py-12">
+      <div className="bg-white rounded-2xl border border-[#e4e2dd] shadow-sm max-w-md w-full p-8 sm:p-10 text-left space-y-6">
         {/* Brand Header */}
-        <div className="text-left space-y-2 border-b-2 border-[#27272a] pb-4">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs font-bold text-[#b91c1c] tracking-widest uppercase">
-              [AUTH-GATEWAY]
-            </span>
-            <span className="stamp-box text-[10px] uppercase font-mono">
-              PUNE-COMMUNITY
-            </span>
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center mx-auto shadow-xs">
+            <PillIcon className="w-6 h-6 transform -rotate-45" />
           </div>
-          <h1 className="text-2xl font-bold text-[#18181b] tracking-tight uppercase">
-            Sign In to MEDISAVE
+          <h1 className="text-2xl font-bold text-[#171717] tracking-tight">
+            Sign in to MEDISAVE
           </h1>
-          <p className="text-xs text-[#52525b] font-mono">
-            Direct access to Pune medicine listings, verified orders, and handover dockets.
+          <p className="text-xs text-[#525252]">
+            Access your medicine listings, orders, prescriptions, and verified requests.
           </p>
         </div>
 
         {/* Security Notice */}
-        <div className="p-3 bg-[#e2e5eb] border border-[#27272a] rounded-none flex items-center gap-2 text-xs text-[#27272a] font-mono">
-          <ShieldCheckIcon className="w-4 h-4 text-[#166534] shrink-0" />
-          <span>Localised token authentication & clinical inspection protocol.</span>
+        <div className="p-3 bg-[#fafaf7] border border-[#e4e2dd] rounded-xl flex items-center gap-2 text-xs text-[#525252]">
+          <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0" />
+          <span>Encrypted healthcare authentication and community verification.</span>
         </div>
 
         {/* Inline Error Alert */}
         {errorMessage && (
-          <div className="p-3.5 bg-red-50 border-2 border-[#b91c1c] rounded-none text-xs text-[#b91c1c] font-mono font-medium">
-            [ERROR]: {errorMessage}
+          <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+            {errorMessage}
           </div>
         )}
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-[#27272a] mb-1">
+            <label className="block text-xs font-semibold text-[#171717] mb-1">
               Email Address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. resident@kothrud.pune"
+              placeholder="name@example.com"
               required
               autoComplete="email"
-              className="w-full bg-[#f8f7f4] border-2 border-[#27272a] rounded-none px-3.5 py-2.5 text-sm text-[#18181b] focus:outline-none focus:bg-white transition"
+              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-mono uppercase tracking-wider text-[#27272a]">
+              <label className="block text-xs font-semibold text-[#171717]">
                 Password
               </label>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-[11px] font-mono text-[#166534] hover:underline cursor-pointer uppercase"
+                className="text-[11px] text-[#0f4c42] hover:underline cursor-pointer"
               >
-                [{showPassword ? "Hide" : "Show"}]
+                {showPassword ? "Hide password" : "Show password"}
               </button>
             </div>
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Enter your password"
               required
               autoComplete="current-password"
-              className="w-full bg-[#f8f7f4] border-2 border-[#27272a] rounded-none px-3.5 py-2.5 text-sm text-[#18181b] focus:outline-none focus:bg-white transition"
+              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-[#52525b] pt-1 font-mono">
+          <div className="flex items-center justify-between text-xs text-[#525252] pt-1">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 defaultChecked
-                className="rounded-none accent-[#166534]"
+                className="accent-[#0f4c42]"
               />
-              <span>Remember station</span>
+              <span>Remember this device</span>
             </label>
           </div>
 
@@ -135,21 +132,22 @@ export default function Login() {
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full"
+            className="w-full shadow-sm"
             isLoading={isLoading}
           >
-            Authenticate & Sign In
+            Sign In
+            <ArrowRightIcon className="w-4 h-4 ml-1" />
           </Button>
         </form>
 
         {/* Footer Link to Signup */}
-        <div className="pt-4 border-t-2 border-[#27272a] text-left text-xs font-mono text-[#52525b]">
-          New community member?{" "}
+        <div className="pt-4 border-t border-[#e4e2dd] text-center text-xs text-[#737373]">
+          Don't have an account yet?{" "}
           <Link
             to="/signup"
-            className="font-bold text-[#166534] hover:underline uppercase"
+            className="font-bold text-[#0f4c42] hover:underline ml-1"
           >
-            Register Pune Account &rarr;
+            Create an Account
           </Link>
         </div>
       </div>

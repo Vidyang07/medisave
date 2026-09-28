@@ -10,27 +10,25 @@ export function Button({
   ...props
 }) {
   const baseStyles =
-    "inline-flex items-center justify-center font-bold tracking-tight rounded-none transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#166534] focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-sans";
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0f4c42] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
   const sizeStyles = {
-    sm: "text-xs px-2.5 py-1 gap-1.5",
-    md: "text-xs sm:text-sm px-4 py-2 gap-2",
-    lg: "text-sm sm:text-base px-5 py-2.5 gap-2.5",
+    sm: "text-xs px-3 py-1.5 gap-1.5",
+    md: "text-sm px-4 py-2 gap-2",
+    lg: "text-base px-5 py-2.5 gap-2.5",
   };
 
   const variantStyles = {
     primary:
-      "bg-[#166534] text-white hover:bg-[#14532d] active:bg-[#052e16] border border-[#166534]",
+      "bg-[#0f4c42] text-white hover:bg-[#0a362f] active:bg-[#072621] shadow-2xs",
     secondary:
-      "bg-[#f0eee7] text-[#141416] hover:bg-[#e4e2d8] active:bg-[#d8d4c7] border border-[#27272a]",
+      "bg-[#e8f3f1] text-[#0f4c42] hover:bg-[#d5ebe7] active:bg-[#c2e3dd] border border-[#c4ded9]",
     outline:
-      "bg-white text-[#141416] border border-[#27272a] hover:bg-[#f8f7f4] active:bg-[#e4e4e7]",
+      "bg-white text-[#262626] border border-[#e4e2dd] hover:bg-[#f7f7f4] hover:text-[#171717] active:bg-[#eceae5] shadow-2xs",
     ghost:
-      "bg-transparent text-[#27272a] hover:bg-[#f0eee7] hover:text-[#141416] active:bg-[#e4e4e7]",
+      "bg-transparent text-[#525252] hover:bg-[#f2f1ec] hover:text-[#171717] active:bg-[#e4e2dd]",
     danger:
-      "bg-[#b91c1c] text-white hover:bg-[#991b1b] active:bg-[#7f1d1d] border border-[#b91c1c]",
-    foil:
-      "bg-[#e2e5eb] text-[#1e293b] hover:bg-[#cbd5e1] border border-[#94a3b8]",
+      "bg-[#be123c] text-white hover:bg-[#9f1239] active:bg-[#881337] shadow-2xs",
   };
 
   return (

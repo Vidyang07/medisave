@@ -7,9 +7,15 @@ import MedicineCard from "../components/MedicineCard";
 import WhyChoose from "../components/WhyChoose";
 import { INITIAL_MEDICINES, CATEGORIES } from "../data/mockData";
 import {
+  ShieldCheckIcon,
+  ClockIcon,
+  PackageIcon,
+  PillIcon,
   ArrowRightIcon,
   CheckIcon,
   AlertCircleIcon,
+  FileTextIcon,
+  UploadIcon,
 } from "../components/common/Icons";
 import { Button } from "../components/common/Button";
 
@@ -45,36 +51,60 @@ export default function Home() {
   }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] text-left">
+    <div className="min-h-screen bg-[#f7f7f4]">
       {/* 1. Hero Section */}
       <Hero />
 
-      {/* 2. Compact Register Bar */}
-      <section className="bg-white border-b-2 border-[#27272a] py-3.5">
+      {/* 2. Compact Trust Strip */}
+      <section className="bg-white border-b border-[#e4e2dd] py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs divide-y sm:divide-y-0 sm:divide-x divide-[#d4d4d8]">
-            <div className="pt-2 sm:pt-0 sm:px-3 text-left">
-              <span className="stamp-green text-[10px] block mb-1">AUDIT VERIFIED</span>
-              <h4 className="font-bold text-[#141416] text-xs">Packaging Inspected</h4>
-              <p className="text-[11px] text-[#52525b]">Sealed blister foils only</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-[#eceae5]">
+            <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-3 text-left">
+              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center shrink-0 border border-[#c4ded9]">
+                <ShieldCheckIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] leading-tight">
+                  Pre-Verified
+                </h4>
+                <p className="text-[11px] text-[#525252]">Every pack inspected</p>
+              </div>
             </div>
 
-            <div className="pt-2 sm:pt-0 sm:px-3 text-left">
-              <span className="stamp-box text-[10px] block mb-1">90-DAY BUFFER</span>
-              <h4 className="font-bold text-[#141416] text-xs">Expiry Guaranteed</h4>
-              <p className="text-[11px] text-[#52525b]">No short-dated medicines</p>
+            <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-3 text-left">
+              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center shrink-0 border border-[#c4ded9]">
+                <ClockIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] leading-tight">
+                  Expiry Guaranteed
+                </h4>
+                <p className="text-[11px] text-[#525252]">Min. 90-day buffer</p>
+              </div>
             </div>
 
-            <div className="pt-2 sm:pt-0 sm:px-3 text-left">
-              <span className="stamp-rx text-[10px] block mb-1">Rx MANDATE</span>
-              <h4 className="font-bold text-[#141416] text-xs">Doctor Prescription</h4>
-              <p className="text-[11px] text-[#52525b]">Schedule H compliance</p>
+            <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-3 text-left">
+              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center shrink-0 border border-[#c4ded9]">
+                <PackageIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] leading-tight">
+                  Intact Packaging
+                </h4>
+                <p className="text-[11px] text-[#525252]">No loose or cut strips</p>
+              </div>
             </div>
 
-            <div className="pt-2 sm:pt-0 sm:px-3 text-left">
-              <span className="stamp-foil text-[10px] block mb-1">DETERMINISTIC</span>
-              <h4 className="font-bold text-[#141416] text-xs">40%–65% Off MRP</h4>
-              <p className="text-[11px] text-[#52525b]">Non-profit community rate</p>
+            <div className="flex items-center gap-3 pt-2 sm:pt-0 sm:px-3 text-left">
+              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center shrink-0 border border-[#c4ded9]">
+                <PillIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] leading-tight">
+                  Community Regulated
+                </h4>
+                <p className="text-[11px] text-[#525252]">Fair peer pricing</p>
+              </div>
             </div>
           </div>
         </div>
@@ -84,40 +114,39 @@ export default function Home() {
       <SearchBar />
 
       {/* 4. Featured / Recently Listed Medicines */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-left">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4 border-b-2 border-[#27272a] pb-4">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-7 gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="stamp-box text-[10px]">REGISTERED STOCKS</span>
-              <span className="stamp-green text-[10px]">ACTIVE PUNE INVENTORY</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-heading text-[#141416] tracking-tight mt-1">
-              Recently Listed Unexpired Medicines
+            <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+              Available Listings
+            </span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#171717] tracking-tight mt-1">
+              Recently listed unexpired medicines
             </h2>
-            <p className="text-xs sm:text-sm text-[#4b4d52] font-mono mt-1">
-              Surplus sealed medicines verified from community donors across Katraj, Kothrud, Hinjewadi, and Baner.
+            <p className="text-xs sm:text-sm text-[#525252] mt-1">
+              Browse authentic surplus medicines verified from registered donors across Pune.
             </p>
           </div>
 
           <Link
             to="/buy"
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white bg-[#166534] hover:bg-[#14532d] px-3.5 py-2 border border-[#166534] transition shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0f4c42] hover:text-[#0a362f] bg-[#e8f3f1] hover:bg-[#d5ebe7] px-3.5 py-2 rounded-lg border border-[#c4ded9] transition shrink-0"
           >
-            <span>View Chemist Price Sheet ({totalCount}+)</span>
+            <span>View all {totalCount}+ listings</span>
             <ArrowRightIcon className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-6 scrollbar-none font-mono text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
           {CATEGORIES.slice(0, 7).map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1 font-bold whitespace-nowrap transition cursor-pointer border border-[#27272a] ${
+              className={`px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 selectedCategory === cat
-                  ? "bg-[#166534] text-white"
-                  : "bg-white text-[#27272a] hover:bg-[#f0eee7]"
+                  ? "bg-[#0f4c42] text-white shadow-2xs"
+                  : "bg-white text-[#525252] border border-[#e4e2dd] hover:border-[#d1cfc7] hover:bg-[#fafaf7]"
               }`}
             >
               {cat}
@@ -126,17 +155,17 @@ export default function Home() {
         </div>
 
         {/* Medicine Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {medicines.map((medicine) => (
             <MedicineCard key={medicine._id || medicine.id} medicine={medicine} />
           ))}
         </div>
 
         {/* Bottom CTA to Full Catalogue */}
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center">
           <Link to="/buy">
-            <Button variant="outline" size="md">
-              Explore Full Chemist Price Sheet ({totalCount} items)
+            <Button variant="outline" size="lg" className="shadow-2xs">
+              Explore Full Medicine Catalogue ({totalCount} items)
               <ArrowRightIcon className="w-4 h-4 ml-1.5" />
             </Button>
           </Link>
@@ -144,71 +173,73 @@ export default function Home() {
       </section>
 
       {/* 5. How MEDISAVE Works */}
-      <section id="how-it-works" className="bg-white border-t-2 border-b-2 border-[#27272a] py-10 sm:py-14 text-left">
+      <section id="how-it-works" className="bg-white border-t border-b border-[#e4e2dd] py-14 sm:py-18 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-8">
-            <span className="stamp-box text-[10px] mb-1 inline-block">EXCHANGE PROTOCOL</span>
-            <h2 className="text-xl sm:text-2xl font-bold font-heading text-[#141416] tracking-tight mt-1">
-              How the Pune Community Exchange Works
+          <div className="max-w-2xl mb-10">
+            <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+              Simple & Safe Process
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#171717] tracking-tight mt-1">
+              How the MEDISAVE exchange works
             </h2>
-            <p className="text-xs sm:text-sm text-[#4b4d52] font-mono mt-1 leading-relaxed">
-              A 4-step verified workflow ensuring packaging authenticity, prescription validation, and local handover.
+            <p className="text-xs sm:text-sm text-[#525252] mt-2 leading-relaxed">
+              A structured 4-step workflow to ensure medical safety, verified authenticity, and seamless community access.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
-            <div className="p-4 bg-[#f8f7f4] border-2 border-[#27272a] flex flex-col justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-5 sm:p-6 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] flex flex-col justify-between">
               <div>
-                <span className="text-lg font-bold text-[#166534] block mb-1">
-                  [STEP 01]
+                <span className="text-2xl font-black text-[#0f4c42]/30 font-mono block mb-2">
+                  01
                 </span>
-                <h3 className="text-sm font-bold font-heading text-[#141416] mb-1">
-                  List or Search Medicine
+                <h3 className="text-sm sm:text-base font-bold text-[#171717] mb-1.5">
+                  Find or List Medicine
                 </h3>
-                <p className="text-xs text-[#4b4d52] font-sans leading-relaxed">
-                  Enter printed brand, salt formulation, and printed MRP. AI extracts compositions and pricing policy calculates the community rate.
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Search by salt name, brand, or manufacturer. Alternatively, list your sealed, unexpired surplus medications in minutes.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f7f4] border-2 border-[#27272a] flex flex-col justify-between">
+            <div className="p-5 sm:p-6 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] flex flex-col justify-between">
               <div>
-                <span className="text-lg font-bold text-[#166534] block mb-1">
-                  [STEP 02]
+                <span className="text-2xl font-black text-[#0f4c42]/30 font-mono block mb-2">
+                  02
                 </span>
-                <h3 className="text-sm font-bold font-heading text-[#141416] mb-1">
-                  Admin Inspection
+                <h3 className="text-sm sm:text-base font-bold text-[#171717] mb-1.5">
+                  Review Batch & Expiry
                 </h3>
-                <p className="text-xs text-[#4b4d52] font-sans leading-relaxed">
-                  Coordinators review high-resolution blister pack photos to verify batch number, intact foil seal, and printed expiry date.
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Inspect manufacturer batch numbers, expiry countdowns, storage guidelines, and blister pack condition.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f7f4] border-2 border-[#27272a] flex flex-col justify-between">
+            <div className="p-5 sm:p-6 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] flex flex-col justify-between">
               <div>
-                <span className="text-lg font-bold text-[#166534] block mb-1">
-                  [STEP 03]
+                <span className="text-2xl font-black text-[#0f4c42]/30 font-mono block mb-2">
+                  03
                 </span>
-                <h3 className="text-sm font-bold font-heading text-[#141416] mb-1">
-                  Rx Review & Order
+                <h3 className="text-sm sm:text-base font-bold text-[#171717] mb-1.5">
+                  Place Request Order
                 </h3>
-                <p className="text-xs text-[#4b4d52] font-sans leading-relaxed">
-                  For Schedule H medicines, buyer uploads a registered doctor prescription. Upon coordinator approval, order is confirmed.
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Submit a request for required dosage units at fair community pricing with zero hidden surcharges.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f7f4] border-2 border-[#27272a] flex flex-col justify-between">
+            <div className="p-5 sm:p-6 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] flex flex-col justify-between">
               <div>
-                <span className="text-lg font-bold text-[#166534] block mb-1">
-                  [STEP 04]
+                <span className="text-2xl font-black text-[#0f4c42]/30 font-mono block mb-2">
+                  04
                 </span>
-                <h3 className="text-sm font-bold font-heading text-[#141416] mb-1">
-                  Pune Handover
+                <h3 className="text-sm sm:text-base font-bold text-[#171717] mb-1.5">
+                  Verified Handover
                 </h3>
-                <p className="text-xs text-[#4b4d52] font-sans leading-relaxed">
-                  Buyer and donor meet at Katraj Chowk, Vanaz Metro, or PICT Campus Dispensary. Physical blister foil is verified before exchange.
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Physical packaging is re-checked upon community handover or localized pickup in Pune, ensuring complete peace of mind.
                 </p>
               </div>
             </div>
@@ -217,61 +248,61 @@ export default function Home() {
       </section>
 
       {/* 6. Prescription Verification Safety Architecture */}
-      <section className="bg-[#f8f7f4] py-10 sm:py-14 text-left border-b-2 border-[#27272a]">
+      <section className="bg-[#f7f7f4] py-14 sm:py-18 text-left border-b border-[#e4e2dd]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white border-2 border-[#27272a] p-5 sm:p-8 rx-stripe-top">
+          <div className="bg-white rounded-2xl border border-[#e4e2dd] p-6 sm:p-10 shadow-2xs">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="stamp-rx text-[10px]">SCHEDULE H COMPLIANCE</span>
-                  <span className="stamp-box text-[10px]">PRIVATE DOCUMENT STORAGE</span>
+              <div className="lg:col-span-7 space-y-4">
+                <div className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-900 border border-purple-200 px-3 py-1 rounded-full text-xs font-bold">
+                  <FileTextIcon className="w-3.5 h-3.5 text-purple-700" />
+                  <span>Prescription Safety Compliance</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold font-heading text-[#141416] tracking-tight">
-                  Strict Prescription Verification Architecture
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#171717] tracking-tight">
+                  Secure prescription verification for Schedule H medicines
                 </h2>
-                <p className="text-xs sm:text-sm text-[#4b4d52] leading-relaxed font-sans">
-                  Schedule H and H1 antibiotic or cardiovascular medications strictly require an approved physician prescription before checkout. Prescriptions are stored outside public web directories with cryptographic access tokens.
+                <p className="text-xs sm:text-sm text-[#525252] leading-relaxed">
+                  MEDISAVE strictly protects community safety. Prescription-required medicines cannot be ordered without a physician prescription approved by our coordinator team. Documents are stored privately with end-to-end access control.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 font-mono text-xs">
-                  <div className="p-2.5 bg-[#f8f7f4] border border-[#27272a]">
-                    <strong className="text-[#141416] block text-[11px] mb-0.5">1. Private Streaming</strong>
-                    <span className="text-[#52525b] text-[10px]">No static file URLs</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="p-3 bg-[#fafaf7] rounded-lg border border-[#e4e2dd] text-xs">
+                    <strong className="text-[#171717] block mb-0.5">1. Private Upload</strong>
+                    <span className="text-[#737373] text-[11px]">Encrypted PDF/image storage</span>
                   </div>
-                  <div className="p-2.5 bg-[#f8f7f4] border border-[#27272a]">
-                    <strong className="text-[#141416] block text-[11px] mb-0.5">2. Medical Audit</strong>
-                    <span className="text-[#52525b] text-[10px]">Doctor registration check</span>
+                  <div className="p-3 bg-[#fafaf7] rounded-lg border border-[#e4e2dd] text-xs">
+                    <strong className="text-[#171717] block mb-0.5">2. Medical Review</strong>
+                    <span className="text-[#737373] text-[11px]">Doctor registration validation</span>
                   </div>
-                  <div className="p-2.5 bg-[#f8f7f4] border border-[#27272a]">
-                    <strong className="text-[#141416] block text-[11px] mb-0.5">3. Server Binding</strong>
-                    <span className="text-[#52525b] text-[10px]">Zero client override</span>
+                  <div className="p-3 bg-[#fafaf7] rounded-lg border border-[#e4e2dd] text-xs">
+                    <strong className="text-[#171717] block mb-0.5">3. Safe Checkout</strong>
+                    <span className="text-[#737373] text-[11px]">Server-verified order binding</span>
                   </div>
                 </div>
               </div>
 
-              <div className="lg:col-span-5 bg-[#fef2f2] border-2 border-[#b91c1c] p-4 space-y-2.5 font-mono text-xs text-[#141416]">
-                <div className="flex items-center justify-between border-b border-[#fca5a5] pb-1.5">
-                  <span className="font-bold text-[#b91c1c] uppercase text-[11px]">Prescription Protocol</span>
-                  <span className="stamp-rx text-[9px]">MANDATORY</span>
-                </div>
-                <ul className="space-y-1.5 text-[11px] text-[#7f1d1d] font-sans">
-                  <li className="flex items-start gap-1.5">
-                    <CheckIcon className="w-3.5 h-3.5 text-[#b91c1c] shrink-0 mt-0.5" />
-                    <span>Legible doctor name and medical council registration</span>
+              <div className="lg:col-span-5 bg-purple-50/60 rounded-xl border border-purple-200 p-5 space-y-3">
+                <h4 className="text-xs font-bold text-purple-950 uppercase tracking-wider">
+                  Prescription Checklist
+                </h4>
+                <ul className="space-y-2 text-xs text-purple-900">
+                  <li className="flex items-start gap-2">
+                    <CheckIcon className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                    <span>Legible doctor name and registration number</span>
                   </li>
-                  <li className="flex items-start gap-1.5">
-                    <CheckIcon className="w-3.5 h-3.5 text-[#b91c1c] shrink-0 mt-0.5" />
-                    <span>Patient name matching account profile</span>
+                  <li className="flex items-start gap-2">
+                    <CheckIcon className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                    <span>Patient name matching account details</span>
                   </li>
-                  <li className="flex items-start gap-1.5">
-                    <CheckIcon className="w-3.5 h-3.5 text-[#b91c1c] shrink-0 mt-0.5" />
-                    <span>Prescription issued within valid clinical timeframe</span>
+                  <li className="flex items-start gap-2">
+                    <CheckIcon className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                    <span>Prescription issued within valid medical timeframe</span>
                   </li>
                 </ul>
-                <div className="pt-2 border-t border-[#fca5a5]">
+                <div className="pt-2 border-t border-purple-200">
                   <Link to="/dashboard">
-                    <button className="w-full py-1.5 bg-[#b91c1c] text-white font-mono font-bold text-xs border border-[#b91c1c] hover:bg-[#991b1b] cursor-pointer">
-                      Manage Prescriptions in Dashboard →
-                    </button>
+                    <Button variant="outline" size="sm" className="w-full bg-white text-purple-900 border-purple-300 hover:bg-purple-100">
+                      <UploadIcon className="w-3.5 h-3.5 mr-1" />
+                      Manage Prescriptions in Dashboard
+                    </Button>
                   </Link>
                 </div>
               </div>
@@ -283,28 +314,31 @@ export default function Home() {
       {/* 7. Why MEDISAVE Pillars */}
       <WhyChoose />
 
-      {/* 8. Community Contribution Banner */}
-      <section className="bg-[#141416] text-[#f8f7f4] py-10 sm:py-14 text-left border-b-2 border-[#27272a]">
+      {/* 8. Community CTA Banner */}
+      <section className="bg-[#0f4c42] text-white py-14 sm:py-16 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="space-y-1.5 max-w-2xl font-mono">
-              <span className="stamp-green text-[10px]">COMMUNITY DONATION INITIATIVE</span>
-              <h2 className="text-xl sm:text-2xl font-bold font-heading text-white tracking-tight">
-                Have sealed, unexpired medicines at home in Pune?
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="space-y-2 max-w-2xl">
+              <span className="text-xs font-bold text-[#a7f3d0] uppercase tracking-wider">
+                Community Contribution
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Have unexpired, sealed medicines at home?
               </h2>
-              <p className="text-xs sm:text-sm text-[#a1a1aa] leading-relaxed font-sans">
-                Do not throw intact medicine strips into municipal waste. List them on MEDISAVE to help neighbors access affordable medicines at non-profit community rates.
+              <p className="text-xs sm:text-sm text-[#d1fae5] leading-relaxed">
+                Give your surplus medications a second life. List them on MEDISAVE to help community members access affordable healthcare while reducing pharmaceutical waste.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <div className="flex flex-wrap items-center gap-3">
               <Link to="/sell">
-                <Button variant="primary" size="md">
-                  List Surplus Medicine Strip
+                <Button variant="secondary" size="lg" className="bg-white text-[#0f4c42] hover:bg-[#e8f3f1] font-bold shadow-sm">
+                  List Unused Medicine
+                  <ArrowRightIcon className="w-4 h-4 ml-1.5" />
                 </Button>
               </Link>
               <Link to="/buy">
-                <Button variant="secondary" size="md">
-                  Browse Price Sheet
+                <Button variant="outline" size="lg" className="border-white/40 text-white hover:bg-white/10">
+                  Browse Catalog
                 </Button>
               </Link>
             </div>
@@ -312,17 +346,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. Academic Project Disclaimer */}
-      <section className="bg-[#f0eee7] py-6 text-left font-mono text-xs text-[#52525b]">
+      {/* 9. Medicine Safety & Academic Advisory Section */}
+      <section className="bg-[#f2f1ec] border-t border-b border-[#e4e2dd] py-14 sm:py-18 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="border border-[#27272a] bg-white p-3.5 space-y-1">
-            <div className="font-bold text-[#141416] uppercase text-[11px] flex items-center gap-1.5">
-              <AlertCircleIcon className="w-3.5 h-3.5 text-[#b91c1c]" />
-              <span>Pune Institute of Computer Technology (PICT) · Community Engagement Program</span>
+          <div className="bg-white rounded-xl border border-[#e4e2dd] p-6 sm:p-8 shadow-2xs">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 pb-5 border-b border-[#e4e2dd]">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#9f1239] uppercase tracking-wider">
+                  <AlertCircleIcon className="w-4 h-4 text-[#be123c]" />
+                  <span>Pharmaceutical Quality & Safety Advisory</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-[#171717]">
+                  Medicine information matters. Safety is non-negotiable.
+                </h3>
+              </div>
+              <div className="bg-[#fffbeb] border border-[#fde68a] rounded-lg px-3.5 py-2 text-xs text-[#92400e] max-w-md">
+                <strong>Mandatory Rule:</strong> Opened bottles, punctured blister foils, and temperature-sensitive biologics (such as Insulin) are strictly prohibited from listing.
+              </div>
             </div>
-            <p className="text-[11px] text-[#52525b] font-sans">
-              MEDISAVE is an academic software prototype developed by SY 2 (Batch H2) students for community health research. It does not replace licensed retail pharmacies or emergency medical services.
-            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+              <div className="space-y-1.5">
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] flex items-center gap-1.5">
+                  <CheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                  Expiry Date & Storage Integrity
+                </h4>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Every listed medicine must have a minimum 90-day shelf life remaining. Donors must declare that medicines were stored in dry conditions below 25°C.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] flex items-center gap-1.5">
+                  <CheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                  Prescription (Rx) Compliance
+                </h4>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Schedule H and H1 medications require a valid physician prescription confirmation upon request fulfillment before checkout.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <h4 className="text-xs sm:text-sm font-bold text-[#171717] flex items-center gap-1.5">
+                  <CheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                  Community Verification
+                </h4>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  All listings undergo manual review by student coordinators before becoming visible in the public catalogue.
+                </p>
+              </div>
+            </div>
+
+            {/* Academic Disclaimer Box */}
+            <div className="mt-6 pt-4 border-t border-[#eceae5] bg-[#fafaf7] rounded-lg p-3.5 text-xs text-[#525252] leading-relaxed">
+              <p>
+                <strong className="text-[#171717]">Project Disclaimer:</strong> MEDISAVE is a student engagement initiative developed for college community research. It does not replace professional medical advice or licensed pharmaceutical distribution. Always consult a qualified physician before consuming any medication.
+              </p>
+            </div>
           </div>
         </div>
       </section>

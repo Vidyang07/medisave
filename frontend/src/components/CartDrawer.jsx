@@ -9,15 +9,17 @@ import {
   TrashIcon,
   PlusIcon,
   MinusIcon,
+  ShoppingBagIcon,
   ShieldCheckIcon,
   ArrowRightIcon,
+  CheckIcon,
   AlertCircleIcon,
   FileTextIcon,
-  PrinterIcon,
+  UploadIcon,
 } from "./common/Icons";
 import { Button } from "./common/Button";
+import { Badge } from "./common/Badge";
 import { Modal } from "./common/Modal";
-import HandoverSlipModal from "./HandoverSlipModal";
 
 export function CartDrawer() {
   const {
@@ -42,7 +44,6 @@ export function CartDrawer() {
   const [isOrdering, setIsOrdering] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
-  const [isDocketOpen, setIsDocketOpen] = useState(false);
 
   // Prescription states
   const [prescriptions, setPrescriptions] = useState([]);
@@ -105,95 +106,79 @@ export function CartDrawer() {
 
   const handleOpenCheckout = () => {
     if (!isAuthenticated) {
-      showToast("Please sign in to place a medicine order request.", "info");
+      showToast("Please sign in or create an account to request medicines", "info");
       closeCart();
-      navigate("/login?redirect=checkout");
+      navigate("/login");
       return;
     }
-
-    if (items.length === 0) {
-      showToast("Your cart is empty.", "warning");
-      return;
-    }
-
-    // Refresh user profile default contact details
-    setFormData((prev) => ({
-      ...prev,
-      fullName: user?.name || prev.fullName || "",
-      phone: user?.phone || prev.phone || "",
-      address: user?.address || prev.address || "",
-    }));
-
+    setFormData({
+      fullName: user?.name || "",
+      phone: user?.phone || "",
+      address: user?.address || "",
+      city: "Pune",
+      state: "Maharashtra",
+      pincode: "411038",
+    });
+    setIsCheckoutModalOpen(true);
     if (requiresPrescription) {
       fetchUserPrescriptions();
     }
-
-    setIsCheckoutModalOpen(true);
   };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-
-    if (!formData.fullName.trim() || !formData.phone.trim() || !formData.address.trim()) {
-      showToast("Please fill in all required contact and handover details.", "warning");
+    if (!isAuthenticated) {
+      showToast("Please log in to complete your medicine request", "error");
       return;
     }
 
-    if (requiresPrescription) {
-      if (!selectedPrescriptionId) {
-        showToast(
-          "Please select a verified, approved doctor prescription for the Rx items in your cart.",
-          "error"
-        );
-        return;
-      }
+    if (!formData.fullName || !formData.phone || !formData.address || !formData.city) {
+      showToast("Please fill in all required shipping details", "error");
+      return;
+    }
 
-      const chosen = prescriptions.find((p) => p._id === selectedPrescriptionId);
-      if (!chosen || chosen.status !== "approved") {
-        showToast(
-          "Selected prescription is pending or not yet approved by coordinators.",
-          "error"
-        );
-        return;
-      }
+    if (requiresPrescription && !selectedPrescriptionId) {
+      showToast("An approved prescription is required for this order.", "error");
+      return;
     }
 
     setIsOrdering(true);
+
     try {
       const orderPayload = {
-        items: items.map((it) => ({
-          medicine: it.id || it._id,
-          quantity: it.quantity,
-          price: it.price,
-          originalMrp: it.originalMrp,
+        items: items.map((item) => ({
+          medicineId: item.id || item._id,
+          quantity: item.quantity,
         })),
         shippingAddress: {
-          fullName: formData.fullName.trim(),
-          phone: formData.phone.trim(),
-          address: formData.address.trim(),
-          city: formData.city.trim(),
-          state: formData.state.trim(),
-          pincode: formData.pincode.trim(),
+          fullName: formData.fullName,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state || "Maharashtra",
+          pincode: formData.pincode || "",
         },
-        prescriptionId: requiresPrescription ? selectedPrescriptionId : undefined,
-        paymentMethod: "Cash on Delivery",
+        paymentMethod: "Demo / Cash on Delivery (Community Handover)",
+        ...(requiresPrescription && selectedPrescriptionId
+          ? { prescriptionId: selectedPrescriptionId }
+          : {}),
       };
 
       const res = await api.post("/orders", orderPayload);
-      if (res.data?.success) {
+
+      if (res.data?.success && res.data?.data) {
         setConfirmedOrder(res.data.data);
-        setOrderComplete(true);
         clearCart();
+        setOrderComplete(true);
         showToast("Medicine request placed successfully!", "success");
       } else {
-        showToast(res.data?.message || "Failed to create order request.", "error");
+        showToast(res.data?.message || "Could not place order", "error");
       }
-    } catch (err) {
-      console.error("Order creation failed:", err);
-      showToast(
-        err.response?.data?.message || "Failed to process order request. Please check required fields.",
-        "error"
-      );
+    } catch (error) {
+      const errMsg =
+        error.response?.data?.message ||
+        "Failed to place order. Please verify items availability and try again.";
+      showToast(errMsg, "error");
     } finally {
       setIsOrdering(false);
     }
@@ -211,47 +196,52 @@ export function CartDrawer() {
     navigate("/dashboard");
   };
 
+  const handleGoToPrescriptions = () => {
+    handleCloseAll();
+    navigate("/dashboard");
+  };
+
   if (!isCartOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 z-50 transition-opacity"
+        className="fixed inset-0 bg-[#171717]/50 backdrop-blur-xs z-50 transition-opacity"
         onClick={closeCart}
       />
 
       {/* Slide-over Drawer */}
-      <div className="fixed inset-y-0 right-0 max-w-md w-full bg-[#f8f7f4] z-50 flex flex-col border-l-2 border-[#27272a] transform transition-transform text-left">
+      <div className="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl z-50 flex flex-col border-l border-[#e4e2dd] transform transition-transform">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b-2 border-[#27272a] bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e4e2dd] bg-[#fafaf7]">
           <div className="flex items-center gap-2">
-            <span className="stamp-box text-[10px]">REQUEST DOCKET</span>
-            <h2 className="font-heading font-bold text-[#141416] text-base">
-              Medicine Order Request
-            </h2>
-            <span className="stamp-green text-[10px]">{itemCount} items</span>
+            <ShoppingBagIcon className="w-5 h-5 text-[#0f4c42]" />
+            <h2 className="font-bold text-[#171717] text-lg">Requested Medicines</h2>
+            <Badge variant="brand" size="sm">
+              {itemCount}
+            </Badge>
           </div>
           <button
             onClick={closeCart}
-            className="p-1 text-[#52525b] hover:text-[#141416] hover:bg-[#e4e4e7] border border-[#d4d4d8] cursor-pointer"
+            className="p-1.5 rounded-lg text-[#737373] hover:text-[#171717] hover:bg-[#e4e2dd]/60 transition cursor-pointer"
           >
-            <XIcon className="w-4 h-4" />
+            <XIcon className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {items.length === 0 ? (
-            <div className="text-center py-16 space-y-3 font-mono">
-              <div className="w-12 h-12 bg-white text-[#27272a] border-2 border-[#27272a] flex items-center justify-center mx-auto mb-2 font-bold text-lg">
-                0
+            <div className="text-center py-16 space-y-3">
+              <div className="w-16 h-16 rounded-2xl bg-[#fafaf7] text-[#737373] border border-[#e4e2dd] flex items-center justify-center mx-auto mb-2">
+                <ShoppingBagIcon className="w-8 h-8" />
               </div>
-              <h3 className="font-bold text-[#141416] text-sm uppercase">
-                Medicine request list is empty
+              <h3 className="font-bold text-[#171717] text-base">
+                Your medicine cart is empty
               </h3>
-              <p className="text-xs text-[#52525b] max-w-xs mx-auto font-sans">
-                Browse verified, unexpired surplus medicines from Pune community donors at 40%–65% below MRP.
+              <p className="text-xs text-[#525252] max-w-xs mx-auto">
+                Browse verified, unexpired surplus medicines from community members at discounted rates.
               </p>
               <div className="pt-2">
                 <Button
@@ -262,7 +252,7 @@ export function CartDrawer() {
                     navigate("/buy");
                   }}
                 >
-                  Browse Chemist Price Sheet
+                  Browse Medicines
                 </Button>
               </div>
             </div>
@@ -270,85 +260,95 @@ export function CartDrawer() {
             <>
               {/* Prescription notice in cart if Rx items exist */}
               {requiresPrescription && (
-                <div className="bg-[#fef2f2] border-2 border-[#b91c1c] p-3 space-y-1 font-mono text-xs text-[#b91c1c]">
-                  <div className="flex items-center gap-1.5 font-bold uppercase text-[11px]">
-                    <AlertCircleIcon className="w-3.5 h-3.5 shrink-0" />
-                    <span>Prescription Verification Mandate</span>
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-start gap-2.5 text-xs text-purple-900 shadow-xs">
+                  <AlertCircleIcon className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-bold">Prescription Required</p>
+                    <p className="text-[11px] text-purple-800 leading-snug">
+                      Your cart contains {rxItems.length} Rx medication(s). An approved doctor
+                      prescription is required at checkout.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-[#7f1d1d] font-sans">
-                    Cart contains {rxItems.length} Schedule H item(s). An approved physician prescription is required before checkout fulfillment.
-                  </p>
                 </div>
               )}
 
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`p-3 border-2 border-[#27272a] bg-white space-y-2 text-xs font-mono ${item.isPrescriptionRequired ? "rx-stripe-left" : "pharmacy-stripe-left"}`}
+                  className="flex gap-3.5 p-3.5 rounded-xl border border-[#e4e2dd] bg-white hover:border-[#0f4c42]/30 transition shadow-xs"
                 >
-                  <div className="flex justify-between items-start gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {item.isPrescriptionRequired ? (
-                          <span className="stamp-rx text-[9px]">Rx</span>
-                        ) : (
-                          <span className="stamp-box text-[9px]">OTC</span>
-                        )}
-                        <h4 className="font-heading font-bold text-sm text-[#141416] truncate">
-                          {item.brandName || item.name}
-                        </h4>
-                      </div>
-                      <p className="text-[11px] text-[#52525b] truncate mt-0.5">{item.company}</p>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded-lg bg-[#fafaf7] shrink-0 border border-[#e4e2dd]"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-1">
+                      <h4 className="font-bold text-[#171717] text-sm truncate">
+                        {item.brandName || item.name}
+                      </h4>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-[#737373] hover:text-rose-600 transition p-0.5 cursor-pointer"
+                        title="Remove item"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
                     </div>
-
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-[#71737c] hover:text-[#b91c1c] p-1 border border-[#d4d4d8] cursor-pointer"
-                      title="Remove item"
-                    >
-                      <TrashIcon className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  {/* Batch / Handover Info */}
-                  <div className="text-[11px] text-[#52525b] border-t border-[#d4d4d8] pt-1.5 flex items-center justify-between">
-                    <span className="truncate max-w-[220px]">
-                      📍 {item.handoverPoint || item.locality || "Pune Handover"}
-                    </span>
-                    {item.expiryText && (
-                      <span className="font-bold text-[#b91c1c]">EXP: {item.expiryText}</span>
+                    <p className="text-xs text-[#525252] truncate">{item.company}</p>
+                    {(item.handoverPoint || item.locality) && (
+                      <p className="text-[11px] text-[#0f4c42] truncate font-medium mt-0.5">
+                        📍 Handover: {item.handoverPoint || item.locality}
+                      </p>
                     )}
-                  </div>
 
-                  {/* Price & Quantity Controls */}
-                  <div className="flex items-center justify-between pt-2 border-t border-[#d4d4d8]">
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="font-bold text-sm text-[#141416]">
-                        ₹{item.price * item.quantity}
-                      </span>
-                      {item.originalMrp && (
-                        <span className="text-[11px] text-[#71737c] line-through">
-                          ₹{item.originalMrp * item.quantity}
+                    <div className="flex items-center flex-wrap gap-1.5 mt-1">
+                      {item.isPrescriptionRequired && (
+                        <span className="text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200 px-1.5 py-0.2 rounded uppercase tracking-wider">
+                          Rx Required
+                        </span>
+                      )}
+                      {item.expiryText && (
+                        <span className="text-xs font-medium text-[#0f4c42] bg-[#e8f3f1] px-1.5 py-0.5 rounded border border-[#c4ded9]">
+                          Exp: {item.expiryText}
+                        </span>
+                      )}
+                      {item.strength && (
+                        <span className="text-xs text-[#737373] font-mono">
+                          {item.strength}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center border border-[#27272a] bg-[#f8f7f4]">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="px-2 py-0.5 hover:bg-[#e4e4e7] cursor-pointer"
-                      >
-                        <MinusIcon className="w-3 h-3" />
-                      </button>
-                      <span className="px-2 font-bold text-[#141416] text-xs">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="px-2 py-0.5 hover:bg-[#e4e4e7] cursor-pointer"
-                      >
-                        <PlusIcon className="w-3 h-3" />
-                      </button>
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#e4e2dd]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-[#171717] text-sm font-mono">
+                          ₹{item.price * item.quantity}
+                        </span>
+                        {item.originalMrp && (
+                          <span className="text-xs text-[#737373] line-through font-mono">
+                            ₹{item.originalMrp * item.quantity}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center border border-[#e4e2dd] rounded-md overflow-hidden bg-[#fafaf7]">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="px-2 py-1 text-[#525252] hover:bg-[#e4e2dd] transition cursor-pointer"
+                        >
+                          <MinusIcon className="w-3 h-3" />
+                        </button>
+                        <span className="px-2 text-xs font-bold text-[#171717] font-mono">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="px-2 py-1 text-[#525252] hover:bg-[#e4e2dd] transition cursor-pointer"
+                        >
+                          <PlusIcon className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -359,34 +359,34 @@ export function CartDrawer() {
 
         {/* Footer with Summary */}
         {items.length > 0 && (
-          <div className="p-4 border-t-2 border-[#27272a] bg-white space-y-3 font-mono text-xs">
+          <div className="p-6 border-t border-[#e4e2dd] bg-[#fafaf7] space-y-3">
             {totalSavings > 0 && (
-              <div className="flex items-center justify-between p-2 bg-[#f0fdf4] border border-[#166534] text-[#166534] font-bold">
-                <span>COMMUNITY SAVINGS:</span>
-                <span>₹{totalSavings} off MRP</span>
+              <div className="flex items-center justify-between text-xs font-semibold text-[#0f4c42] bg-[#e8f3f1] px-3 py-2 rounded-lg border border-[#c4ded9]">
+                <span>Community Savings:</span>
+                <span>₹{totalSavings} saved</span>
               </div>
             )}
 
-            <div className="space-y-1 text-[#52525b]">
+            <div className="space-y-1.5 text-xs text-[#525252]">
               <div className="flex justify-between">
                 <span>Medicine Subtotal:</span>
-                <span className="font-bold text-[#141416]">₹{subtotal}</span>
+                <span className="font-medium text-[#171717] font-mono">₹{subtotal}</span>
               </div>
               <div className="flex justify-between">
                 <span>Community Handling Fee:</span>
-                <span className="font-bold text-[#141416]">
+                <span className="font-medium text-[#171717]">
                   {shippingFee === 0 ? "FREE" : `₹${shippingFee}`}
                 </span>
               </div>
-              <div className="flex justify-between text-sm font-bold text-[#141416] pt-1.5 border-t-2 border-[#27272a]">
+              <div className="flex justify-between text-sm font-bold text-[#171717] pt-2 border-t border-[#e4e2dd]">
                 <span>Total Payable:</span>
-                <span className="text-[#166534]">₹{grandTotal}</span>
+                <span className="text-base text-[#0f4c42] font-mono">₹{grandTotal}</span>
               </div>
             </div>
 
             <Button
               variant="primary"
-              size="md"
+              size="lg"
               className="w-full"
               onClick={handleOpenCheckout}
             >
@@ -394,9 +394,9 @@ export function CartDrawer() {
               <ArrowRightIcon className="w-4 h-4 ml-1" />
             </Button>
 
-            <div className="flex items-center justify-center gap-1 text-[10px] text-[#71737c] font-sans">
-              <ShieldCheckIcon className="w-3.5 h-3.5 text-[#166534]" />
-              <span>Inspection on physical pickup guaranteed</span>
+            <div className="flex items-center justify-center gap-1 text-[11px] text-[#737373] pt-1">
+              <ShieldCheckIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
+              <span>Packaging integrity & batch verification guaranteed</span>
             </div>
           </div>
         )}
@@ -409,133 +409,231 @@ export function CartDrawer() {
         title={orderComplete ? "Order Placed Successfully" : "Complete Medicine Request"}
       >
         {orderComplete ? (
-          <div className="text-left py-2 space-y-4 font-mono text-xs">
-            <div className="border-2 border-[#166534] bg-[#f0fdf4] p-3 space-y-1">
-              <span className="stamp-green text-[10px]">REQUEST CONFIRMED</span>
-              <h4 className="font-heading font-bold text-base text-[#141416]">
-                Medicine Handover Request Recorded
-              </h4>
-              <p className="text-[11px] text-[#166534]">
-                Docket Number:{" "}
-                <strong>
-                  {confirmedOrder?.orderNumber ||
-                    (confirmedOrder?._id
-                      ? `MS-PUN-${confirmedOrder._id.slice(-6).toUpperCase()}`
-                      : "MS-PUN-CONFIRMED")}
+          <div className="text-center py-6 space-y-4">
+            <div className="w-14 h-14 bg-[#e8f3f1] text-[#0f4c42] rounded-full flex items-center justify-center mx-auto">
+              <CheckIcon className="w-8 h-8" />
+            </div>
+            <h4 className="text-xl font-bold text-[#171717]">
+              Medicine Request Confirmed!
+            </h4>
+            <p className="text-sm text-[#525252] leading-relaxed max-w-sm mx-auto">
+              Order reference{" "}
+              <span className="font-mono font-bold text-[#0f4c42]">
+                {confirmedOrder?.orderNumber ||
+                  (confirmedOrder?._id
+                    ? `#MED-2026-${confirmedOrder._id.slice(-4).toUpperCase()}`
+                    : "#MED-2026-CONFIRMED")}
+              </span>
+              . The donor seller has been notified for pickup verification.
+            </p>
+            <div className="bg-[#fafaf7] rounded-xl p-4 text-xs text-left text-[#525252] border border-[#e4e2dd] space-y-1.5">
+              <p>
+                • Recipient:{" "}
+                <strong className="text-[#171717]">
+                  {confirmedOrder?.shippingAddress?.fullName}
                 </strong>
               </p>
+              <p>
+                • Handover Location:{" "}
+                <strong className="text-[#171717]">
+                  {confirmedOrder?.shippingAddress?.address},{" "}
+                  {confirmedOrder?.shippingAddress?.city}
+                </strong>
+              </p>
+              <p>
+                • Total Payable:{" "}
+                <strong className="text-[#0f4c42] font-bold">
+                  ₹{confirmedOrder?.totalAmount}
+                </strong>
+              </p>
+              <p>
+                • Payment Mode:{" "}
+                <strong className="text-[#171717]">
+                  Cash / UPI on Physical Handover
+                </strong>
+              </p>
+              {confirmedOrder?.prescription && (
+                <p>
+                  • Prescription:{" "}
+                  <strong className="text-[#0f4c42]">
+                    Verified ({confirmedOrder.prescription.patientName || "Patient Record"})
+                  </strong>
+                </p>
+              )}
             </div>
-
-            <div className="border border-[#27272a] p-3 bg-white space-y-1.5">
-              <p>• Recipient: <strong>{confirmedOrder?.shippingAddress?.fullName}</strong></p>
-              <p>• Handover Location: <strong>{confirmedOrder?.shippingAddress?.address}, {confirmedOrder?.shippingAddress?.city}</strong></p>
-              <p>• Total Payable: <strong className="text-[#166534]">₹{confirmedOrder?.totalAmount}</strong></p>
-              <p>• Payment Mode: <strong>Cash / UPI upon physical handover</strong></p>
-            </div>
-
             <div className="space-y-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsDocketOpen(true);
-                }}
-                className="w-full py-2 bg-[#166534] hover:bg-[#14532d] text-white font-mono font-bold text-xs border border-[#166534] flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <PrinterIcon className="w-4 h-4" />
-                <span>Print Official Handover Slip / Docket</span>
-              </button>
-
               <Button
-                variant="secondary"
+                variant="primary"
                 size="md"
                 className="w-full"
                 onClick={handleViewDashboardOrders}
               >
-                View in Member Dashboard
+                View My Orders in Dashboard
               </Button>
-
               <Button
                 variant="outline"
                 size="md"
                 className="w-full"
                 onClick={handleCloseAll}
               >
-                Close & Return to Price Sheet
+                Done & Continue Browsing
               </Button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handlePlaceOrder} className="space-y-4 text-left font-mono text-xs">
-            <div className="bg-[#f8f7f4] border border-[#27272a] p-2.5 text-[11px] text-[#141416]">
-              <strong>Pune Community Exchange:</strong> Handover is coordinated in-person at local landmarks. Payment is made directly to the donor upon physical blister inspection.
+          <form onSubmit={handlePlaceOrder} className="space-y-4 text-left">
+            <div className="bg-[#e8f3f1] border border-[#c4ded9] rounded-xl p-3 text-xs text-[#0a362f] leading-snug">
+              <strong>Community Exchange Handover:</strong> Medicines are handed over in-person with
+              verified packaging and batch inspection. Payment mode: <strong>Cash / UPI on physical handover</strong>.
             </div>
 
             {/* Prescription Selection Section */}
             {requiresPrescription && (
-              <div className="border-2 border-[#b91c1c] bg-[#fef2f2] p-3 space-y-2.5">
-                <div className="flex items-start gap-1.5">
-                  <FileTextIcon className="w-4 h-4 text-[#b91c1c] shrink-0 mt-0.5" />
+              <div className="border border-purple-200 bg-purple-50/50 rounded-xl p-3.5 space-y-3">
+                <div className="flex items-start gap-2">
+                  <FileTextIcon className="w-5 h-5 text-purple-700 shrink-0 mt-0.5" />
                   <div>
-                    <h5 className="font-bold text-[#b91c1c] uppercase text-[11px]">
-                      Doctor Prescription Required (Schedule H)
+                    <h5 className="text-xs font-bold text-purple-950">
+                      Prescription Verification Required
                     </h5>
-                    <p className="text-[10px] text-[#7f1d1d] font-sans">
-                      Select a verified, approved prescription for:{" "}
-                      <strong>{rxItems.map((i) => i.brandName || i.name).join(", ")}</strong>.
+                    <p className="text-[11px] text-purple-800 mt-0.5">
+                      This order contains {rxItems.length} Rx medication(s):{" "}
+                      <strong>
+                        {rxItems.map((i) => i.brandName || i.name).join(", ")}
+                      </strong>
+                      . Select an approved prescription to proceed.
                     </p>
                   </div>
                 </div>
 
                 {loadingPrescriptions ? (
-                  <div className="py-2 text-center text-[#52525b] bg-white border border-[#d4d4d8]">
-                    Loading verified prescriptions...
+                  <div className="py-4 text-center text-xs text-[#737373] bg-white rounded-lg border border-purple-100">
+                    Loading your verified prescriptions...
                   </div>
                 ) : prescriptionError ? (
-                  <div className="p-2 text-rose-800 bg-rose-50 border border-rose-200">
+                  <div className="p-3 text-xs text-rose-700 bg-rose-50 rounded-lg border border-rose-200">
                     {prescriptionError}
                   </div>
                 ) : prescriptions.length === 0 ? (
-                  <div className="p-2 text-[#92400e] bg-amber-50 border border-[#d97706] space-y-1.5">
-                    <p><strong>No Prescriptions on File:</strong> Upload a valid prescription to order Schedule H medicines.</p>
+                  <div className="p-3 text-xs text-amber-900 bg-amber-50 rounded-lg border border-amber-200 space-y-2">
+                    <p>
+                      <strong>No Prescriptions Found:</strong> You do not have any uploaded
+                      prescriptions on your account.
+                    </p>
                     <button
                       type="button"
-                      onClick={() => {
-                        handleCloseAll();
-                        navigate("/dashboard");
-                      }}
-                      className="px-2 py-1 bg-[#166534] text-white text-[10px] font-bold"
+                      onClick={handleGoToPrescriptions}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition cursor-pointer"
                     >
-                      Go to Dashboard & Upload →
+                      <UploadIcon className="w-3.5 h-3.5" />
+                      Upload Prescription in Dashboard
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                    {prescriptions.map((rx) => {
-                      const isValid = isPrescriptionValid(rx);
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {prescriptions.map((p) => {
+                      const isValidApproved = isPrescriptionValid(p);
+                      const isSelected = selectedPrescriptionId === p._id;
+                      const isExpired =
+                        p.status === "approved" &&
+                        p.validUntil &&
+                        new Date(p.validUntil) <= new Date();
+
+                      let statusBadge = (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                          Pending Approval
+                        </span>
+                      );
+
+                      if (isExpired) {
+                        statusBadge = (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">
+                            Expired
+                          </span>
+                        );
+                      } else if (p.status === "approved") {
+                        statusBadge = (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            Approved & Valid
+                          </span>
+                        );
+                      } else if (p.status === "rejected") {
+                        statusBadge = (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">
+                            Rejected
+                          </span>
+                        );
+                      }
+
                       return (
                         <label
-                          key={rx._id}
-                          className={`flex items-start gap-2 p-2 border cursor-pointer ${
-                            selectedPrescriptionId === rx._id
-                              ? "bg-white border-[#27272a]"
-                              : "bg-[#f8f7f4] border-[#d4d4d8]"
+                          key={p._id}
+                          className={`block p-2.5 rounded-lg border text-xs transition cursor-pointer ${
+                            isValidApproved
+                              ? isSelected
+                              ? "border-[#0f4c42] bg-white ring-2 ring-[#0f4c42]/30 shadow-xs"
+                              : "border-[#e4e2dd] bg-white hover:border-[#0f4c42]/50"
+                              : "border-[#e4e2dd] bg-[#fafaf7] opacity-75 cursor-not-allowed"
                           }`}
                         >
-                          <input
-                            type="radio"
-                            name="selectedRx"
-                            value={rx._id}
-                            disabled={!isValid}
-                            checked={selectedPrescriptionId === rx._id}
-                            onChange={() => setSelectedPrescriptionId(rx._id)}
-                            className="accent-[#166534] mt-0.5"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <div className="font-bold text-[#141416]">
-                              {rx.patientName} {rx.doctorName && `(Dr. ${rx.doctorName})`}
-                            </div>
-                            <div className="text-[10px] text-[#52525b]">
-                              Status: <strong className={rx.status === "approved" ? "text-[#166534]" : "text-[#b91c1c]"}>{rx.status.toUpperCase()}</strong>
+                          <div className="flex items-start gap-2.5">
+                            <input
+                              type="radio"
+                              name="prescriptionSelection"
+                              value={p._id}
+                              checked={isSelected}
+                              disabled={!isValidApproved}
+                              onChange={() => {
+                                if (isValidApproved) {
+                                  setSelectedPrescriptionId(p._id);
+                                }
+                              }}
+                              className="mt-0.5 accent-[#0f4c42]"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-bold text-[#171717] truncate">
+                                  Patient: {p.patientName}
+                                </span>
+                                {statusBadge}
+                              </div>
+
+                              <div className="text-[11px] text-[#525252] mt-0.5 space-y-0.5">
+                                <p className="truncate">
+                                  Doctor: <strong>{p.doctorName || "Prescribing Physician"}</strong>
+                                  {p.doctorRegistrationNumber
+                                    ? ` (Reg: ${p.doctorRegistrationNumber})`
+                                    : ""}
+                                </p>
+                                {p.prescribedSalts && (
+                                  <p className="text-[#737373] truncate">
+                                    Salts: {p.prescribedSalts}
+                                  </p>
+                                )}
+                                {p.validUntil && (
+                                  <p className="text-[10px] text-[#737373]">
+                                    Validity: {new Date(p.validUntil).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+
+                              {p.status === "rejected" && p.rejectionReason && (
+                                <p className="text-[11px] text-rose-700 font-medium mt-1 bg-rose-50 p-1.5 rounded border border-rose-100">
+                                  Rejection reason: {p.rejectionReason}
+                                </p>
+                              )}
+
+                              {p.status === "pending" && (
+                                <p className="text-[10px] text-amber-700 font-medium mt-0.5">
+                                  Coordinator verification in progress. Cannot be used until approved.
+                                </p>
+                              )}
+
+                              {isExpired && (
+                                <p className="text-[10px] text-rose-700 font-medium mt-0.5">
+                                  Prescription expired on {new Date(p.validUntil).toLocaleDateString()}.
+                                </p>
+                              )}
                             </div>
                           </div>
                         </label>
@@ -546,92 +644,168 @@ export function CartDrawer() {
               </div>
             )}
 
-            {/* Recipient & Handover Contact Fields */}
-            <div className="space-y-2.5">
+            {/* Handover Preference Selector */}
+            <div className="p-3 bg-[#f7f7f4] border border-[#e4e2dd] rounded-xl space-y-2">
+              <label className="block text-xs font-bold text-[#171717]">
+                Community Handover Preference <span className="text-rose-600">*</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <label
+                  className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer transition ${
+                    formData.handoverType === "public_point"
+                      ? "border-[#0f4c42] bg-[#e8f3f1] text-[#0f4c42] font-semibold"
+                      : "border-[#e4e2dd] bg-white text-[#525252]"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="handoverType"
+                    checked={formData.handoverType === "public_point"}
+                    onChange={() => setFormData({ ...formData, handoverType: "public_point" })}
+                    className="mt-0.5 accent-[#0f4c42]"
+                  />
+                  <div>
+                    <span className="block font-bold text-[#171717]">Agreed Public Point</span>
+                    <span className="text-[11px] text-[#525252]">College gate, metro station, landmark</span>
+                  </div>
+                </label>
+
+                <label
+                  className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer transition ${
+                    formData.handoverType === "direct_handover"
+                      ? "border-[#0f4c42] bg-[#e8f3f1] text-[#0f4c42] font-semibold"
+                      : "border-[#e4e2dd] bg-white text-[#525252]"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="handoverType"
+                    checked={formData.handoverType === "direct_handover"}
+                    onChange={() => setFormData({ ...formData, handoverType: "direct_handover" })}
+                    className="mt-0.5 accent-[#0f4c42]"
+                  />
+                  <div>
+                    <span className="block font-bold text-[#171717]">Nearby Direct Handover</span>
+                    <span className="text-[11px] text-[#525252]">Within seller/buyer locality</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#171717] mb-1">
+                Recipient Full Name <span className="text-rose-600">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                required
+                placeholder="e.g. Dr. Ananya Sharma"
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-[#141416] mb-1">
-                  Recipient Full Name *
+                <label className="block text-xs font-semibold text-[#171717] mb-1">
+                  Contact Phone <span className="text-rose-600">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
+                  placeholder="e.g. +91 98230 45678"
+                  className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#171717] mb-1">
+                  City / Locality <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   required
-                  placeholder="e.g. Ronit Subhedar"
-                  className="w-full bg-white border border-[#27272a] p-1.5 text-xs focus:ring-2 focus:ring-[#166534] focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase text-[#141416] mb-1">
-                    Contact Phone *
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                    placeholder="+91 98230 XXXXX"
-                    className="w-full bg-white border border-[#27272a] p-1.5 text-xs focus:ring-2 focus:ring-[#166534] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold uppercase text-[#141416] mb-1">
-                    Pune Locality *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    required
-                    placeholder="e.g. Katraj, Pune"
-                    className="w-full bg-white border border-[#27272a] p-1.5 text-xs focus:ring-2 focus:ring-[#166534] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-[#141416] mb-1">
-                  Recipient Address / Preferred Handover Landmark *
-                </label>
-                <textarea
-                  rows={2}
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  required
-                  placeholder="e.g. Near Katraj Chowk PMT Bus Stop, Pune - 411046"
-                  className="w-full bg-white border border-[#27272a] p-1.5 text-xs focus:ring-2 focus:ring-[#166534] focus:outline-none"
+                  placeholder="e.g. Pune"
+                  className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* Price Summary in Modal */}
-            <div className="p-2.5 bg-[#f8f7f4] border border-[#27272a] flex justify-between items-center text-xs">
-              <span>Total Payable at Handover:</span>
-              <span className="font-bold text-sm text-[#166534]">₹{grandTotal}</span>
+            <div>
+              <label className="block text-xs font-semibold text-[#171717] mb-1">
+                Delivery Address / Community Handover Point <span className="text-rose-600">*</span>
+              </label>
+              <textarea
+                rows={2}
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                required
+                placeholder="e.g. Flat 402, Green Meadows, Kothrud, Pune - 411038"
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-[#171717] mb-1">
+                  State
+                </label>
+                <input
+                  type="text"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  placeholder="Maharashtra"
+                  className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#171717] mb-1">
+                  Pincode
+                </label>
+                <input
+                  type="text"
+                  value={formData.pincode}
+                  onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                  placeholder="411038"
+                  className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-sm text-[#171717] focus:ring-2 focus:ring-[#0f4c42] focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-[#e4e2dd]">
+              <div className="flex justify-between text-xs text-[#525252] mb-1">
+                <span>Items ({itemCount}):</span>
+                <span className="font-mono">₹{subtotal}</span>
+              </div>
+              <div className="flex justify-between text-xs text-[#525252] mb-1">
+                <span>Handling Fee:</span>
+                <span>{shippingFee === 0 ? "FREE" : `₹${shippingFee}`}</span>
+              </div>
+              <div className="flex justify-between text-sm font-bold text-[#171717] pt-1">
+                <span>Total Amount:</span>
+                <span className="text-[#0f4c42] font-mono">₹{grandTotal}</span>
+              </div>
             </div>
 
             <Button
               type="submit"
               variant="primary"
-              size="md"
-              className="w-full"
+              size="lg"
+              className="w-full mt-2"
               isLoading={isOrdering}
-              disabled={isOrdering || (requiresPrescription && !selectedPrescriptionId)}
+              disabled={requiresPrescription && !selectedPrescriptionId}
             >
-              {isOrdering ? "Placing Order..." : "Confirm Medicine Request"}
+              {requiresPrescription && !selectedPrescriptionId
+                ? "Select Approved Prescription to Proceed"
+                : `Confirm Request (₹${grandTotal})`}
             </Button>
           </form>
         )}
       </Modal>
-
-      {/* Handover Docket Modal */}
-      <HandoverSlipModal
-        isOpen={isDocketOpen}
-        onClose={() => setIsDocketOpen(false)}
-        order={confirmedOrder}
-      />
     </>
   );
 }
