@@ -152,6 +152,11 @@ const orderSchema = new mongoose.Schema(
 );
 
 
+// Scalability compound indexes
+orderSchema.index({ buyer: 1, createdAt: -1 });
+orderSchema.index({ "items.seller": 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+
 // Format human-friendly order reference number virtual
 orderSchema.virtual("orderNumber").get(function () {
   const dateStr = this.createdAt ? new Date(this.createdAt).getFullYear() : "2026";

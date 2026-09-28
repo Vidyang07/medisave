@@ -374,10 +374,13 @@ export const createMedicine = async (req, res) => {
     });
 
     const locData = findLocality(locality || "Katraj");
-    const resolvedLocality = locality?.trim() || locData?.name || "Katraj";
+    const resolvedLocality = locData?.name || locality?.trim() || "Katraj";
     const resolvedPin = pinCode?.trim() || locData?.pinCode || "411046";
-    const resolvedCoords = locData?.coordinates || { latitude: 18.4529, longitude: 73.8652 };
-    const resolvedHandoverPoint = handoverPoint?.trim() || "Community Landmark / Main Gate";
+    const resolvedCoords = {
+      lat: locData ? locData.lat : 18.4529,
+      lng: locData ? locData.lng : 73.8652,
+    };
+    const resolvedHandoverPoint = handoverPoint?.trim() || locData?.defaultHandover || "Community Landmark / Main Gate";
     const resolvedRadius = Number(handoverRadiusKm) || 5;
 
     // 6. Create medicine with seller bound to authenticated user
@@ -540,7 +543,7 @@ export const updateMedicine = async (req, res) => {
     if (req.body.locality) {
       const locData = findLocality(req.body.locality);
       if (locData) {
-        medicine.locationCoordinates = locData.coordinates;
+        medicine.locationCoordinates = { lat: locData.lat, lng: locData.lng };
         if (!req.body.pinCode) {
           medicine.pinCode = locData.pinCode;
         }

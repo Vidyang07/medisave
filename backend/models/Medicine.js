@@ -155,6 +155,12 @@ medicineSchema.virtual("expiryText").get(function () {
   return `${months[d.getMonth()]} ${d.getFullYear()}`;
 });
 
+// Scalability compound indexes
+medicineSchema.index({ status: 1, locality: 1, createdAt: -1 });
+medicineSchema.index({ status: 1, category: 1, createdAt: -1 });
+medicineSchema.index({ seller: 1, createdAt: -1 });
+medicineSchema.index({ medicineName: "text", brandName: "text", genericName: "text" });
+
 // Ensure virtuals are included in toJSON / toObject
 medicineSchema.set("toJSON", { virtuals: true });
 medicineSchema.set("toObject", { virtuals: true });
