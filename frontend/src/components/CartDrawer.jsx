@@ -373,7 +373,7 @@ export function CartDrawer() {
                 <span className="font-medium text-[#171717] font-mono">₹{subtotal}</span>
               </div>
               <div className="flex justify-between">
-                <span>Handling / Delivery Fee:</span>
+                <span>Community Handling Fee:</span>
                 <span className="font-medium text-[#171717]">
                   {shippingFee === 0 ? "FREE" : `₹${shippingFee}`}
                 </span>

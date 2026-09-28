@@ -216,16 +216,28 @@ export function getProximityInfo(buyerLocality, sellerLocality) {
   let buyerCoords = null;
   let sellerCoords = null;
 
-  if (typeof buyerLocality === "object" && buyerLocality?.lat && buyerLocality?.lng) {
-    buyerCoords = buyerLocality;
-  } else {
+  if (typeof buyerLocality === "object" && buyerLocality) {
+    if (buyerLocality.lat !== undefined && buyerLocality.lng !== undefined) {
+      buyerCoords = { lat: Number(buyerLocality.lat), lng: Number(buyerLocality.lng) };
+    } else if (buyerLocality.latitude !== undefined && buyerLocality.longitude !== undefined) {
+      buyerCoords = { lat: Number(buyerLocality.latitude), lng: Number(buyerLocality.longitude) };
+    }
+  }
+  
+  if (!buyerCoords) {
     const loc = findLocality(buyerLocality);
     if (loc) buyerCoords = { lat: loc.lat, lng: loc.lng };
   }
 
-  if (typeof sellerLocality === "object" && sellerLocality?.lat && sellerLocality?.lng) {
-    sellerCoords = sellerLocality;
-  } else {
+  if (typeof sellerLocality === "object" && sellerLocality) {
+    if (sellerLocality.lat !== undefined && sellerLocality.lng !== undefined) {
+      sellerCoords = { lat: Number(sellerLocality.lat), lng: Number(sellerLocality.lng) };
+    } else if (sellerLocality.latitude !== undefined && sellerLocality.longitude !== undefined) {
+      sellerCoords = { lat: Number(sellerLocality.latitude), lng: Number(sellerLocality.longitude) };
+    }
+  }
+  
+  if (!sellerCoords) {
     const loc = findLocality(sellerLocality);
     if (loc) sellerCoords = { lat: loc.lat, lng: loc.lng };
   }
