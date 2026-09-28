@@ -390,6 +390,33 @@ Do not claim these future features already exist.
 
 ---
 
+## 👥 Academic & Community Engagement Program (CEP) Team
+* **Institution**: Pune Institute of Computer Technology (PICT)
+* **Program**: Community Engagement Program (CEP)
+* **Division**: SY 2 | **Batch**: H2
+* **Team Members**:
+  * **Ronit Subhedar** — Roll No. 21270
+  * **Vidyang Wagh** — Roll No. 21282
+  * **Darshan Solanke** — Roll No. 21269
+  * **Sumukh Bhat** — Roll No. 21271
+
+---
+
+## 🎬 5–7 Minute Presentation Demo Flow
+
+| Step | Persona | Action | Verified System Behavior |
+| :--- | :--- | :--- | :--- |
+| **1. Auth & Login** | Any User | Login with seeded accounts (`buyer@medisave.org`, `seller@medisave.org`, `admin@medisave.org`) | Role-based navigation with signed JWT. |
+| **2. Locality Discovery** | Buyer | Browse Pune marketplace with locality selector (*Bibvewadi* vs *Katraj*) | Haversine proximity computed; nearby listings prioritized with *"Nearby First"*. |
+| **3. Medicine Details** | Buyer | Inspect medicine specification (*MRP, Discount, Expiry buffer, Handover point*) | Explains deterministic pricing rationale and verified blister pack integrity. |
+| **4. Seller Listing** | Seller | Enter *"Dolo 650"*, click **Auto-Fill with AI** | OpenRouter AI identifies formulation; seller inputs printed MRP; deterministic rules calculate suggested price; seller confirms. |
+| **5. Coordinator Moderation**| Admin | Review pending listings in Admin Console | Admin inspects packaging photos and approves/rejects with audit trail. |
+| **6. Cart & Multi-Seller** | Buyer | Add multiple items from distinct donors to Cart | Atomic stock reservation; self-purchase blocked; multi-seller item isolation. |
+| **7. Prescription Workflow** | Buyer / Admin | Upload Schedule H prescription document (PDF/PNG) | Coordinator validates doctor registration; IDOR-protected document streaming. |
+| **8. Community Handover** | Buyer & Seller | Place order and progress through 5-stage lifecycle | `ORDER PLACED` $\rightarrow$ `SELLER CONFIRMS` $\rightarrow$ `READY FOR HANDOVER` $\rightarrow$ `COORDINATE` $\rightarrow$ `COMPLETED` at public landmark. |
+
+---
+
 ## 🤝 Community Engagement & College Campus Deployment
 
 MEDISAVE is structured for straightforward pilot deployment across university campuses and local residential welfare associations (RWAs):
