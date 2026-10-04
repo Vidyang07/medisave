@@ -184,7 +184,7 @@ export default function PartnerDashboard() {
 
     if (exp <= today) {
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#fee2e2] text-[#991b1b] border border-[#fca5a5]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-danger-tint text-danger border border-[#fca5a5]">
           🔴 Expired — Disposal Only
         </span>
       );
@@ -194,19 +194,19 @@ export default function PartnerDashboard() {
 
     if (diffMonths >= 6) {
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#d1fae5] text-[#065f46] border border-[#a7f3d0]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-success-tint text-success border border-success-line">
           🟢 Stable ({diffMonths}m)
         </span>
       );
     } else if (diffMonths >= 3) {
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-warning-tint text-warning border border-warning-line">
           🟡 Expiring Soon ({diffMonths}m)
         </span>
       );
     } else {
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#fee2e2] text-[#991b1b] border border-[#fca5a5]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-danger-tint text-danger border border-[#fca5a5]">
           🔴 Critical (&lt;3m)
         </span>
       );
@@ -236,7 +236,7 @@ export default function PartnerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafaf7] py-8 text-[#171717]">
+    <div className="min-h-screen bg-surface-alt py-8 text-ink">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Navigation Breadcrumbs */}
         <Breadcrumb
@@ -247,54 +247,54 @@ export default function PartnerDashboard() {
         />
 
         {/* Partner Organization Header Banner */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e4e2dd] shadow-2xs relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-6 border border-line shadow-2xs relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#e8f3f1] text-[#0f4c42] border border-[#a7f3d0]">
-                  <ShieldCheckIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-tint text-brand border border-success-line">
+                  <ShieldCheckIcon className="w-3.5 h-3.5 text-brand" />
                   Verified Community Partner
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#f2f1ec] text-[#525252]">
-                  <MapPinIcon className="w-3 h-3 text-[#737373]" />
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sunken text-ink-muted">
+                  <MapPinIcon className="w-3 h-3 text-ink-subtle" />
                   {user?.locality || "Katraj, Pune"}
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#171717]">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
                 {user?.organizationName || "Partner Health Center & NGO Portal"}
               </h1>
-              <p className="text-xs sm:text-sm text-[#525252] max-w-2xl">
+              <p className="text-xs sm:text-sm text-ink-muted max-w-2xl">
                 Welcome, <strong>{user?.name}</strong> ({user?.organizationType || "Charitable Health Organization"}). Review verified community medicine donations, accept available listings in your locality, and perform secure physical handovers via donor 6-digit OTP verification.
               </p>
             </div>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-3 bg-[#fafaf7] p-3 rounded-xl border border-[#e4e2dd] text-center shrink-0">
+            <div className="grid grid-cols-3 gap-3 bg-surface-alt p-3 rounded-xl border border-line text-center shrink-0">
               <div className="px-2">
-                <p className="text-[10px] uppercase font-bold text-[#737373] tracking-wider">Available</p>
-                <p className="text-xl font-extrabold text-[#0f4c42]">{availableDonations.length}</p>
+                <p className="text-[10px] uppercase font-bold text-ink-subtle tracking-wider">Available</p>
+                <p className="text-xl font-extrabold text-brand">{availableDonations.length}</p>
               </div>
-              <div className="px-2 border-x border-[#e4e2dd]">
-                <p className="text-[10px] uppercase font-bold text-[#737373] tracking-wider">Active Handover</p>
-                <p className="text-xl font-extrabold text-[#b45309]">{activeHandovers.length}</p>
+              <div className="px-2 border-x border-line">
+                <p className="text-[10px] uppercase font-bold text-ink-subtle tracking-wider">Active Handover</p>
+                <p className="text-xl font-extrabold text-warning">{activeHandovers.length}</p>
               </div>
               <div className="px-2">
-                <p className="text-[10px] uppercase font-bold text-[#737373] tracking-wider">Completed</p>
-                <p className="text-xl font-extrabold text-[#15803d]">{completedHandovers.length}</p>
+                <p className="text-[10px] uppercase font-bold text-ink-subtle tracking-wider">Completed</p>
+                <p className="text-xl font-extrabold text-success">{completedHandovers.length}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[#e4e2dd] gap-2 overflow-x-auto pb-0.5">
+        <div className="flex border-b border-line gap-2 overflow-x-auto pb-0.5">
           <button
             onClick={() => setActiveTab("available")}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors cursor-pointer flex items-center gap-2 ${
               activeTab === "available"
-                ? "bg-white border-t border-x border-[#e4e2dd] text-[#0f4c42] shadow-2xs"
-                : "text-[#525252] hover:text-[#171717] hover:bg-[#f2f1ec]"
+                ? "bg-white border-t border-x border-line text-brand shadow-2xs"
+                : "text-ink-muted hover:text-ink hover:bg-sunken"
             }`}
           >
             <PackageIcon className="w-4 h-4" />
@@ -304,8 +304,8 @@ export default function PartnerDashboard() {
             onClick={() => setActiveTab("handovers")}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors cursor-pointer flex items-center gap-2 ${
               activeTab === "handovers"
-                ? "bg-white border-t border-x border-[#e4e2dd] text-[#b45309] shadow-2xs"
-                : "text-[#525252] hover:text-[#171717] hover:bg-[#f2f1ec]"
+                ? "bg-white border-t border-x border-line text-warning shadow-2xs"
+                : "text-ink-muted hover:text-ink hover:bg-sunken"
             }`}
           >
             <ClockIcon className="w-4 h-4" />
@@ -315,8 +315,8 @@ export default function PartnerDashboard() {
             onClick={() => setActiveTab("history")}
             className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-colors cursor-pointer flex items-center gap-2 ${
               activeTab === "history"
-                ? "bg-white border-t border-x border-[#e4e2dd] text-[#15803d] shadow-2xs"
-                : "text-[#525252] hover:text-[#171717] hover:bg-[#f2f1ec]"
+                ? "bg-white border-t border-x border-line text-success shadow-2xs"
+                : "text-ink-muted hover:text-ink hover:bg-sunken"
             }`}
           >
             <CheckCircleIcon className="w-4 h-4" />
@@ -328,15 +328,15 @@ export default function PartnerDashboard() {
         {activeTab === "available" && (
           <div className="space-y-4">
             {/* Search and Filters */}
-            <div className="bg-white p-4 rounded-xl border border-[#e4e2dd] flex flex-col sm:flex-row gap-3 items-center justify-between shadow-2xs">
+            <div className="bg-white p-4 rounded-xl border border-line flex flex-col sm:flex-row gap-3 items-center justify-between shadow-2xs">
               <form onSubmit={handleSearchSubmit} className="relative w-full sm:max-w-md">
-                <SearchIcon className="w-4 h-4 text-[#737373] absolute left-3 top-2.5" />
+                <SearchIcon className="w-4 h-4 text-ink-subtle absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Search medicine name, salts, manufacturer..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#f7f7f4] border border-[#e4e2dd] text-xs rounded-lg pl-9 pr-3 py-2 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                  className="w-full bg-canvas border border-line text-xs rounded-lg pl-9 pr-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                 />
               </form>
 
@@ -344,7 +344,7 @@ export default function PartnerDashboard() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-[#f7f7f4] border border-[#e4e2dd] text-xs rounded-lg px-3 py-2 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                  className="bg-canvas border border-line text-xs rounded-lg px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                 >
                   <option value="All">All Categories</option>
                   <option value="Pain & Fever">Pain & Fever</option>
@@ -359,7 +359,7 @@ export default function PartnerDashboard() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-[#f7f7f4] border border-[#e4e2dd] text-xs rounded-lg px-3 py-2 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                  className="bg-canvas border border-line text-xs rounded-lg px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                 >
                   <option value="nearby">📍 Closest Proximity First</option>
                   <option value="expiry-nearest">⏳ Nearest Expiry First</option>
@@ -371,10 +371,10 @@ export default function PartnerDashboard() {
             {isLoadingAvailable ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className="bg-white p-5 rounded-xl border border-[#e4e2dd] animate-pulse space-y-3">
-                    <div className="h-4 bg-[#f2f1ec] rounded w-3/4"></div>
-                    <div className="h-3 bg-[#f2f1ec] rounded w-1/2"></div>
-                    <div className="h-20 bg-[#f2f1ec] rounded"></div>
+                  <div key={n} className="bg-white p-5 rounded-xl border border-line animate-pulse space-y-3">
+                    <div className="h-4 bg-sunken rounded w-3/4"></div>
+                    <div className="h-3 bg-sunken rounded w-1/2"></div>
+                    <div className="h-20 bg-sunken rounded"></div>
                   </div>
                 ))}
               </div>
@@ -391,71 +391,71 @@ export default function PartnerDashboard() {
                   return (
                     <div
                       key={med._id}
-                      className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-2xs hover:shadow-sm transition flex flex-col justify-between"
+                      className="bg-white rounded-xl border border-line p-5 shadow-2xs hover:shadow-sm transition flex flex-col justify-between"
                     >
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-[#e8f3f1] text-[#0f4c42] uppercase tracking-wider mb-1">
+                            <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-brand-tint text-brand uppercase tracking-wider mb-1">
                               {med.category}
                             </span>
-                            <h3 className="text-base font-bold text-[#171717] leading-snug">
+                            <h3 className="text-base font-bold text-ink leading-snug">
                               {med.medicineName}
                             </h3>
-                            <p className="text-xs text-[#525252]">
+                            <p className="text-xs text-ink-muted">
                               {med.company} {med.strength ? `· ${med.strength}` : ""}
                             </p>
                           </div>
 
                           <div className="text-right shrink-0">
-                            <span className="inline-block px-2 py-1 rounded-lg text-xs font-extrabold bg-[#ecfdf5] text-[#065f46] border border-[#a7f3d0]">
+                            <span className="inline-block px-2 py-1 rounded-lg text-xs font-extrabold bg-success-tint text-success border border-success-line">
                               🎁 Free Donation
                             </span>
                           </div>
                         </div>
 
                         {/* Details pill box */}
-                        <div className="bg-[#fafaf7] p-3 rounded-lg border border-[#e4e2dd] text-xs space-y-1.5">
-                          <div className="flex justify-between text-[#525252]">
+                        <div className="bg-surface-alt p-3 rounded-lg border border-line text-xs space-y-1.5">
+                          <div className="flex justify-between text-ink-muted">
                             <span>Batch Number:</span>
-                            <span className="font-semibold text-[#171717]">{med.batchNumber || "Verified"}</span>
+                            <span className="font-semibold text-ink">{med.batchNumber || "Verified"}</span>
                           </div>
-                          <div className="flex justify-between text-[#525252]">
+                          <div className="flex justify-between text-ink-muted">
                             <span>Quantity:</span>
-                            <span className="font-semibold text-[#171717]">{med.quantity} {med.unit || "units"}</span>
+                            <span className="font-semibold text-ink">{med.quantity} {med.unit || "units"}</span>
                           </div>
-                          <div className="flex justify-between text-[#525252]">
+                          <div className="flex justify-between text-ink-muted">
                             <span>Packaging:</span>
-                            <span className="font-medium text-[#171717] truncate max-w-[170px]">{med.packageCondition}</span>
+                            <span className="font-medium text-ink truncate max-w-[170px]">{med.packageCondition}</span>
                           </div>
-                          <div className="flex justify-between items-center pt-1 border-t border-[#e4e2dd]">
+                          <div className="flex justify-between items-center pt-1 border-t border-line">
                             <span>Expiry:</span>
                             {getExpiryBadge(med.expiryDate)}
                           </div>
                         </div>
 
                         {/* Location and straight-line distance */}
-                        <div className="text-xs text-[#525252] space-y-1">
-                          <div className="flex items-center gap-1.5 font-medium text-[#171717]">
-                            <MapPinIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
+                        <div className="text-xs text-ink-muted space-y-1">
+                          <div className="flex items-center gap-1.5 font-medium text-ink">
+                            <MapPinIcon className="w-3.5 h-3.5 text-brand" />
                             {med.locality || "Pune"} ({med.pinCode || "411046"})
                           </div>
                           {dist !== undefined && dist !== null && (
-                            <p className="text-[11px] text-[#737373] italic">
+                            <p className="text-[11px] text-ink-subtle italic">
                               Approx. straight-line distance: ~{dist.toFixed(1)} km from your center
                             </p>
                           )}
-                          <p className="text-[11px] text-[#525252]">
+                          <p className="text-[11px] text-ink-muted">
                             <strong>Handover point:</strong> {med.handoverPoint || "Community landmark"}
                           </p>
                         </div>
                       </div>
 
                       {/* Action Button */}
-                      <div className="pt-4 border-t border-[#e4e2dd] mt-4">
+                      <div className="pt-4 border-t border-line mt-4">
                         <Button
                           variant="primary"
-                          className="w-full justify-center text-xs py-2 bg-[#0f4c42] hover:bg-[#0a362f]"
+                          className="w-full justify-center text-xs py-2 bg-brand hover:bg-brand-strong"
                           onClick={() => setSelectedForAccept(med)}
                         >
                           🤝 Accept Donation for Redistribution
@@ -472,11 +472,11 @@ export default function PartnerDashboard() {
         {/* TAB 2: ACTIVE PHYSICAL HANDOVERS */}
         {activeTab === "handovers" && (
           <div className="space-y-4">
-            <div className="bg-[#fffbeb] p-4 rounded-xl border border-[#fef3c7] text-xs text-[#92400e] flex items-start gap-3 shadow-2xs">
-              <ClockIcon className="w-5 h-5 text-[#b45309] shrink-0 mt-0.5" />
+            <div className="bg-warning-tint p-4 rounded-xl border border-warning-tint text-xs text-warning flex items-start gap-3 shadow-2xs">
+              <ClockIcon className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-sm text-[#78350f]">Physical Medicine Handover Verification Instructions</p>
-                <p className="mt-1 text-[#92400e]">
+                <p className="font-bold text-sm text-warning">Physical Medicine Handover Verification Instructions</p>
+                <p className="mt-1 text-warning">
                   These medicine donations have been assigned to your organization. During physical handover with the donor, inspect packaging integrity and ask the donor for their <strong>6-digit secure handover code</strong> shown in their member dashboard. Enter and verify the code below to complete redistribution.
                 </p>
               </div>
@@ -485,7 +485,7 @@ export default function PartnerDashboard() {
             {isLoadingAccepted ? (
               <div className="space-y-3">
                 {[1, 2].map((n) => (
-                  <div key={n} className="bg-white p-5 rounded-xl border border-[#e4e2dd] animate-pulse h-28"></div>
+                  <div key={n} className="bg-white p-5 rounded-xl border border-line animate-pulse h-28"></div>
                 ))}
               </div>
             ) : activeHandovers.length === 0 ? (
@@ -501,21 +501,21 @@ export default function PartnerDashboard() {
                 {activeHandovers.map((med) => (
                   <div
                     key={med._id}
-                    className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5"
+                    className="bg-white rounded-xl border border-line p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#fef3c7] text-[#92400e] uppercase tracking-wider">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-warning-tint text-warning uppercase tracking-wider">
                           Awaiting Physical Handover
                         </span>
                         {getExpiryBadge(med.expiryDate)}
                       </div>
 
-                      <h3 className="text-base font-bold text-[#171717]">
+                      <h3 className="text-base font-bold text-ink">
                         {med.medicineName} ({med.quantity} {med.unit || "units"})
                       </h3>
 
-                      <div className="text-xs text-[#525252] space-y-1">
+                      <div className="text-xs text-ink-muted space-y-1">
                         <p>
                           <strong>Manufacturer:</strong> {med.company} · <strong>Batch:</strong> {med.batchNumber || "Verified"}
                         </p>
@@ -528,7 +528,7 @@ export default function PartnerDashboard() {
                       </div>
 
                       {med.handoverLocked && (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#fee2e2] text-[#991b1b] text-xs font-bold">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-danger-tint text-danger text-xs font-bold">
                           <AlertTriangleIcon className="w-4 h-4" />
                           Handover locked due to 5 consecutive failed attempts. Please contact Admin.
                         </div>
@@ -538,7 +538,7 @@ export default function PartnerDashboard() {
                     <div className="flex flex-col sm:flex-row gap-2 shrink-0">
                       <Button
                         variant="outline"
-                        className="text-xs py-2 px-3 text-[#be123c] border-[#fecdd3] hover:bg-[#fff1f2]"
+                        className="text-xs py-2 px-3 text-danger border-danger-line hover:bg-danger-tint"
                         onClick={() => {
                           setRejectingMed(med);
                           setRejectReason("");
@@ -548,7 +548,7 @@ export default function PartnerDashboard() {
                       </Button>
                       <Button
                         variant="primary"
-                        className="bg-[#b45309] hover:bg-[#92400e] text-xs py-2 px-4 flex items-center justify-center gap-2"
+                        className="bg-warning hover:bg-warning text-xs py-2 px-4 flex items-center justify-center gap-2"
                         onClick={() => {
                           setVerifyingMed(med);
                           setHandoverCodeInput("");
@@ -573,7 +573,7 @@ export default function PartnerDashboard() {
             {isLoadingAccepted ? (
               <div className="space-y-3">
                 {[1, 2].map((n) => (
-                  <div key={n} className="bg-white p-5 rounded-xl border border-[#e4e2dd] animate-pulse h-20"></div>
+                  <div key={n} className="bg-white p-5 rounded-xl border border-line animate-pulse h-20"></div>
                 ))}
               </div>
             ) : completedHandovers.length === 0 ? (
@@ -583,39 +583,39 @@ export default function PartnerDashboard() {
                 description="Once you verify physical handover codes with donors, the verified redistribution audit trail will appear here."
               />
             ) : (
-              <div className="bg-white rounded-xl border border-[#e4e2dd] shadow-2xs overflow-hidden">
-                <div className="px-5 py-4 border-b border-[#e4e2dd] bg-[#fafaf7] flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#171717]">
+              <div className="bg-white rounded-xl border border-line shadow-2xs overflow-hidden">
+                <div className="px-5 py-4 border-b border-line bg-surface-alt flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-ink">
                     Verified Physical Handover Audit Trail ({completedHandovers.length})
                   </h3>
-                  <span className="text-xs text-[#525252]">
+                  <span className="text-xs text-ink-muted">
                     Total Units Rescued: <strong>{completedHandovers.reduce((acc, curr) => acc + (curr.quantity || 0), 0)}</strong>
                   </span>
                 </div>
 
-                <div className="divide-y divide-[#e4e2dd]">
+                <div className="divide-y divide-line">
                   {completedHandovers.map((med) => (
                     <div key={med._id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-[#dcfce7] text-[#15803d]">
-                            <CheckIcon className="w-3 h-3 text-[#15803d]" />
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-success-tint text-success">
+                            <CheckIcon className="w-3 h-3 text-success" />
                             Handover Verified
                           </span>
-                          <span className="text-xs text-[#737373]">
+                          <span className="text-xs text-ink-subtle">
                             Completed on: {med.completedAt ? new Date(med.completedAt).toLocaleString() : "Recently"}
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-[#171717]">
+                        <h4 className="text-sm font-bold text-ink">
                           {med.medicineName} ({med.quantity} {med.unit || "units"})
                         </h4>
-                        <p className="text-xs text-[#525252]">
+                        <p className="text-xs text-ink-muted">
                           Batch: {med.batchNumber || "Verified"} · Donor: {med.seller?.name || "Community Donor"} ({med.locality || "Katraj"})
                         </p>
                       </div>
 
                       <div className="text-left sm:text-right shrink-0">
-                        <span className="inline-block text-xs font-semibold text-[#0f4c42] bg-[#e8f3f1] px-3 py-1 rounded-full border border-[#a7f3d0]">
+                        <span className="inline-block text-xs font-semibold text-brand bg-brand-tint px-3 py-1 rounded-full border border-success-line">
                           Redistributed to Community
                         </span>
                       </div>
@@ -634,27 +634,27 @@ export default function PartnerDashboard() {
             onClose={() => setSelectedForAccept(null)}
             title="Accept Community Donation"
           >
-            <div className="space-y-4 text-xs text-[#262626]">
+            <div className="space-y-4 text-xs text-ink">
               <p>
                 You are accepting the following medicine donation on behalf of <strong>{user?.organizationName || "your partner center"}</strong>:
               </p>
 
-              <div className="bg-[#f7f7f4] p-3.5 rounded-xl border border-[#e4e2dd] space-y-1.5">
-                <p className="font-bold text-sm text-[#171717]">{selectedForAccept.medicineName}</p>
+              <div className="bg-canvas p-3.5 rounded-xl border border-line space-y-1.5">
+                <p className="font-bold text-sm text-ink">{selectedForAccept.medicineName}</p>
                 <p><strong>Quantity:</strong> {selectedForAccept.quantity} {selectedForAccept.unit || "units"}</p>
                 <p><strong>Batch:</strong> {selectedForAccept.batchNumber || "Standard batch"}</p>
                 <p><strong>Expiry:</strong> {new Date(selectedForAccept.expiryDate).toLocaleDateString()}</p>
                 <p><strong>Handover Landmark:</strong> {selectedForAccept.handoverPoint || selectedForAccept.locality}</p>
               </div>
 
-              <div className="bg-[#e8f3f1] p-3 rounded-lg border border-[#a7f3d0] text-[#0f4c42]">
+              <div className="bg-brand-tint p-3 rounded-lg border border-success-line text-brand">
                 <p className="font-bold">Next Steps:</p>
                 <p className="mt-0.5">
                   Upon acceptance, a unique 6-digit physical handover code will be generated and made visible ONLY to the donor in their dashboard. You will collect this code during in-person medicine collection.
                 </p>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#e4e2dd]">
+              <div className="flex justify-end gap-3 pt-3 border-t border-line">
                 <Button
                   variant="outline"
                   onClick={() => setSelectedForAccept(null)}
@@ -666,7 +666,7 @@ export default function PartnerDashboard() {
                   variant="primary"
                   onClick={handleAcceptDonation}
                   disabled={isAccepting}
-                  className="bg-[#0f4c42] hover:bg-[#0a362f]"
+                  className="bg-brand hover:bg-brand-strong"
                 >
                   {isAccepting ? "Accepting..." : "Confirm & Accept Donation"}
                 </Button>
@@ -686,13 +686,13 @@ export default function PartnerDashboard() {
             }}
             title="Physical Handover Verification"
           >
-            <form onSubmit={handleVerifyHandover} className="space-y-4 text-xs text-[#262626]">
+            <form onSubmit={handleVerifyHandover} className="space-y-4 text-xs text-ink">
               <p>
                 Please verify physical inspection of <strong>{verifyingMed.medicineName}</strong> (Batch: {verifyingMed.batchNumber || "Verified"}) and enter the 6-digit handover code provided by donor <strong>{verifyingMed.seller?.name || "Community Donor"}</strong>:
               </p>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#171717]">
+                <label className="block text-xs font-bold text-ink">
                   6-Digit Handover Code (OTP):
                 </label>
                 <input
@@ -701,22 +701,22 @@ export default function PartnerDashboard() {
                   placeholder="e.g. 548921"
                   value={handoverCodeInput}
                   onChange={(e) => setHandoverCodeInput(e.target.value.replace(/\D/g, ""))}
-                  className="w-full text-center text-2xl font-mono tracking-widest bg-[#f7f7f4] border-2 border-[#0f4c42] rounded-xl py-3 focus:outline-none focus:bg-white transition"
+                  className="w-full text-center text-2xl font-mono tracking-widest bg-canvas border-2 border-brand rounded-xl py-3 focus:outline-none focus:bg-white transition"
                   autoFocus
                 />
               </div>
 
               {verificationError && (
-                <div className="p-3 bg-[#fee2e2] text-[#991b1b] rounded-lg border border-[#fecaca] font-medium">
+                <div className="p-3 bg-danger-tint text-danger rounded-lg border border-[#fecaca] font-medium">
                   {verificationError}
                 </div>
               )}
 
-              <p className="text-[11px] text-[#737373]">
+              <p className="text-[11px] text-ink-subtle">
                 * Security policy enforces maximum 5 attempts before verification lockout.
               </p>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#e4e2dd]">
+              <div className="flex justify-end gap-3 pt-3 border-t border-line">
                 <Button
                   variant="outline"
                   type="button"
@@ -733,7 +733,7 @@ export default function PartnerDashboard() {
                   variant="primary"
                   type="submit"
                   disabled={isVerifyingCode || handoverCodeInput.length < 6}
-                  className="bg-[#0f4c42] hover:bg-[#0a362f]"
+                  className="bg-brand hover:bg-brand-strong"
                 >
                   {isVerifyingCode ? "Verifying..." : "Verify & Complete Handover"}
                 </Button>
@@ -752,13 +752,13 @@ export default function PartnerDashboard() {
             }}
             title="Cancel / Release Donation"
           >
-            <form onSubmit={handleRejectDonation} className="space-y-4 text-xs text-[#262626]">
+            <form onSubmit={handleRejectDonation} className="space-y-4 text-xs text-ink">
               <p>
                 Are you sure you want to release <strong>{rejectingMed.medicineName}</strong> back to the available donations pool?
               </p>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-[#171717]">
+                <label className="block text-xs font-bold text-ink">
                   Reason for Cancellation / Rejection:
                 </label>
                 <textarea
@@ -766,12 +766,12 @@ export default function PartnerDashboard() {
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder="e.g. Damaged packaging upon inspection, donor unreachable, or unable to collect."
-                  className="w-full bg-[#f7f7f4] border border-[#e4e2dd] rounded-lg p-2.5 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                  className="w-full bg-canvas border border-line rounded-lg p-2.5 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                   required
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#e4e2dd]">
+              <div className="flex justify-end gap-3 pt-3 border-t border-line">
                 <Button
                   variant="outline"
                   type="button"
@@ -787,7 +787,7 @@ export default function PartnerDashboard() {
                   variant="primary"
                   type="submit"
                   disabled={isRejecting || !rejectReason.trim()}
-                  className="bg-[#be123c] hover:bg-[#9f1239] text-white"
+                  className="bg-danger hover:bg-danger text-white"
                 >
                   {isRejecting ? "Releasing..." : "Confirm Release"}
                 </Button>

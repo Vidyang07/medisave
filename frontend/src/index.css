@@ -1,115 +1,136 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --color-bg-base: #f7f7f4;
-    --color-bg-subtle: #f2f1ec;
-    --color-bg-card: #ffffff;
-    --color-text-main: #171717;
-    --color-text-muted: #525252;
-    --color-text-subtle: #737373;
-    --color-brand: #0f4c42;
-    --color-brand-hover: #0a362f;
-    --color-brand-light: #166557;
-    --color-brand-tint: #e8f3f1;
-    --color-border: #e4e2dd;
-    --color-border-subtle: #eceae5;
-  }
+/*
+ * MEDISAVE design system
+ * Clinical white surfaces, deep teal accent, restrained status colours.
+ * All components reference these tokens (bg-brand, text-ink, border-line …).
+ */
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* Neutrals */
+  --color-canvas: #f6f8f7;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafbfb;
+  --color-sunken: #eef2f1;
+  --color-line: #e2e8e6;
+  --color-line-soft: #edf1f0;
+  --color-line-strong: #c9d3d0;
+
+  /* Text */
+  --color-ink: #0f1d1a;
+  --color-ink-muted: #46554f;
+  --color-ink-subtle: #6a7873;
+  --color-ink-faint: #98a49f;
+
+  /* Brand — deep clinical teal */
+  --color-brand: #0b5d53;
+  --color-brand-strong: #074840;
+  --color-brand-tint: #e6f2ef;
+  --color-brand-line: #bfdcd5;
+
+  /* Status */
+  --color-success: #15734a;
+  --color-success-tint: #e9f6ef;
+  --color-success-line: #b5e3c9;
+  --color-warning: #a2560a;
+  --color-warning-tint: #fdf4e3;
+  --color-warning-line: #f3d79c;
+  --color-danger: #b4232f;
+  --color-danger-tint: #fdeeee;
+  --color-danger-line: #f5c7ca;
+
+  /* Elevation */
+  --shadow-2xs: 0 1px 1px 0 rgb(15 29 26 / 0.04);
+  --shadow-xs: 0 1px 2px 0 rgb(15 29 26 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(15 29 26 / 0.04), 0 2px 8px -2px rgb(15 29 26 / 0.06);
+  --shadow-md: 0 2px 4px rgb(15 29 26 / 0.04), 0 8px 20px -6px rgb(15 29 26 / 0.08);
+  --shadow-lg: 0 4px 8px rgb(15 29 26 / 0.04), 0 16px 36px -10px rgb(15 29 26 / 0.12);
+}
+
+@layer base {
   html {
     font-family: var(--font-sans);
-    background-color: var(--color-bg-base);
-    color: var(--color-text-main);
+    font-size: 106.25%; /* 17px base — improves readability of dense dashboards */
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    background-color: var(--color-bg-base);
-    color: var(--color-text-main);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     min-height: 100vh;
   }
 
-  /* Accessibility focus rings */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  input, select, textarea {
+    border-radius: 0.625rem;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--color-brand);
+  }
+
   :focus-visible {
-    outline: 2px solid #0f4c42;
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+
+  table { font-variant-numeric: tabular-nums; }
+
+  ::selection {
+    background: var(--color-brand-tint);
+    color: var(--color-brand-strong);
   }
 }
 
-/* Custom Healthcare Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Tables scroll horizontally on small screens instead of breaking layout */
+@utility table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-::-webkit-scrollbar-track {
-  background: #f2f1ec;
+/* Small uppercase section label used above headings */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #d1cfc7;
-  border-radius: 4px;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-sunken); }
+::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-ink-faint); }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a69e;
-}
-
-/* Utilities */
-.bg-med-warm {
-  background-color: #f7f7f4;
-}
-
-.bg-med-subtle {
-  background-color: #f2f1ec;
-}
-
-.border-med {
-  border-color: #e4e2dd;
-}
-
-.border-med-subtle {
-  border-color: #eceae5;
-}
-
-.text-med-main {
-  color: #171717;
-}
-
-.text-med-muted {
-  color: #525252;
-}
-
-.text-med-subtle {
-  color: #737373;
-}
-
-.text-med-brand {
-  color: #0f4c42;
-}
-
-.bg-med-brand {
-  background-color: #0f4c42;
-}
-
-.bg-med-brand:hover {
-  background-color: #0a362f;
-}
-
-.bg-med-brand-tint {
-  background-color: #e8f3f1;
-}
-
-.border-med-brand {
-  border-color: #0f4c42;
-}
-
-.border-med-brand-tint {
-  border-color: #c4ded9;
-}
+/* Legacy helper classes kept for compatibility */
+.bg-med-warm { background-color: var(--color-canvas); }
+.bg-med-subtle { background-color: var(--color-sunken); }
+.border-med { border-color: var(--color-line); }
+.border-med-subtle { border-color: var(--color-line-soft); }
+.text-med-main { color: var(--color-ink); }
+.text-med-muted { color: var(--color-ink-muted); }
+.text-med-subtle { color: var(--color-ink-subtle); }
+.text-med-brand { color: var(--color-brand); }
+.bg-med-brand { background-color: var(--color-brand); }
+.bg-med-brand:hover { background-color: var(--color-brand-strong); }
+.bg-med-brand-tint { background-color: var(--color-brand-tint); }
+.border-med-brand { border-color: var(--color-brand); }
+.border-med-brand-tint { border-color: var(--color-brand-line); }
 
 @media (prefers-reduced-motion: reduce) {
   * {

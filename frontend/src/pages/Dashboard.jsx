@@ -520,35 +520,35 @@ export default function Dashboard() {
   const acceptedListings = listings.filter((l) => l.status === "accepted");
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
+    <div className="min-h-screen bg-canvas py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Navigation */}
         <Breadcrumb items={[{ label: "Member Dashboard", href: "/dashboard" }]} />
 
         {/* Dashboard Header Profile Banner */}
-        <div className="bg-white rounded-2xl border border-[#e4e2dd] p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-left">
+        <div className="bg-white rounded-2xl border border-line p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-left">
           <div className="flex items-center gap-4">
             {currentUser.avatar ? (
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-16 h-16 rounded-2xl object-cover border-2 border-[#e4e2dd] shadow-xs"
+                className="w-16 h-16 rounded-2xl object-cover border-2 border-line shadow-xs"
               />
             ) : (
-              <div className="w-16 h-16 rounded-2xl bg-[#0f4c42] text-white flex items-center justify-center font-extrabold text-2xl shadow-xs">
+              <div className="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center font-extrabold text-2xl shadow-xs">
                 {currentUser.name?.charAt(0).toUpperCase() || "U"}
               </div>
             )}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-[#171717] tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-ink tracking-tight">
                   Welcome, {currentUser.name}
                 </h1>
                 <Badge variant="verified" size="sm">
                   {currentUser.role === "admin" ? "Administrator" : "Verified Member"}
                 </Badge>
               </div>
-              <p className="text-xs text-[#525252]">
+              <p className="text-xs text-ink-muted">
                 {currentUser.email} • {currentUser.address?.split(",")[0] || "Pune, MH"}
               </p>
             </div>
@@ -560,9 +560,9 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="md"
-                  className="w-full bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100 font-bold shadow-xs"
+                  className="w-full bg-warning-tint border-warning-line text-warning hover:bg-warning-tint font-bold shadow-xs"
                 >
-                  <ShieldCheckIcon className="w-4 h-4 text-amber-700" />
+                  <ShieldCheckIcon className="w-4 h-4 text-warning" />
                   Admin Console
                 </Button>
               </Link>
@@ -573,7 +573,7 @@ export default function Dashboard() {
               onClick={() => setIsUploadRxModalOpen(true)}
               className="flex-1 sm:flex-none"
             >
-              <UploadIcon className="w-4 h-4 text-[#0f4c42]" />
+              <UploadIcon className="w-4 h-4 text-brand" />
               Upload Prescription
             </Button>
             <Link to="/sell" className="flex-1 sm:flex-none">
@@ -587,53 +587,53 @@ export default function Dashboard() {
 
         {/* 4 Metric Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left">
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Cabinet Tracker</span>
-              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-brand-tint text-brand flex items-center justify-center">
                 <PackageIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">{cabinetItems.length}</div>
-            <span className="text-[11px] text-[#0f4c42] font-medium">
+            <div className="text-2xl font-black text-ink">{cabinetItems.length}</div>
+            <span className="text-[11px] text-brand font-medium">
               Household medicines logged
             </span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Active Donations</span>
-              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-brand-tint text-brand flex items-center justify-center">
                 <ShieldCheckIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">{activeCount}</div>
-            <span className="text-[11px] text-[#0f4c42] font-medium">
+            <div className="text-2xl font-black text-ink">{activeCount}</div>
+            <span className="text-[11px] text-brand font-medium">
               Approved for redistribution
             </span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Pending Review</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-warning-tint text-warning flex items-center justify-center">
                 <ClockIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">{pendingCount}</div>
-            <span className="text-[11px] text-amber-800 font-medium">
+            <div className="text-2xl font-black text-ink">{pendingCount}</div>
+            <span className="text-[11px] text-warning font-medium">
               Under coordinator inspection
             </span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Prescriptions</span>
               <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-800 flex items-center justify-center">
                 <FileTextIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">{prescriptions.length}</div>
+            <div className="text-2xl font-black text-ink">{prescriptions.length}</div>
             <span className="text-[11px] text-purple-800 font-medium">
               {prescriptions.filter((p) => p.status === "approved").length} approved records
             </span>
@@ -641,15 +641,15 @@ export default function Dashboard() {
         </div>
 
         {/* Tabbed Activity Center */}
-        <div className="bg-white rounded-2xl border border-[#e4e2dd] shadow-xs overflow-hidden text-left">
+        <div className="bg-white rounded-2xl border border-line shadow-xs overflow-hidden text-left">
           {/* Tabs Bar */}
-          <div className="flex border-b border-[#e4e2dd] px-6 overflow-x-auto bg-[#fafaf7]">
+          <div className="flex border-b border-line px-6 overflow-x-auto bg-surface-alt">
             <button
               onClick={() => setActiveTab("cabinet")}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "cabinet"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               💊 My Medicine Cabinet ({cabinetItems.length})
@@ -658,8 +658,8 @@ export default function Dashboard() {
               onClick={() => setActiveTab("listings")}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "listings"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               Donation Listings ({listings.length})
@@ -668,8 +668,8 @@ export default function Dashboard() {
               onClick={() => setActiveTab("prescriptions")}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "prescriptions"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               Prescriptions ({prescriptions.length})
@@ -680,17 +680,17 @@ export default function Dashboard() {
           {activeTab === "cabinet" && (
             <div className="p-6 space-y-6">
               {/* Header & Controls */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#fafaf7] p-5 rounded-2xl border border-[#e4e2dd]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-alt p-5 rounded-2xl border border-line">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base sm:text-lg font-bold text-[#171717]">
+                    <h2 className="text-base sm:text-lg font-bold text-ink">
                       Household Medicine Cabinet Tracker
                     </h2>
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#e8f3f1] text-[#0f4c42]">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-tint text-brand">
                       {cabinetItems.length} Logged
                     </span>
                   </div>
-                  <p className="text-xs text-[#525252] mt-1 max-w-2xl leading-relaxed">
+                  <p className="text-xs text-ink-muted mt-1 max-w-2xl leading-relaxed">
                     Keep track of unused household medicines. Items with ≥3 months remaining are eligible for verified community donation. Expired or unsealed medicines route to safe household disposal.
                   </p>
                 </div>
@@ -699,7 +699,7 @@ export default function Dashboard() {
                   variant="primary"
                   size="md"
                   onClick={() => setIsAddCabinetModalOpen(true)}
-                  className="shrink-0 bg-[#0f4c42] hover:bg-[#0a362f]"
+                  className="shrink-0 bg-brand hover:bg-brand-strong"
                 >
                   <PlusIcon className="w-4 h-4" />
                   Add Medicine to Cabinet
@@ -708,25 +708,25 @@ export default function Dashboard() {
 
               {/* Status Color Key / Legend */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 rounded-xl border border-[#bbf7d0] bg-[#f0fdf4] text-[#166534] flex items-center gap-2.5">
+                <div className="p-3 rounded-xl border border-success-line bg-success-tint text-[#166534] flex items-center gap-2.5">
                   <div className="w-3 h-3 rounded-full bg-[#16a34a] shrink-0"></div>
                   <div>
                     <strong className="block font-bold">GREEN: &gt;6 Months Shelf Life</strong>
-                    <span className="text-[11px] text-[#15803d]">Healthy stock · Eligible for donation</span>
+                    <span className="text-[11px] text-success">Healthy stock · Eligible for donation</span>
                   </div>
                 </div>
-                <div className="p-3 rounded-xl border border-[#fde68a] bg-[#fffbeb] text-[#92400e] flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-full bg-[#d97706] shrink-0"></div>
+                <div className="p-3 rounded-xl border border-warning-line bg-warning-tint text-warning flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full bg-warning shrink-0"></div>
                   <div>
                     <strong className="block font-bold">AMBER: 3–6 Months Shelf Life</strong>
-                    <span className="text-[11px] text-[#b45309]">Expiring Soon · Action Recommended</span>
+                    <span className="text-[11px] text-warning">Expiring Soon · Action Recommended</span>
                   </div>
                 </div>
-                <div className="p-3 rounded-xl border border-[#fecdd3] bg-[#fff1f2] text-[#9f1239] flex items-center gap-2.5">
+                <div className="p-3 rounded-xl border border-danger-line bg-danger-tint text-danger flex items-center gap-2.5">
                   <div className="w-3 h-3 rounded-full bg-[#e11d48] shrink-0"></div>
                   <div>
                     <strong className="block font-bold">RED: &lt;3 Months or Expired</strong>
-                    <span className="text-[11px] text-[#be123c]">Ineligible · Follow Safe Disposal</span>
+                    <span className="text-[11px] text-danger">Ineligible · Follow Safe Disposal</span>
                   </div>
                 </div>
               </div>
@@ -749,10 +749,10 @@ export default function Dashboard() {
                         key={item.id}
                         className={`p-4 rounded-xl border-2 transition flex flex-col justify-between shadow-2xs ${
                           status.color === "green"
-                            ? "border-[#bbf7d0] bg-[#f0fdf4]/60"
+                            ? "border-success-line bg-success-tint/60"
                             : status.color === "amber"
-                            ? "border-[#fde68a] bg-[#fffbeb]/60"
-                            : "border-[#fecdd3] bg-[#fff1f2]/60"
+                            ? "border-warning-line bg-warning-tint/60"
+                            : "border-danger-line bg-danger-tint/60"
                         }`}
                       >
                         <div className="space-y-2">
@@ -760,51 +760,51 @@ export default function Dashboard() {
                             <span
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                                 status.color === "green"
-                                  ? "bg-[#dcfce7] text-[#15803d]"
+                                  ? "bg-success-tint text-success"
                                   : status.color === "amber"
-                                  ? "bg-[#fef3c7] text-[#92400e]"
-                                  : "bg-[#ffe4e6] text-[#9f1239]"
+                                  ? "bg-warning-tint text-warning"
+                                  : "bg-danger-tint text-danger"
                               }`}
                             >
                               {status.label}
                             </span>
                             <button
                               onClick={() => handleDeleteCabinetItem(item.id, item.name)}
-                              className="text-[#a3a3a3] hover:text-[#e11d48] transition p-1"
+                              className="text-ink-faint hover:text-[#e11d48] transition p-1"
                               title="Remove from cabinet"
                             >
                               <TrashIcon className="w-3.5 h-3.5" />
                             </button>
                           </div>
 
-                          <h3 className="text-sm font-bold text-[#171717]">{item.name}</h3>
+                          <h3 className="text-sm font-bold text-ink">{item.name}</h3>
 
-                          <div className="text-xs text-[#525252] space-y-0.5">
+                          <div className="text-xs text-ink-muted space-y-0.5">
                             <div>
-                              <span className="font-semibold text-[#171717]">Quantity:</span> {item.quantity} {item.unit || "units"} ({item.form || "Tablet"})
+                              <span className="font-semibold text-ink">Quantity:</span> {item.quantity} {item.unit || "units"} ({item.form || "Tablet"})
                             </div>
                             <div>
-                              <span className="font-semibold text-[#171717]">Category:</span> {item.category || "General Health"}
+                              <span className="font-semibold text-ink">Category:</span> {item.category || "General Health"}
                             </div>
                             <div className="font-mono text-[11px] pt-1">
-                              <span className="font-semibold text-[#171717]">Expiry:</span> {item.expiryDate}
+                              <span className="font-semibold text-ink">Expiry:</span> {item.expiryDate}
                             </div>
                           </div>
                         </div>
 
                         {/* Action CTA */}
-                        <div className="pt-3 mt-3 border-t border-[#e4e2dd]">
+                        <div className="pt-3 mt-3 border-t border-line">
                           {status.eligible ? (
                             <Link
                               to={`/sell?name=${encodeURIComponent(item.name)}&quantity=${item.quantity}&category=${encodeURIComponent(item.category || "General Health")}&form=${encodeURIComponent(item.form || "Tablet")}`}
-                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#0f4c42] hover:bg-[#0a362f] text-white text-xs font-bold rounded-lg transition shadow-2xs"
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-brand hover:bg-brand-strong text-white text-xs font-bold rounded-lg transition shadow-2xs"
                             >
                               <span>🎁 Donate This</span>
                             </Link>
                           ) : (
                             <Link
                               to="/disposal-guide"
-                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#e11d48] hover:bg-[#be123c] text-white text-xs font-bold rounded-lg transition shadow-2xs"
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#e11d48] hover:bg-danger text-white text-xs font-bold rounded-lg transition shadow-2xs"
                             >
                               <span>♻️ Safe Disposal Guide</span>
                             </Link>
@@ -824,18 +824,18 @@ export default function Dashboard() {
               {/* Active Accepted Handovers Banner for Donor */}
               {acceptedListings.length > 0 && (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#065f46] uppercase tracking-wider">
-                    <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                  <div className="flex items-center gap-2 text-xs font-bold text-success uppercase tracking-wider">
+                    <ShieldCheckIcon className="w-4 h-4 text-brand" />
                     <span>Action Required: Physical Medicine Handover</span>
                   </div>
 
                   {acceptedListings.map((accItem) => (
                     <div
                       key={accItem._id || accItem.id}
-                      className="bg-[#ecfdf5] border-2 border-[#a7f3d0] rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5"
+                      className="bg-success-tint border-2 border-success-line rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5"
                     >
                       <div className="space-y-1.5">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#d1fae5] text-[#065f46]">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-success-tint text-success">
                           🤝 Accepted by {accItem.acceptedBy?.organizationName || accItem.acceptedBy?.name || "Verified Partner Organization"}
                         </div>
                         <h3 className="text-base font-bold text-[#064e3b]">
@@ -846,14 +846,14 @@ export default function Dashboard() {
                         </p>
                       </div>
 
-                      <div className="bg-white p-3.5 rounded-xl border border-[#a7f3d0] text-center shadow-xs shrink-0 space-y-1">
-                        <span className="text-[10px] font-bold text-[#065f46] uppercase tracking-wider block">
+                      <div className="bg-white p-3.5 rounded-xl border border-success-line text-center shadow-xs shrink-0 space-y-1">
+                        <span className="text-[10px] font-bold text-success uppercase tracking-wider block">
                           6-Digit Handover Code
                         </span>
-                        <div className="text-2xl font-mono font-black text-[#0f4c42] tracking-widest px-3 py-0.5 bg-[#f0fdf4] rounded-lg border border-[#bbf7d0]">
+                        <div className="text-2xl font-mono font-black text-brand tracking-widest px-3 py-0.5 bg-success-tint rounded-lg border border-success-line">
                           {accItem.handoverCode || "Pending"}
                         </div>
-                        <span className="text-[10px] text-[#737373] block">
+                        <span className="text-[10px] text-ink-subtle block">
                           Give to partner representative
                         </span>
                       </div>
@@ -877,8 +877,8 @@ export default function Dashboard() {
                     onClick={() => setListingFilter(f.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                       listingFilter === f.id
-                        ? "bg-[#0f4c42] text-white"
-                        : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                        ? "bg-brand text-white"
+                        : "bg-surface-alt text-ink-muted border border-line hover:bg-canvas"
                     }`}
                   >
                     {f.label}
@@ -888,12 +888,12 @@ export default function Dashboard() {
 
               {isLoadingListings ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : filteredListings.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Medicine Name</th>
                         <th className="py-3 px-4 font-bold">Category</th>
@@ -903,7 +903,7 @@ export default function Dashboard() {
                         <th className="py-3 px-4 font-bold text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {filteredListings.map((item) => {
                         const medId = item._id || item.id;
                         const title = item.brandName || item.medicineName || item.name;
@@ -912,10 +912,10 @@ export default function Dashboard() {
                           (item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : "-");
 
                         return (
-                          <tr key={medId} className="hover:bg-[#fafaf7] transition">
-                            <td className="py-4 px-4 font-semibold text-[#171717]">
+                          <tr key={medId} className="hover:bg-surface-alt transition">
+                            <td className="py-4 px-4 font-semibold text-ink">
                               <div>{title}</div>
-                              <div className="text-xs text-[#737373] font-normal">
+                              <div className="text-xs text-ink-subtle font-normal">
                                 {item.company} {item.strength ? `(${item.strength})` : ""} · {item.quantity} {item.unit || "units"}
                               </div>
                               {item.isPrescriptionRequired && (
@@ -924,9 +924,9 @@ export default function Dashboard() {
                                 </span>
                               )}
                             </td>
-                            <td className="py-4 px-4 text-xs text-[#525252]">{item.category}</td>
+                            <td className="py-4 px-4 text-xs text-ink-muted">{item.category}</td>
                             <td className="py-4 px-4">
-                              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] border border-[#a7f3d0]">
+                              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-success-tint text-success border border-success-line">
                                 🎁 Free Donation
                               </span>
                             </td>
@@ -939,11 +939,11 @@ export default function Dashboard() {
                               )}
                               {item.status === "accepted" && (
                                 <div className="space-y-1">
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-warning-tint text-warning border border-warning-line">
                                     🤝 Accepted by Partner
                                   </span>
                                   {item.handoverCode && (
-                                    <div className="text-[11px] font-mono font-bold text-[#0f4c42]">
+                                    <div className="text-[11px] font-mono font-bold text-brand">
                                       Code: <span className="underline">{item.handoverCode}</span>
                                     </div>
                                   )}
@@ -965,7 +965,7 @@ export default function Dashboard() {
                                     Rejected
                                   </Badge>
                                   {item.rejectionReason && (
-                                    <p className="text-[10px] text-rose-600 mt-0.5 max-w-xs">
+                                    <p className="text-[10px] text-danger mt-0.5 max-w-xs">
                                       {item.rejectionReason}
                                     </p>
                                   )}
@@ -981,7 +981,7 @@ export default function Dashboard() {
                               <div className="flex items-center justify-end gap-3">
                                 <Link
                                   to={`/medicine/${medId}`}
-                                  className="text-xs font-semibold text-[#0f4c42] hover:underline cursor-pointer"
+                                  className="text-xs font-semibold text-brand hover:underline cursor-pointer"
                                 >
                                   View
                                 </Link>
@@ -989,7 +989,7 @@ export default function Dashboard() {
                                   <button
                                     onClick={() => handleDeleteListing(medId, title)}
                                     disabled={deletingId === medId}
-                                    className="text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer disabled:opacity-50"
+                                    className="text-xs font-semibold text-danger hover:text-danger transition cursor-pointer disabled:opacity-50"
                                     title="Delete listing"
                                   >
                                     <TrashIcon className="w-3.5 h-3.5" />
@@ -1019,12 +1019,12 @@ export default function Dashboard() {
             <div className="p-6">
               {isLoadingSellerOrders ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : sellerOrders.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Order Ref</th>
                         <th className="py-3 px-4 font-bold">Recipient Details</th>
@@ -1035,7 +1035,7 @@ export default function Dashboard() {
                         <th className="py-3 px-4 font-bold text-right">Fulfillment Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {sellerOrders.map((order) => {
                         const orderId = order._id;
                         const orderNum =
@@ -1061,35 +1061,35 @@ export default function Dashboard() {
                           return (
                             <tr
                               key={`${orderId}-${itemId}-${itemIdx}`}
-                              className="hover:bg-[#fafaf7] transition"
+                              className="hover:bg-surface-alt transition"
                             >
-                              <td className="py-4 px-4 font-mono font-bold text-[#171717]">
+                              <td className="py-4 px-4 font-mono font-bold text-ink">
                                 <div>{orderNum}</div>
-                                <span className="text-[11px] text-[#737373] font-sans font-normal">
+                                <span className="text-[11px] text-ink-subtle font-sans font-normal">
                                   {order.paymentMethod || "Physical Handover"}
                                 </span>
                               </td>
 
-                              <td className="py-4 px-4 text-[#171717]">
+                              <td className="py-4 px-4 text-ink">
                                 <div className="font-semibold">{buyerName}</div>
-                                <div className="text-[11px] text-[#737373]">
+                                <div className="text-[11px] text-ink-subtle">
                                   {buyerContact ? `${buyerContact} • ` : ""}
                                   {buyerCity}
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 font-semibold text-[#171717]">
+                              <td className="py-4 px-4 font-semibold text-ink">
                                 <div>{medTitle}</div>
-                                <div className="text-[11px] text-[#737373] font-normal">
+                                <div className="text-[11px] text-ink-subtle font-normal">
                                   {item.company} {item.strength ? `(${item.strength})` : ""}
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 font-mono text-[#171717]">
+                              <td className="py-4 px-4 font-mono text-ink">
                                 × {item.quantity}
                               </td>
 
-                              <td className="py-4 px-4 font-bold text-[#0f4c42] font-mono">
+                              <td className="py-4 px-4 font-bold text-brand font-mono">
                                 ₹{itemTotalAmount}
                               </td>
 
@@ -1161,7 +1161,7 @@ export default function Dashboard() {
                                           )
                                         }
                                         disabled={isUpdating}
-                                        className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
+                                        className="text-danger hover:bg-danger-tint border-danger-line text-xs"
                                       >
                                         Decline
                                       </Button>
@@ -1182,7 +1182,7 @@ export default function Dashboard() {
                                           )
                                         }
                                         disabled={isUpdating}
-                                        className="text-xs font-semibold bg-amber-700 hover:bg-amber-800"
+                                        className="text-xs font-semibold bg-warning hover:bg-warning"
                                       >
                                         {isUpdating ? "Updating..." : "Start Packaging"}
                                       </Button>
@@ -1198,7 +1198,7 @@ export default function Dashboard() {
                                           )
                                         }
                                         disabled={isUpdating}
-                                        className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
+                                        className="text-danger hover:bg-danger-tint border-danger-line text-xs"
                                       >
                                         Cancel
                                       </Button>
@@ -1235,7 +1235,7 @@ export default function Dashboard() {
                                           )
                                         }
                                         disabled={isUpdating}
-                                        className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
+                                        className="text-danger hover:bg-danger-tint border-danger-line text-xs"
                                       >
                                         Cancel
                                       </Button>
@@ -1255,20 +1255,20 @@ export default function Dashboard() {
                                         )
                                       }
                                       disabled={isUpdating}
-                                      className="text-xs font-semibold bg-emerald-700 hover:bg-emerald-800"
+                                      className="text-xs font-semibold bg-success hover:bg-success"
                                     >
                                       {isUpdating ? "Updating..." : "Mark Delivered"}
                                     </Button>
                                   )}
 
                                   {itemStatus === "delivered" && (
-                                    <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1 justify-end">
+                                    <span className="text-xs font-semibold text-success flex items-center gap-1 justify-end">
                                       <CheckIcon className="w-3.5 h-3.5" /> Fulfilled
                                     </span>
                                   )}
 
                                   {itemStatus === "cancelled" && (
-                                    <span className="text-xs text-[#737373] italic">Cancelled</span>
+                                    <span className="text-xs text-ink-subtle italic">Cancelled</span>
                                   )}
                                 </div>
                               </td>
@@ -1293,7 +1293,7 @@ export default function Dashboard() {
             <div className="p-6">
               {isLoadingOrders ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : orders.length > 0 ? (
                 <div className="space-y-4">
@@ -1322,14 +1322,14 @@ export default function Dashboard() {
                     return (
                       <div
                         key={orderId}
-                        className="p-5 rounded-xl border border-[#e4e2dd] bg-[#fafaf7] space-y-4"
+                        className="p-5 rounded-xl border border-line bg-surface-alt space-y-4"
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#e4e2dd]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-line">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-[#171717] text-sm">
+                            <span className="font-mono font-bold text-ink text-sm">
                               {orderNum}
                             </span>
-                            <span className="text-xs text-[#737373]">• Placed on {orderDate}</span>
+                            <span className="text-xs text-ink-subtle">• Placed on {orderDate}</span>
                           </div>
                           <div>
                             {order.status === "confirmed" && (
@@ -1371,17 +1371,17 @@ export default function Dashboard() {
 
                         {/* Order Lifecycle Progress Bar: Realistic Community Handover Model */}
                         {!isCancelled && (
-                          <div className="py-2.5 px-3 bg-white rounded-lg border border-[#e4e2dd] space-y-2">
-                            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-[#737373] tracking-tight">
-                              <span className={currentIdx >= 0 ? "text-[#0f4c42]" : ""}>1. ORDER PLACED</span>
-                              <span className={currentIdx >= 1 ? "text-[#0f4c42]" : ""}>2. DONOR CONFIRMS</span>
-                              <span className={currentIdx >= 2 ? "text-[#0f4c42]" : ""}>3. READY FOR HANDOVER</span>
-                              <span className={currentIdx >= 3 ? "text-[#0f4c42]" : ""}>4. DONOR + RECIPIENT COORDINATE</span>
-                              <span className={currentIdx >= 4 ? "text-emerald-700" : ""}>5. HANDOVER COMPLETED</span>
+                          <div className="py-2.5 px-3 bg-white rounded-lg border border-line space-y-2">
+                            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-ink-subtle tracking-tight">
+                              <span className={currentIdx >= 0 ? "text-brand" : ""}>1. ORDER PLACED</span>
+                              <span className={currentIdx >= 1 ? "text-brand" : ""}>2. DONOR CONFIRMS</span>
+                              <span className={currentIdx >= 2 ? "text-brand" : ""}>3. READY FOR HANDOVER</span>
+                              <span className={currentIdx >= 3 ? "text-brand" : ""}>4. DONOR + RECIPIENT COORDINATE</span>
+                              <span className={currentIdx >= 4 ? "text-success" : ""}>5. HANDOVER COMPLETED</span>
                             </div>
-                            <div className="w-full bg-[#e4e2dd] h-2 rounded-full overflow-hidden flex">
+                            <div className="w-full bg-line h-2 rounded-full overflow-hidden flex">
                               <div
-                                className="bg-[#0f4c42] h-full transition-all duration-300"
+                                className="bg-brand h-full transition-all duration-300"
                                 style={{
                                   width: `${
                                     currentIdx === -1
@@ -1391,7 +1391,7 @@ export default function Dashboard() {
                                 }}
                               />
                             </div>
-                            <p className="text-[10px] text-[#737373] italic">
+                            <p className="text-[10px] text-ink-subtle italic">
                               Handover method: Community pickup / mutually agreed location
                             </p>
                           </div>
@@ -1401,31 +1401,31 @@ export default function Dashboard() {
                           {order.items?.map((it, idx) => (
                             <div
                               key={idx}
-                              className="flex justify-between items-center text-[#525252]"
+                              className="flex justify-between items-center text-ink-muted"
                             >
                               <div>
-                                <span className="font-medium text-[#171717]">
+                                <span className="font-medium text-ink">
                                   {it.brandName || it.medicineName}
                                 </span>
                                 {it.strength && (
-                                  <span className="text-[#737373] ml-1.5 font-mono text-[11px]">
+                                  <span className="text-ink-subtle ml-1.5 font-mono text-[11px]">
                                     ({it.strength})
                                   </span>
                                 )}
-                                <span className="text-[#525252] ml-2">× {it.quantity}</span>
+                                <span className="text-ink-muted ml-2">× {it.quantity}</span>
                               </div>
-                              <span className="font-semibold text-[#171717] font-mono">
+                              <span className="font-semibold text-ink font-mono">
                                 ₹{it.price * it.quantity}
                               </span>
                             </div>
                           ))}
                         </div>
 
-                        <div className="pt-3 border-t border-[#e4e2dd] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
-                          <div className="space-y-0.5 text-[#525252]">
+                        <div className="pt-3 border-t border-line flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
+                          <div className="space-y-0.5 text-ink-muted">
                             <div>
                               Handover Location:{" "}
-                              <strong className="text-[#171717]">
+                              <strong className="text-ink">
                                 {order.shippingAddress?.address}, {order.shippingAddress?.city}
                               </strong>
                             </div>
@@ -1435,7 +1435,7 @@ export default function Dashboard() {
                           </div>
 
                           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                            <span className="text-sm font-bold text-[#0f4c42] font-mono">
+                            <span className="text-sm font-bold text-brand font-mono">
                               Total: ₹{order.totalAmount}
                             </span>
                             {isCancellable && (
@@ -1444,7 +1444,7 @@ export default function Dashboard() {
                                 size="sm"
                                 onClick={() => handleCancelOrder(orderId, orderNum)}
                                 disabled={cancellingOrderId === orderId}
-                                className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
+                                className="text-danger hover:bg-danger-tint border-danger-line text-xs"
                               >
                                 {cancellingOrderId === orderId ? "Cancelling..." : "Cancel Order"}
                               </Button>
@@ -1471,10 +1471,10 @@ export default function Dashboard() {
             <div className="p-6 space-y-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
                 <div>
-                  <h2 className="text-base font-bold text-[#171717]">
+                  <h2 className="text-base font-bold text-ink">
                     My Uploaded Prescriptions
                   </h2>
-                  <p className="text-xs text-[#737373]">
+                  <p className="text-xs text-ink-subtle">
                     Prescriptions verified by coordinators can be used to request Schedule H and Rx
                     medications during redistribution.
                   </p>
@@ -1492,12 +1492,12 @@ export default function Dashboard() {
 
               {isLoadingPrescriptions ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : prescriptions.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Patient Name</th>
                         <th className="py-3 px-4 font-bold">Doctor & Reg No</th>
@@ -1507,7 +1507,7 @@ export default function Dashboard() {
                         <th className="py-3 px-4 font-bold text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {prescriptions.map((rx) => {
                         const rxId = rx._id || rx.id;
                         const uploadDate = rx.createdAt
@@ -1519,29 +1519,29 @@ export default function Dashboard() {
                           new Date(rx.validUntil) <= new Date();
 
                         return (
-                          <tr key={rxId} className="hover:bg-[#fafaf7] transition">
-                            <td className="py-4 px-4 font-semibold text-[#171717]">
+                          <tr key={rxId} className="hover:bg-surface-alt transition">
+                            <td className="py-4 px-4 font-semibold text-ink">
                               {rx.patientName}
                             </td>
 
-                            <td className="py-4 px-4 text-[#525252]">
+                            <td className="py-4 px-4 text-ink-muted">
                               <div>{rx.doctorName || "Not specified"}</div>
                               {rx.doctorRegistrationNumber && (
-                                <span className="text-[11px] text-[#737373] font-mono">
+                                <span className="text-[11px] text-ink-subtle font-mono">
                                   Reg: {rx.doctorRegistrationNumber}
                                 </span>
                               )}
                             </td>
 
-                            <td className="py-4 px-4 text-xs text-[#525252] max-w-xs truncate">
+                            <td className="py-4 px-4 text-xs text-ink-muted max-w-xs truncate">
                               {rx.prescribedSalts || "-"}
                             </td>
 
-                            <td className="py-4 px-4 text-xs text-[#737373]">
+                            <td className="py-4 px-4 text-xs text-ink-subtle">
                               <div className="font-mono truncate max-w-[150px]">
                                 {rx.documentOriginalName || "document.pdf"}
                               </div>
-                              <span className="text-[11px] text-[#737373]">{uploadDate}</span>
+                              <span className="text-[11px] text-ink-subtle">{uploadDate}</span>
                             </td>
 
                             <td className="py-4 px-4">
@@ -1555,7 +1555,7 @@ export default function Dashboard() {
                                     Approved
                                   </Badge>
                                   {rx.validUntil && (
-                                    <span className="block text-[10px] text-[#737373] mt-0.5">
+                                    <span className="block text-[10px] text-ink-subtle mt-0.5">
                                       Valid until {new Date(rx.validUntil).toLocaleDateString()}
                                     </span>
                                   )}
@@ -1566,7 +1566,7 @@ export default function Dashboard() {
                                     Rejected
                                   </Badge>
                                   {rx.rejectionReason && (
-                                    <p className="text-[10px] text-rose-600 mt-0.5 line-clamp-1">
+                                    <p className="text-[10px] text-danger mt-0.5 line-clamp-1">
                                       {rx.rejectionReason}
                                     </p>
                                   )}
@@ -1614,14 +1614,14 @@ export default function Dashboard() {
         title="Upload Doctor Prescription"
       >
         <form onSubmit={handleUploadRxSubmit} className="space-y-4 text-left">
-          <p className="text-xs text-[#525252] leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             Upload an authentic doctor prescription. Community coordinators will inspect patient
             name, registration credentials, and prescribed medications for verification.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
-              Patient Full Name <span className="text-rose-600">*</span>
+            <label className="block text-xs font-semibold text-ink mb-1">
+              Patient Full Name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -1631,13 +1631,13 @@ export default function Dashboard() {
                 setRxFormData({ ...rxFormData, patientName: e.target.value })
               }
               placeholder="e.g. Rahul Patil"
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#171717] mb-1">
+              <label className="block text-xs font-semibold text-ink mb-1">
                 Prescribing Doctor Name
               </label>
               <input
@@ -1647,12 +1647,12 @@ export default function Dashboard() {
                   setRxFormData({ ...rxFormData, doctorName: e.target.value })
                 }
                 placeholder="e.g. Dr. K. Deshmukh"
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#171717] mb-1">
+              <label className="block text-xs font-semibold text-ink mb-1">
                 Doctor Registration No.
               </label>
               <input
@@ -1665,13 +1665,13 @@ export default function Dashboard() {
                   })
                 }
                 placeholder="e.g. MMC-2018-0943"
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] font-mono focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink font-mono focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               Prescribed Generic Salts / Medications
             </label>
             <input
@@ -1681,24 +1681,24 @@ export default function Dashboard() {
                 setRxFormData({ ...rxFormData, prescribedSalts: e.target.value })
               }
               placeholder="e.g. Metformin 500mg, Atorvastatin 10mg"
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
-              Prescription Document File (PDF, JPG, PNG up to 5 MB) <span className="text-rose-600">*</span>
+            <label className="block text-xs font-semibold text-ink mb-1">
+              Prescription Document File (PDF, JPG, PNG up to 5 MB) <span className="text-danger">*</span>
             </label>
             <input
               type="file"
               required
               accept=".pdf,.jpg,.jpeg,.png,image/*,application/pdf"
               onChange={(e) => setRxFile(e.target.files[0] || null)}
-              className="w-full text-xs text-[#525252] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#e8f3f1] file:text-[#0f4c42] hover:file:bg-[#c4ded9] cursor-pointer"
+              className="w-full text-xs text-ink-muted file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-tint file:text-brand hover:file:bg-brand-line cursor-pointer"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#e4e2dd]">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-line">
             <Button
               variant="outline"
               size="md"
@@ -1732,14 +1732,14 @@ export default function Dashboard() {
         title={`Prescription: ${previewRx?.patientName || "Document"}`}
       >
         <div className="space-y-4 text-left">
-          <div className="p-3 bg-[#fafaf7] border border-[#e4e2dd] rounded-xl text-xs grid grid-cols-2 gap-2">
+          <div className="p-3 bg-surface-alt border border-line rounded-xl text-xs grid grid-cols-2 gap-2">
             <div>
-              <span className="text-[#737373] block">Patient Name</span>
-              <strong className="text-[#171717]">{previewRx?.patientName}</strong>
+              <span className="text-ink-subtle block">Patient Name</span>
+              <strong className="text-ink">{previewRx?.patientName}</strong>
             </div>
             <div>
-              <span className="text-[#737373] block">Doctor & Reg</span>
-              <strong className="text-[#171717]">
+              <span className="text-ink-subtle block">Doctor & Reg</span>
+              <strong className="text-ink">
                 {previewRx?.doctorName || "Not specified"}{" "}
                 {previewRx?.doctorRegistrationNumber
                   ? `(${previewRx.doctorRegistrationNumber})`
@@ -1748,17 +1748,17 @@ export default function Dashboard() {
             </div>
             {previewRx?.prescribedSalts && (
               <div className="col-span-2">
-                <span className="text-[#737373] block">Prescribed Salts</span>
-                <span className="text-[#171717] font-medium">{previewRx.prescribedSalts}</span>
+                <span className="text-ink-subtle block">Prescribed Salts</span>
+                <span className="text-ink font-medium">{previewRx.prescribedSalts}</span>
               </div>
             )}
           </div>
 
-          <div className="border border-[#e4e2dd] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[350px] max-h-[480px]">
+          <div className="border border-line rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[350px] max-h-[480px]">
             {isLoadingDoc ? (
               <div className="py-16 flex flex-col items-center gap-2">
-                <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-xs text-[#737373]">Loading secure document...</span>
+                <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-xs text-ink-subtle">Loading secure document...</span>
               </div>
             ) : previewBlobUrl ? (
               previewRx?.documentMimeType?.includes("pdf") ? (
@@ -1775,7 +1775,7 @@ export default function Dashboard() {
                 />
               )
             ) : (
-              <div className="p-8 text-center text-[#737373] text-xs">
+              <div className="p-8 text-center text-ink-subtle text-xs">
                 Unable to preview document.
               </div>
             )}
@@ -1787,7 +1787,7 @@ export default function Dashboard() {
                 href={previewBlobUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs font-semibold text-[#0f4c42] hover:underline"
+                className="text-xs font-semibold text-brand hover:underline"
               >
                 Open in Fullscreen / New Window
               </a>
@@ -1817,7 +1817,7 @@ export default function Dashboard() {
       >
         <form onSubmit={handleAddCabinetSubmit} className="space-y-4 text-left">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
               Medicine Brand / Name *
             </label>
             <input
@@ -1826,13 +1826,13 @@ export default function Dashboard() {
               placeholder="e.g. Paracetamol 650mg, Dolo 650, Azithromycin 500mg"
               value={cabinetFormData.name}
               onChange={(e) => setCabinetFormData({ ...cabinetFormData, name: e.target.value })}
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line rounded-lg px-3 py-2 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
                 Quantity *
               </label>
               <input
@@ -1841,18 +1841,18 @@ export default function Dashboard() {
                 required
                 value={cabinetFormData.quantity}
                 onChange={(e) => setCabinetFormData({ ...cabinetFormData, quantity: e.target.value })}
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3 py-2 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
                 Unit
               </label>
               <select
                 value={cabinetFormData.unit}
                 onChange={(e) => setCabinetFormData({ ...cabinetFormData, unit: e.target.value })}
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3 py-2 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <option value="tablets">Tablets</option>
                 <option value="capsules">Capsules</option>
@@ -1865,7 +1865,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
                 Expiry Date *
               </label>
               <input
@@ -1873,18 +1873,18 @@ export default function Dashboard() {
                 required
                 value={cabinetFormData.expiryDate}
                 onChange={(e) => setCabinetFormData({ ...cabinetFormData, expiryDate: e.target.value })}
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3 py-2 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1">
                 Category
               </label>
               <select
                 value={cabinetFormData.category}
                 onChange={(e) => setCabinetFormData({ ...cabinetFormData, category: e.target.value })}
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3 py-2 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <option value="General Health">General Health</option>
                 <option value="Pain & Fever">Pain & Fever</option>
@@ -1897,7 +1897,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#e4e2dd] flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-line flex items-center justify-end gap-2">
             <Button
               type="button"
               variant="outline"
@@ -1910,7 +1910,7 @@ export default function Dashboard() {
               type="submit"
               variant="primary"
               size="md"
-              className="bg-[#0f4c42] hover:bg-[#0a362f]"
+              className="bg-brand hover:bg-brand-strong"
             >
               Save to Cabinet
             </Button>

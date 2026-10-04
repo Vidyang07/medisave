@@ -271,44 +271,44 @@ export default function SellMedicine() {
 
   if (isSubmittedSuccess) {
     return (
-      <div className="min-h-[75vh] bg-[#f7f7f4] flex items-center justify-center px-4 py-16">
-        <div className="bg-white rounded-2xl border border-[#e4e2dd] p-8 sm:p-10 max-w-lg w-full text-center shadow-sm space-y-6">
-          <div className="w-16 h-16 bg-[#e8f3f1] text-[#0f4c42] rounded-full flex items-center justify-center mx-auto">
+      <div className="min-h-[75vh] bg-canvas flex items-center justify-center px-4 py-16">
+        <div className="bg-white rounded-2xl border border-line p-8 sm:p-10 max-w-lg w-full text-center shadow-sm space-y-6">
+          <div className="w-16 h-16 bg-brand-tint text-brand rounded-full flex items-center justify-center mx-auto">
             <CheckIcon className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-[#171717] tracking-tight">
+            <h2 className="text-2xl font-bold text-ink tracking-tight">
               Donation Submitted for Coordinator Review
             </h2>
-            <p className="text-xs sm:text-sm text-[#525252] leading-relaxed max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-md mx-auto">
               Thank you for contributing to MEDISAVE. Your medicine donation for{" "}
-              <strong className="text-[#171717]">{formData.brandName || "Medicine"}</strong> has
+              <strong className="text-ink">{formData.brandName || "Medicine"}</strong> has
               been submitted. Once verified by a platform coordinator, it will become available to verified community partners in{" "}
               <strong>{formData.locality}</strong>.
             </p>
           </div>
 
-          <div className="bg-[#fafaf7] rounded-xl p-4 text-xs text-left text-[#525252] border border-[#e4e2dd] space-y-2.5">
+          <div className="bg-surface-alt rounded-xl p-4 text-xs text-left text-ink-muted border border-line space-y-2.5">
             <div className="flex justify-between">
-              <span className="text-[#737373]">Donation Reference:</span>
-              <span className="font-mono font-bold text-[#171717]">{submissionReference}</span>
+              <span className="text-ink-subtle">Donation Reference:</span>
+              <span className="font-mono font-bold text-ink">{submissionReference}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#737373]">Locality & PIN:</span>
-              <span className="font-medium text-[#171717]">
+              <span className="text-ink-subtle">Locality & PIN:</span>
+              <span className="font-medium text-ink">
                 {formData.locality} ({formData.pinCode})
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#737373]">Designated Handover:</span>
-              <span className="font-medium text-[#171717] truncate max-w-[200px]">
+              <span className="text-ink-subtle">Designated Handover:</span>
+              <span className="font-medium text-ink truncate max-w-[200px]">
                 {formData.handoverPoint}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[#737373]">Status:</span>
-              <span className="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+              <span className="text-ink-subtle">Status:</span>
+              <span className="font-bold text-warning bg-warning-tint px-2 py-0.5 rounded border border-warning-line">
                 Pending Coordinator Review
               </span>
             </div>
@@ -364,20 +364,20 @@ export default function SellMedicine() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
+    <div className="min-h-screen bg-canvas py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Header */}
         <Breadcrumb items={[{ label: "Home", to: "/" }, { label: "Donate Medicine" }]} />
 
         {/* Page Title */}
         <div className="max-w-3xl text-left">
-          <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+          <span className="text-xs font-bold text-brand uppercase tracking-wider">
             MEDISAVE Community Medicine Intake · Pune
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#171717] tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight mt-1">
             Donate unexpired surplus medicine
           </h1>
-          <p className="text-xs sm:text-sm text-[#525252] mt-1.5 leading-relaxed">
+          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 leading-relaxed">
             Redirect eligible unexpired medications to verified community health desks, senior care centers, and non-profit partners in Pune. Every donation is 100% free and verified by platform coordinators.
           </p>
         </div>
@@ -385,32 +385,32 @@ export default function SellMedicine() {
         {/* Two-Column Form Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Multi-Section Donation Form (8 cols) */}
-          <main className="lg:col-span-8 bg-white rounded-2xl border border-[#e4e2dd] p-6 sm:p-8 text-left space-y-8">
+          <main className="lg:col-span-8 bg-white rounded-2xl border border-line p-6 sm:p-8 text-left space-y-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {serverError && (
-                <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium flex items-center gap-2">
-                  <AlertCircleIcon className="w-4 h-4 shrink-0 text-rose-600" />
+                <div className="p-3.5 bg-danger-tint border border-danger-line rounded-xl text-xs text-danger font-medium flex items-center gap-2">
+                  <AlertCircleIcon className="w-4 h-4 shrink-0 text-danger" />
                   <span>{serverError}</span>
                 </div>
               )}
 
               {/* AI SMART AUTO-FILL BANNER */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4c42]/10 via-[#0f4c42]/5 to-emerald-500/10 border border-[#0f4c42]/20 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand/10 via-brand/5 to-emerald-500/10 border border-brand/20 p-5 sm:p-6 shadow-xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center shadow-xs">
-                      <SparklesIcon className="w-5 h-5 text-amber-300" />
+                    <div className="w-9 h-9 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+                      <SparklesIcon className="w-5 h-5 text-warning-line" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-sm sm:text-base font-bold text-[#171717]">
+                        <h2 className="text-sm sm:text-base font-bold text-ink">
                           AI Medicine Intake Assistant
                         </h2>
-                        <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#0f4c42] text-white">
+                        <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-brand text-white">
                           Auto-Fill Helper
                         </span>
                       </div>
-                      <p className="text-xs text-[#525252] mt-0.5">
+                      <p className="text-xs text-ink-muted mt-0.5">
                         Type any medicine name — AI assists with active salt formula, manufacturer, and standard packaging details.
                       </p>
                     </div>
@@ -431,7 +431,7 @@ export default function SellMedicine() {
                         }
                       }}
                       placeholder="Enter medicine name (e.g. Dolo 650, Augmentin 625, Pan-D, Shelcal)..."
-                      className="w-full bg-white border border-[#c4ded9] rounded-xl pl-3.5 pr-4 py-2.5 text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:border-transparent transition shadow-xs"
+                      className="w-full bg-white border border-brand-line rounded-xl pl-3.5 pr-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition shadow-xs"
                     />
                   </div>
                   <Button
@@ -442,14 +442,14 @@ export default function SellMedicine() {
                     onClick={() => handleAiEstimate(aiQuery)}
                     isLoading={isAiLoading}
                   >
-                    <SparklesIcon className="w-4 h-4 text-amber-300" />
+                    <SparklesIcon className="w-4 h-4 text-warning-line" />
                     <span>Auto-Fill with AI</span>
                   </Button>
                 </div>
 
                 {/* Quick 1-Click Suggestions */}
                 <div className="flex items-center flex-wrap gap-1.5 pt-1">
-                  <span className="text-[11px] font-medium text-[#737373]">Try quick auto-fill:</span>
+                  <span className="text-[11px] font-medium text-ink-subtle">Try quick auto-fill:</span>
                   {["Dolo 650", "Augmentin 625", "Pan-D", "Shelcal 500", "Azee 500", "Cetirizine 10mg"].map((sample) => (
                     <button
                       key={sample}
@@ -458,7 +458,7 @@ export default function SellMedicine() {
                         setAiQuery(sample);
                         handleAiEstimate(sample);
                       }}
-                      className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-[#0f4c42] border border-[#0f4c42]/20 hover:border-[#0f4c42] transition shadow-2xs cursor-pointer"
+                      className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-brand border border-brand/20 hover:border-brand transition shadow-2xs cursor-pointer"
                     >
                       {sample}
                     </button>
@@ -467,17 +467,17 @@ export default function SellMedicine() {
 
                 {/* AI Suggestion Box */}
                 {aiSuggestion && (
-                  <div className="mt-3 p-3.5 bg-white rounded-xl border border-[#c4ded9] text-xs space-y-1.5 shadow-2xs">
+                  <div className="mt-3 p-3.5 bg-white rounded-xl border border-brand-line text-xs space-y-1.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#0f4c42]">
+                      <span className="font-bold text-brand">
                         ✨ AI Suggestion: {aiSuggestion.brandName || aiQuery}
                       </span>
-                      <span className="text-[10px] text-[#737373]">
+                      <span className="text-[10px] text-ink-subtle">
                         {aiSuggestion.company || "Standard Manufacturer"}
                       </span>
                     </div>
                     {aiSuggestion.genericName && (
-                      <p className="text-[11px] text-[#525252]">
+                      <p className="text-[11px] text-ink-muted">
                         <strong>Active Salt:</strong> {aiSuggestion.genericName}
                       </p>
                     )}
@@ -487,12 +487,12 @@ export default function SellMedicine() {
 
               {/* SECTION 1: Medicine Identification */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-[#e4e2dd]">
+                <div className="flex items-center justify-between pb-2 border-b border-line">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+                    <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                       1
                     </span>
-                    <h2 className="font-bold text-[#171717] text-base">
+                    <h2 className="font-bold text-ink text-base">
                       Medicine Identification
                     </h2>
                   </div>
@@ -500,8 +500,8 @@ export default function SellMedicine() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Brand / Trade Name <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Brand / Trade Name <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -515,13 +515,13 @@ export default function SellMedicine() {
                       }}
                       placeholder="e.g. Dolo 650, Crocin Advance, Augmentin 625"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Generic Salt / Active Formula <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Generic Salt / Active Formula <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -530,15 +530,15 @@ export default function SellMedicine() {
                       onChange={handleChange}
                       placeholder="e.g. Paracetamol IP, Amoxicillin + Clavulanic Acid"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Manufacturer / Company <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Manufacturer / Company <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -547,20 +547,20 @@ export default function SellMedicine() {
                       onChange={handleChange}
                       placeholder="e.g. Cipla, Sun Pharma, Micro Labs"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Therapeutic Category <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Therapeutic Category <span className="text-danger">*</span>
                     </label>
                     <select
                       name="category"
                       value={formData.category}
                       onChange={handleChange}
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     >
                       <option value="">Select therapeutic category</option>
                       {CATEGORIES.filter((c) => c !== "All Categories").map((cat) => (
@@ -572,7 +572,7 @@ export default function SellMedicine() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
+                    <label className="block text-xs font-semibold text-ink mb-1">
                       Dosage Form & Strength
                     </label>
                     <input
@@ -581,27 +581,27 @@ export default function SellMedicine() {
                       value={formData.strength}
                       onChange={handleChange}
                       placeholder="e.g. Tablet (650mg)"
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
                 </div>
               </div>
 
               {/* SECTION 2: Batch & Expiry Information */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     2
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Batch & Expiry Guardrails
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Batch Number (Printed on Packaging) <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Batch Number (Printed on Packaging) <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -610,16 +610,16 @@ export default function SellMedicine() {
                       onChange={handleChange}
                       placeholder="e.g. B-9942A or GSK-P2409"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] font-mono focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink font-mono focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
-                    <span className="text-[11px] text-[#737373]">
+                    <span className="text-[11px] text-ink-subtle">
                       Must match printed stamping on physical blister or foil.
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Printed Expiry Date <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Printed Expiry Date <span className="text-danger">*</span>
                     </label>
                     <input
                       type="date"
@@ -627,7 +627,7 @@ export default function SellMedicine() {
                       value={formData.expiryDate}
                       onChange={handleChange}
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
                 </div>
@@ -636,10 +636,10 @@ export default function SellMedicine() {
                   <div
                     className={`p-3.5 rounded-xl border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                       expiryCheck.status === "expired"
-                        ? "bg-rose-50 border-rose-200 text-rose-900"
+                        ? "bg-danger-tint border-danger-line text-danger"
                         : expiryCheck.status === "short"
-                        ? "bg-amber-50 border-amber-200 text-amber-900"
-                        : "bg-emerald-50 border-emerald-200 text-emerald-900"
+                        ? "bg-warning-tint border-warning-line text-warning"
+                        : "bg-success-tint border-success-line text-success"
                     }`}
                   >
                     <div className="flex items-start gap-2">
@@ -649,7 +649,7 @@ export default function SellMedicine() {
                     {(expiryCheck.status === "expired" || expiryCheck.status === "short") && (
                       <Link
                         to="/disposal-guide"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0f4c42] text-white hover:bg-[#0a362f] rounded-lg text-[11px] font-bold shrink-0 transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white hover:bg-brand-strong rounded-lg text-[11px] font-bold shrink-0 transition"
                       >
                         <span>🌱 Safe Disposal Guide</span>
                       </Link>
@@ -659,26 +659,26 @@ export default function SellMedicine() {
               </div>
 
               {/* SECTION 3: Physical Package Condition */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     3
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Packaging Condition
                   </h2>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#171717] mb-1">
-                    Packaging Type & Integrity <span className="text-rose-600">*</span>
+                  <label className="block text-xs font-semibold text-ink mb-1">
+                    Packaging Type & Integrity <span className="text-danger">*</span>
                   </label>
                   <select
                     name="packageCondition"
                     value={formData.packageCondition}
                     onChange={handleChange}
                     required
-                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                    className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                   >
                     <option value="Intact Sealed Blister Pack">
                       Intact Sealed Blister Pack (No tears, punctures, or cut strips)
@@ -697,37 +697,37 @@ export default function SellMedicine() {
               </div>
 
               {/* SECTION 4: Quantity & Purpose */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     4
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Quantity & Donation Purpose
                   </h2>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#e8f3f1] border border-[#c4ded9] space-y-3 text-left">
+                <div className="p-4 rounded-xl bg-brand-tint border border-brand-line space-y-3 text-left">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <HeartIcon className="w-5 h-5 text-[#0f4c42]" />
-                      <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+                      <HeartIcon className="w-5 h-5 text-brand" />
+                      <span className="text-xs font-bold text-brand uppercase tracking-wider">
                         100% Free Community Donation
                       </span>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#a7f3d0] text-[#0a362f]">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success-line text-brand-strong">
                       Non-Profit Welfare
                     </span>
                   </div>
-                  <p className="text-xs text-[#525252]">
+                  <p className="text-xs text-ink-muted">
                     All medicine donations on MEDISAVE are 100% free for patients in need. We do not support peer-to-peer buying or selling.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Available Units / Strips <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Available Units / Strips <span className="text-danger">*</span>
                     </label>
                     <input
                       type="number"
@@ -737,22 +737,22 @@ export default function SellMedicine() {
                       onChange={handleChange}
                       placeholder="e.g. 10 (tablets/capsules)"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
-                    <span className="text-[11px] text-[#737373] mt-1 block">
+                    <span className="text-[11px] text-ink-subtle mt-1 block">
                       Packaging unit: {formData.unit || "Tablets / Units"}
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
+                    <label className="block text-xs font-semibold text-ink mb-1">
                       Preferred Target Beneficiary Group
                     </label>
                     <select
                       name="targetBeneficiary"
                       value={formData.targetBeneficiary}
                       onChange={handleChange}
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     >
                       <option value="General Community">General Community (Open Redistribution)</option>
                       <option value="Local Old Age Home">Local Old Age Home (Matoshree Vriddhashram)</option>
@@ -764,27 +764,27 @@ export default function SellMedicine() {
               </div>
 
               {/* SECTION 5: Community Handover Point */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     5
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Community Handover Point (Pune)
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Locality in Pune <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      Locality in Pune <span className="text-danger">*</span>
                     </label>
                     <select
                       name="locality"
                       value={formData.locality}
                       onChange={handleChange}
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     >
                       {PUNE_LOCALITIES.map((loc) => (
                         <option key={loc.name} value={loc.name}>
@@ -795,8 +795,8 @@ export default function SellMedicine() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      PIN Code <span className="text-rose-600">*</span>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      PIN Code <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -805,14 +805,14 @@ export default function SellMedicine() {
                       onChange={handleChange}
                       placeholder="e.g. 411038"
                       required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] font-mono focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                      className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink font-mono focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#171717] mb-1">
-                    Designated Public Handover Landmark <span className="text-rose-600">*</span>
+                  <label className="block text-xs font-semibold text-ink mb-1">
+                    Designated Public Handover Landmark <span className="text-danger">*</span>
                   </label>
                   <input
                     type="text"
@@ -821,40 +821,40 @@ export default function SellMedicine() {
                     onChange={handleChange}
                     placeholder="e.g. City Pride Kothrud / Vanaz Metro Station / Community Health Desk"
                     required
-                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                    className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                   />
-                  <span className="text-[11px] text-[#737373] mt-1 block">
+                  <span className="text-[11px] text-ink-subtle mt-1 block">
                     Public landmark where verified coordinators or partners will accept physical handover.
                   </span>
                 </div>
               </div>
 
               {/* SECTION 6: Medical Safety Compliance */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     6
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Medical Safety & Storage Certification
                   </h2>
                 </div>
 
                 {/* Prescription Required Toggle */}
-                <div className="p-4 bg-[#fafaf7] border border-[#e4e2dd] rounded-xl space-y-2">
+                <div className="p-4 bg-surface-alt border border-line rounded-xl space-y-2">
                   <label className="flex items-start gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       name="isPrescriptionRequired"
                       checked={formData.isPrescriptionRequired}
                       onChange={handleChange}
-                      className="accent-[#0f4c42] mt-0.5"
+                      className="accent-brand mt-0.5"
                     />
                     <div>
-                      <span className="text-xs font-bold text-[#171717] block">
+                      <span className="text-xs font-bold text-ink block">
                         Schedule H / Rx Prescription Required
                       </span>
-                      <span className="text-[11px] text-[#525252]">
+                      <span className="text-[11px] text-ink-muted">
                         Check this box if this medication requires a valid doctor prescription for dispensation.
                       </span>
                     </div>
@@ -862,7 +862,7 @@ export default function SellMedicine() {
                 </div>
 
                 {/* Storage Certification */}
-                <div className="p-4 bg-[#e8f3f1] border border-[#c4ded9] rounded-xl space-y-2">
+                <div className="p-4 bg-brand-tint border border-brand-line rounded-xl space-y-2">
                   <label className="flex items-start gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
@@ -870,9 +870,9 @@ export default function SellMedicine() {
                       checked={formData.storageConfirmed}
                       onChange={handleChange}
                       required
-                      className="accent-[#0f4c42] mt-0.5"
+                      className="accent-brand mt-0.5"
                     />
-                    <span className="text-xs font-medium text-[#0a362f] leading-snug">
+                    <span className="text-xs font-medium text-brand-strong leading-snug">
                       I certify that this medicine was stored in a clean, temperature-controlled environment below 25°C and has never been opened, diluted, or exposed to excessive heat or moisture.
                     </span>
                   </label>
@@ -880,26 +880,26 @@ export default function SellMedicine() {
               </div>
 
               {/* SECTION 7: Packaging Photo Verification */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
-                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div className="flex items-center gap-2 pb-2 border-b border-line">
+                  <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center font-mono">
                     7
                   </span>
-                  <h2 className="font-bold text-[#171717] text-base">
+                  <h2 className="font-bold text-ink text-base">
                     Packaging Photo Verification
                   </h2>
                 </div>
 
-                <div className="border-2 border-dashed border-[#e4e2dd] rounded-2xl p-6 text-center hover:border-[#0f4c42]/50 transition bg-[#fafaf7]">
+                <div className="border-2 border-dashed border-line rounded-2xl p-6 text-center hover:border-brand/50 transition bg-surface-alt">
                   {imagePreview ? (
                     <div className="space-y-3">
                       <img
                         src={imagePreview}
                         alt="Uploaded preview"
-                        className="w-48 h-36 object-cover rounded-xl mx-auto border border-[#e4e2dd] shadow-xs"
+                        className="w-48 h-36 object-cover rounded-xl mx-auto border border-line shadow-xs"
                       />
                       <div className="flex justify-center gap-3">
-                        <label className="text-xs font-bold text-[#0f4c42] hover:underline cursor-pointer">
+                        <label className="text-xs font-bold text-brand hover:underline cursor-pointer">
                           Change Photo
                           <input
                             type="file"
@@ -911,7 +911,7 @@ export default function SellMedicine() {
                         <button
                           type="button"
                           onClick={() => setImagePreview(null)}
-                          className="text-xs font-semibold text-rose-600 hover:underline cursor-pointer"
+                          className="text-xs font-semibold text-danger hover:underline cursor-pointer"
                         >
                           Remove
                         </button>
@@ -919,13 +919,13 @@ export default function SellMedicine() {
                     </div>
                   ) : (
                     <label className="flex flex-col items-center justify-center cursor-pointer">
-                      <div className="w-12 h-12 bg-white rounded-full text-[#0f4c42] border border-[#e4e2dd] flex items-center justify-center mb-2 shadow-xs">
+                      <div className="w-12 h-12 bg-white rounded-full text-brand border border-line flex items-center justify-center mb-2 shadow-xs">
                         <UploadIcon className="w-6 h-6" />
                       </div>
-                      <span className="text-sm font-bold text-[#171717]">
+                      <span className="text-sm font-bold text-ink">
                         Upload packaging photograph
                       </span>
-                      <span className="text-xs text-[#737373] mt-1 max-w-sm">
+                      <span className="text-xs text-ink-subtle mt-1 max-w-sm">
                         Ensure batch number, expiry date, and intact packaging seal are visible. (PNG, JPG up to 5 MB)
                       </span>
                       <input
@@ -940,9 +940,9 @@ export default function SellMedicine() {
               </div>
 
               {/* SECTION 8: Additional Notes */}
-              <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
+              <div className="space-y-4 pt-4 border-t border-line">
                 <div>
-                  <label className="block text-xs font-semibold text-[#171717] mb-1">
+                  <label className="block text-xs font-semibold text-ink mb-1">
                     Donor Notes / Storage Details (Optional)
                   </label>
                   <input
@@ -951,13 +951,13 @@ export default function SellMedicine() {
                     value={formData.description}
                     onChange={handleChange}
                     placeholder="e.g. Surplus from doctor-revised recovery prescription, stored in cool cabinet"
-                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                    className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                   />
                 </div>
               </div>
 
               {/* Submit CTA */}
-              <div className="pt-4 border-t border-[#e4e2dd]">
+              <div className="pt-4 border-t border-line">
                 <Button
                   type="submit"
                   variant="primary"
@@ -967,7 +967,7 @@ export default function SellMedicine() {
                 >
                   Submit Medicine Donation for Coordinator Review
                 </Button>
-                <p className="text-[11px] text-[#737373] text-center mt-2">
+                <p className="text-[11px] text-ink-subtle text-center mt-2">
                   By submitting, you confirm compliance with MEDISAVE Community Verification Guidelines.
                 </p>
               </div>
@@ -975,63 +975,63 @@ export default function SellMedicine() {
           </main>
 
           {/* Right Column: Sticky Guidance & Safety Checklist Panel (4 cols) */}
-          <aside className="lg:col-span-4 bg-white rounded-2xl border border-[#e4e2dd] p-6 shadow-xs space-y-6 sticky top-24 text-left">
-            <div className="flex items-center gap-2 pb-3 border-b border-[#e4e2dd]">
-              <ShieldCheckIcon className="w-5 h-5 text-[#0f4c42]" />
-              <h2 className="font-bold text-[#171717] text-sm">
+          <aside className="lg:col-span-4 bg-white rounded-2xl border border-line p-6 shadow-xs space-y-6 sticky top-24 text-left">
+            <div className="flex items-center gap-2 pb-3 border-b border-line">
+              <ShieldCheckIcon className="w-5 h-5 text-brand" />
+              <h2 className="font-bold text-ink text-sm">
                 Donation Guidelines
               </h2>
             </div>
 
-            <div className="space-y-3.5 text-xs text-[#525252]">
+            <div className="space-y-3.5 text-xs text-ink-muted">
               <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-brand-tint text-brand flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">100% Free Community Donation</strong>
+                  <strong className="text-ink block">100% Free Community Donation</strong>
                   Donated medicines are distributed to non-profit partners and clinics without charges.
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-brand-tint text-brand flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Minimum 90-Day Expiry Buffer</strong>
+                  <strong className="text-ink block">Minimum 90-Day Expiry Buffer</strong>
                   Must have at least 90 days remaining shelf life from today before expiration.
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-brand-tint text-brand flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Intact Blister / Foil Seal</strong>
+                  <strong className="text-ink block">Intact Blister / Foil Seal</strong>
                   No cut strips, punctured foil bubbles, or broken tamper seals are accepted.
                 </div>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-brand-tint text-brand flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Physical Handover Verification</strong>
+                  <strong className="text-ink block">Physical Handover Verification</strong>
                   Coordinator or partner confirms handover in person using a 6-digit verification code.
                 </div>
               </div>
             </div>
 
             {/* Prohibited Items Warning */}
-            <div className="p-4 bg-rose-50/80 rounded-xl border border-rose-200 text-xs text-rose-900 space-y-1.5">
-              <strong className="flex items-center gap-1 font-bold text-rose-800">
-                <AlertCircleIcon className="w-4 h-4 text-rose-700" />
+            <div className="p-4 bg-danger-tint/80 rounded-xl border border-danger-line text-xs text-danger space-y-1.5">
+              <strong className="flex items-center gap-1 font-bold text-danger">
+                <AlertCircleIcon className="w-4 h-4 text-danger" />
                 Strictly Prohibited Items:
               </strong>
-              <ul className="list-disc list-inside space-y-1 text-[11px] text-rose-800/90 pl-1">
+              <ul className="list-disc list-inside space-y-1 text-[11px] text-danger/90 pl-1">
                 <li>Opened liquid syrups or reconstituted suspensions</li>
                 <li>Biologics requiring strict cold-chain (e.g. Insulin)</li>
                 <li>Schedule X psychotropics and narcotics</li>

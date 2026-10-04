@@ -502,7 +502,7 @@ export default function AdminDashboard() {
     partners.filter((p) => p.partnerStatus === "pending").length;
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
+    <div className="min-h-screen bg-canvas py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Navigation */}
         <Breadcrumb
@@ -513,21 +513,21 @@ export default function AdminDashboard() {
         />
 
         {/* Admin Header Banner */}
-        <div className="bg-white rounded-2xl border border-[#e4e2dd] p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-left">
+        <div className="bg-white rounded-2xl border border-line p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 text-left">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#0f4c42] text-white flex items-center justify-center shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center shadow-xs">
               <ShieldCheckIcon className="w-8 h-8" />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-[#171717] tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-ink tracking-tight">
                   Coordinator Moderation Console
                 </h1>
                 <Badge variant="verified" size="sm">
                   Administrator
                 </Badge>
               </div>
-              <p className="text-xs text-[#525252]">
+              <p className="text-xs text-ink-muted">
                 Logged in as <strong>{user?.name || "Admin"}</strong> ({user?.email}) • Platform
                 Quality & Verification
               </p>
@@ -550,17 +550,17 @@ export default function AdminDashboard() {
 
         {/* 5 Moderation Metric Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-left">
-          <div className="bg-white rounded-xl border border-amber-200 p-5 shadow-xs bg-amber-50/30">
-            <div className="flex items-center justify-between text-amber-800 text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-warning-line p-5 shadow-xs bg-warning-tint/30">
+            <div className="flex items-center justify-between text-warning text-xs font-semibold mb-2">
               <span>Listing Reviews</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-warning-tint text-warning flex items-center justify-center">
                 <ClockIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">
+            <div className="text-2xl font-black text-ink">
               {isLoadingStats ? "..." : stats?.medicines?.pending || 0}
             </div>
-            <span className="text-[11px] text-amber-800 font-medium">
+            <span className="text-[11px] text-warning font-medium">
               Surplus medicine listings
             </span>
           </div>
@@ -572,7 +572,7 @@ export default function AdminDashboard() {
                 <FileTextIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">
+            <div className="text-2xl font-black text-ink">
               {isLoadingStats ? "..." : stats?.prescriptions?.pending || 0}
             </div>
             <span className="text-[11px] text-purple-800 font-medium">
@@ -580,27 +580,27 @@ export default function AdminDashboard() {
             </span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Approved Listings</span>
-              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-brand-tint text-brand flex items-center justify-center">
                 <PackageIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">
+            <div className="text-2xl font-black text-ink">
               {isLoadingStats ? "..." : stats?.medicines?.approved || 0}
             </div>
-            <span className="text-[11px] text-[#0f4c42] font-medium">Live in public exchange</span>
+            <span className="text-[11px] text-brand font-medium">Live in public exchange</span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Registered Users</span>
               <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-800 flex items-center justify-center">
                 <UserIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#171717]">
+            <div className="text-2xl font-black text-ink">
               {isLoadingStats ? "..." : stats?.users?.total || 0}
             </div>
             <span className="text-[11px] text-sky-700 font-medium">
@@ -608,26 +608,26 @@ export default function AdminDashboard() {
             </span>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs col-span-2 sm:col-span-1">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+          <div className="bg-white rounded-xl border border-line p-5 shadow-xs col-span-2 sm:col-span-1">
+            <div className="flex items-center justify-between text-ink-subtle text-xs font-semibold mb-2">
               <span>Orders Placed</span>
-              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-brand-tint text-brand flex items-center justify-center">
                 <ShoppingBagIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-[#0f4c42]">
+            <div className="text-2xl font-black text-brand">
               {isLoadingStats ? "..." : stats?.orders?.total || 0}
             </div>
-            <span className="text-[11px] text-[#0f4c42] font-medium font-mono">
+            <span className="text-[11px] text-brand font-medium font-mono">
               ₹{stats?.orders?.turnover || 0} volume
             </span>
           </div>
         </div>
 
         {/* Tabbed Moderation Center */}
-        <div className="bg-white rounded-2xl border border-[#e4e2dd] shadow-xs overflow-hidden text-left">
+        <div className="bg-white rounded-2xl border border-line shadow-xs overflow-hidden text-left">
           {/* Tabs Bar */}
-          <div className="flex border-b border-[#e4e2dd] px-6 overflow-x-auto bg-[#fafaf7]">
+          <div className="flex border-b border-line px-6 overflow-x-auto bg-surface-alt">
             <button
               onClick={() => {
                 setActiveTab("pending");
@@ -636,13 +636,13 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === "pending"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               <span>Listing Queue</span>
               {pendingQueueCount > 0 && (
-                <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-full bg-amber-100 text-amber-900">
+                <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-full bg-warning-tint text-warning">
                   {pendingQueueCount}
                 </span>
               )}
@@ -655,8 +655,8 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === "prescriptions"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               <FileTextIcon className="w-4 h-4 text-purple-700" />
@@ -675,8 +675,8 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "medicines"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               All Medicines ({stats?.medicines?.total || medicines.length})
@@ -688,8 +688,8 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "orders"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               Platform Orders ({stats?.orders?.total || orders.length})
@@ -701,8 +701,8 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "users"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               User Management ({stats?.users?.total || users.length})
@@ -714,13 +714,13 @@ export default function AdminDashboard() {
               }}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 activeTab === "partners"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
+                  ? "border-brand text-brand bg-white"
+                  : "border-transparent text-ink-subtle hover:text-ink"
               }`}
             >
               <span>Partner Organizations ({partners.length})</span>
               {pendingPartnerCount > 0 && (
-                <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-full bg-amber-100 text-amber-900">
+                <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-full bg-warning-tint text-warning">
                   {pendingPartnerCount}
                 </span>
               )}
@@ -732,24 +732,24 @@ export default function AdminDashboard() {
             <div className="p-6">
               {isLoadingMedicines ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : pendingMedicines.length > 0 ? (
                 <div className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between gap-4 text-xs text-amber-900">
+                  <div className="bg-warning-tint border border-warning-line rounded-xl p-4 flex items-center justify-between gap-4 text-xs text-warning">
                     <div className="flex items-center gap-2.5">
-                      <AlertCircleIcon className="w-5 h-5 text-amber-700 shrink-0" />
+                      <AlertCircleIcon className="w-5 h-5 text-warning shrink-0" />
                       <span>
                         <strong>Coordinator Inspection:</strong> Verify intact sealed packaging,
-                        legitimate batch stamping, future expiry date (&gt;30 days), and subsidized
-                        pricing before approving for public catalog.
+                        legitimate batch stamping, future expiry date (&gt;90 days), and free donation
+                        terms before approving for public catalog.
                       </span>
                     </div>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                      <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                    <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                      <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                         <tr>
                           <th className="py-3 px-4 font-bold">Medicine & Batch</th>
                           <th className="py-3 px-4 font-bold">Donor</th>
@@ -759,7 +759,7 @@ export default function AdminDashboard() {
                           <th className="py-3 px-4 font-bold text-right">Moderation Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#e4e2dd]">
+                      <tbody className="divide-y divide-line">
                         {pendingMedicines.map((med) => {
                           const medId = med._id || med.id;
                           const title = med.brandName || med.medicineName;
@@ -768,14 +768,14 @@ export default function AdminDashboard() {
                             actionLoadingId === `reject-${medId}`;
 
                           return (
-                            <tr key={medId} className="hover:bg-[#fafaf7] transition">
-                              <td className="py-4 px-4 font-semibold text-[#171717]">
+                            <tr key={medId} className="hover:bg-surface-alt transition">
+                              <td className="py-4 px-4 font-semibold text-ink">
                                 <div>{title}</div>
-                                <div className="text-[11px] text-[#737373] font-normal">
+                                <div className="text-[11px] text-ink-subtle font-normal">
                                   {med.company} • Batch:{" "}
                                   <span className="font-mono">{med.batchNumber || "N/A"}</span>
                                 </div>
-                                <div className="text-[10px] text-[#525252] font-normal mt-0.5">
+                                <div className="text-[10px] text-ink-muted font-normal mt-0.5">
                                   Pack: {med.packageCondition || "Intact Sealed"}
                                   {med.isPrescriptionRequired && (
                                     <span className="ml-2 font-bold text-purple-800">
@@ -785,17 +785,17 @@ export default function AdminDashboard() {
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 text-[#171717]">
+                              <td className="py-4 px-4 text-ink">
                                 <div className="font-semibold">{med.seller?.name || "Member"}</div>
-                                <div className="text-[11px] text-[#737373]">
+                                <div className="text-[11px] text-ink-subtle">
                                   {med.seller?.email} •{" "}
                                   {med.seller?.phone || med.seller?.address?.split(",")[0] || "Pune"}
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 text-xs text-[#525252]">
+                              <td className="py-4 px-4 text-xs text-ink-muted">
                                 <div>{med.category}</div>
-                                <span className="text-[11px] text-[#737373]">
+                                <span className="text-[11px] text-ink-subtle">
                                   {med.dosageForm} ({med.strength || "Standard"})
                                 </span>
                               </td>
@@ -807,8 +807,8 @@ export default function AdminDashboard() {
                                     : "-")}
                               </td>
 
-                              <td className="py-4 px-4 font-bold text-[#065f46]">
-                                <span className="inline-block text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] px-2 py-0.5 rounded border border-[#a7f3d0]">
+                              <td className="py-4 px-4 font-bold text-success">
+                                <span className="inline-block text-[11px] font-bold bg-success-tint text-success px-2 py-0.5 rounded border border-success-line">
                                   🎁 Free Donation
                                 </span>
                               </td>
@@ -820,7 +820,7 @@ export default function AdminDashboard() {
                                     size="sm"
                                     onClick={() => handleApproveMedicine(medId, title)}
                                     disabled={isActionLoading}
-                                    className="bg-emerald-700 hover:bg-emerald-800 text-xs font-semibold"
+                                    className="bg-success hover:bg-success text-xs font-semibold"
                                   >
                                     <CheckIcon className="w-3.5 h-3.5" />
                                     Approve
@@ -830,14 +830,14 @@ export default function AdminDashboard() {
                                     size="sm"
                                     onClick={() => handleOpenRejectModal(med)}
                                     disabled={isActionLoading}
-                                    className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs"
+                                    className="text-danger hover:bg-danger-tint border-danger-line text-xs"
                                   >
                                     <XIcon className="w-3.5 h-3.5" />
                                     Reject
                                   </Button>
                                   <Link
                                     to={`/medicine/${medId}`}
-                                    className="text-xs font-semibold text-[#737373] hover:text-[#171717] underline ml-1 cursor-pointer"
+                                    className="text-xs font-semibold text-ink-subtle hover:text-ink underline ml-1 cursor-pointer"
                                   >
                                     Inspect
                                   </Link>
@@ -873,8 +873,8 @@ export default function AdminDashboard() {
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition cursor-pointer ${
                         prescriptionStatusFilter === st
-                          ? "bg-[#0f4c42] text-white"
-                          : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                          ? "bg-brand text-white"
+                          : "bg-surface-alt text-ink-muted border border-line hover:bg-canvas"
                       }`}
                     >
                       {st === "pending" ? "Pending Review" : st}
@@ -883,7 +883,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="relative w-full sm:w-64">
-                  <SearchIcon className="w-4 h-4 text-[#737373] absolute left-3 top-2.5" />
+                  <SearchIcon className="w-4 h-4 text-ink-subtle absolute left-3 top-2.5" />
                   <input
                     type="text"
                     placeholder="Search patient, doctor, salts..."
@@ -892,14 +892,14 @@ export default function AdminDashboard() {
                       setPrescriptionSearch(e.target.value);
                       fetchPrescriptions(prescriptionStatusFilter, e.target.value);
                     }}
-                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-lg pl-9 pr-3 py-2 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                    className="w-full bg-surface-alt border border-line text-xs rounded-lg pl-9 pr-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
               </div>
 
               {isLoadingPrescriptions ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : prescriptions.length > 0 ? (
                 <div className="space-y-4">
@@ -915,8 +915,8 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                      <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                    <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                      <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                         <tr>
                           <th className="py-3 px-4 font-bold">Patient & Recipient</th>
                           <th className="py-3 px-4 font-bold">Doctor & Reg No</th>
@@ -926,7 +926,7 @@ export default function AdminDashboard() {
                           <th className="py-3 px-4 font-bold text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#e4e2dd]">
+                      <tbody className="divide-y divide-line">
                         {prescriptions.map((rx) => {
                           const rxId = rx._id || rx.id;
                           const isActionLoading =
@@ -946,36 +946,36 @@ export default function AdminDashboard() {
                             : "N/A";
 
                           return (
-                            <tr key={rxId} className="hover:bg-[#fafaf7] transition">
-                              <td className="py-4 px-4 font-semibold text-[#171717]">
-                                <div className="text-[#171717] font-bold">{rx.patientName}</div>
-                                <div className="text-[11px] text-[#737373] font-normal">
+                            <tr key={rxId} className="hover:bg-surface-alt transition">
+                              <td className="py-4 px-4 font-semibold text-ink">
+                                <div className="text-ink font-bold">{rx.patientName}</div>
+                                <div className="text-[11px] text-ink-subtle font-normal">
                                   Recipient: {rx.buyer?.name || "Patient Member"}
                                 </div>
-                                <div className="text-[10px] text-[#737373] font-normal">
+                                <div className="text-[10px] text-ink-subtle font-normal">
                                   {rx.buyer?.email} {rx.buyer?.phone ? `• ${rx.buyer?.phone}` : ""}
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 text-[#171717]">
+                              <td className="py-4 px-4 text-ink">
                                 <div className="font-semibold">
                                   {rx.doctorName || "Not specified"}
                                 </div>
-                                <div className="text-[11px] text-[#737373] font-mono">
+                                <div className="text-[11px] text-ink-subtle font-mono">
                                   Reg: {rx.doctorRegistrationNumber || "N/A"}
                                 </div>
                               </td>
 
-                              <td className="py-4 px-4 text-xs text-[#525252] max-w-xs">
+                              <td className="py-4 px-4 text-xs text-ink-muted max-w-xs">
                                 {rx.prescribedSalts ? (
-                                  <div className="text-[#171717] font-medium line-clamp-2">
+                                  <div className="text-ink font-medium line-clamp-2">
                                     {rx.prescribedSalts}
                                   </div>
                                 ) : (
-                                  <span className="text-[#737373] italic">No salts specified</span>
+                                  <span className="text-ink-subtle italic">No salts specified</span>
                                 )}
                                 {rx.medicines && rx.medicines.length > 0 && (
-                                  <div className="text-[10px] text-[#0f4c42] mt-1">
+                                  <div className="text-[10px] text-brand mt-1">
                                     Linked:{" "}
                                     {rx.medicines
                                       .map((m) => m.brandName || m.medicineName)
@@ -986,12 +986,12 @@ export default function AdminDashboard() {
 
                               <td className="py-4 px-4 text-xs">
                                 <div
-                                  className="font-mono text-[#171717] font-medium truncate max-w-[160px]"
+                                  className="font-mono text-ink font-medium truncate max-w-[160px]"
                                   title={rx.documentOriginalName}
                                 >
                                   {rx.documentOriginalName || "document.pdf"}
                                 </div>
-                                <div className="text-[11px] text-[#737373]">
+                                <div className="text-[11px] text-ink-subtle">
                                   {fileSizeKb} • {uploadDate}
                                 </div>
                               </td>
@@ -1014,7 +1014,7 @@ export default function AdminDashboard() {
                                     </Badge>
                                     {rx.rejectionReason && (
                                       <p
-                                        className="text-[10px] text-rose-600 mt-0.5 line-clamp-1"
+                                        className="text-[10px] text-danger mt-0.5 line-clamp-1"
                                         title={rx.rejectionReason}
                                       >
                                         {rx.rejectionReason}
@@ -1030,7 +1030,7 @@ export default function AdminDashboard() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleViewPrescriptionDoc(rx)}
-                                    className="text-[#0f4c42] border-[#c4ded9] hover:bg-[#e8f3f1] text-xs font-semibold cursor-pointer"
+                                    className="text-brand border-brand-line hover:bg-brand-tint text-xs font-semibold cursor-pointer"
                                   >
                                     <FileTextIcon className="w-3.5 h-3.5" />
                                     View File
@@ -1042,7 +1042,7 @@ export default function AdminDashboard() {
                                         size="sm"
                                         onClick={() => handleOpenApprovePrescriptionModal(rx)}
                                         disabled={isActionLoading}
-                                        className="bg-emerald-700 hover:bg-emerald-800 text-xs font-semibold cursor-pointer"
+                                        className="bg-success hover:bg-success text-xs font-semibold cursor-pointer"
                                       >
                                         <CheckIcon className="w-3.5 h-3.5" />
                                         Approve
@@ -1052,7 +1052,7 @@ export default function AdminDashboard() {
                                         size="sm"
                                         onClick={() => handleOpenRejectPrescriptionModal(rx)}
                                         disabled={isActionLoading}
-                                        className="text-rose-600 hover:bg-rose-50 border-rose-200 text-xs cursor-pointer"
+                                        className="text-danger hover:bg-danger-tint border-danger-line text-xs cursor-pointer"
                                       >
                                         <XIcon className="w-3.5 h-3.5" />
                                         Reject
@@ -1091,8 +1091,8 @@ export default function AdminDashboard() {
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition cursor-pointer ${
                         medicineStatusFilter === st
-                          ? "bg-[#0f4c42] text-white"
-                          : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                          ? "bg-brand text-white"
+                          : "bg-surface-alt text-ink-muted border border-line hover:bg-canvas"
                       }`}
                     >
                       {st}
@@ -1101,7 +1101,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="relative w-full sm:w-64">
-                  <SearchIcon className="w-4 h-4 text-[#737373] absolute left-3 top-2.5" />
+                  <SearchIcon className="w-4 h-4 text-ink-subtle absolute left-3 top-2.5" />
                   <input
                     type="text"
                     placeholder="Search medicine or batch..."
@@ -1110,19 +1110,19 @@ export default function AdminDashboard() {
                       setMedicineSearch(e.target.value);
                       fetchMedicines(medicineStatusFilter, e.target.value);
                     }}
-                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-lg pl-9 pr-3 py-2 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                    className="w-full bg-surface-alt border border-line text-xs rounded-lg pl-9 pr-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
               </div>
 
               {isLoadingMedicines ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : medicines.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Medicine</th>
                         <th className="py-3 px-4 font-bold">Donor</th>
@@ -1132,7 +1132,7 @@ export default function AdminDashboard() {
                         <th className="py-3 px-4 font-bold text-right">Moderator Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {medicines.map((med) => {
                         const medId = med._id || med.id;
                         const title = med.brandName || med.medicineName;
@@ -1142,25 +1142,25 @@ export default function AdminDashboard() {
                           actionLoadingId === `delete-${medId}`;
 
                         return (
-                          <tr key={medId} className="hover:bg-[#fafaf7] transition">
-                            <td className="py-4 px-4 font-semibold text-[#171717]">
+                          <tr key={medId} className="hover:bg-surface-alt transition">
+                            <td className="py-4 px-4 font-semibold text-ink">
                               <div>{title}</div>
-                              <div className="text-[11px] text-[#737373] font-normal">
+                              <div className="text-[11px] text-ink-subtle font-normal">
                                 {med.company} • {med.category}
                               </div>
                             </td>
 
-                            <td className="py-4 px-4 text-[#171717]">
+                            <td className="py-4 px-4 text-ink">
                               <div className="font-semibold">{med.seller?.name || "Member"}</div>
-                              <div className="text-[11px] text-[#737373]">{med.seller?.email}</div>
+                              <div className="text-[11px] text-ink-subtle">{med.seller?.email}</div>
                             </td>
 
-                            <td className="py-4 px-4 font-mono text-[#171717]">
+                            <td className="py-4 px-4 font-mono text-ink">
                               {med.quantity} units
                             </td>
 
-                            <td className="py-4 px-4 font-bold text-[#065f46]">
-                              <span className="inline-block text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] px-2 py-0.5 rounded border border-[#a7f3d0]">
+                            <td className="py-4 px-4 font-bold text-success">
+                              <span className="inline-block text-[11px] font-bold bg-success-tint text-success px-2 py-0.5 rounded border border-success-line">
                                 🎁 Free Donation
                               </span>
                             </td>
@@ -1194,7 +1194,7 @@ export default function AdminDashboard() {
                                   <button
                                     onClick={() => handleApproveMedicine(medId, title)}
                                     disabled={isActionLoading}
-                                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
+                                    className="text-xs font-semibold text-success hover:text-success underline cursor-pointer"
                                   >
                                     Approve
                                   </button>
@@ -1203,7 +1203,7 @@ export default function AdminDashboard() {
                                   <button
                                     onClick={() => handleOpenRejectModal(med)}
                                     disabled={isActionLoading}
-                                    className="text-xs font-semibold text-amber-700 hover:text-amber-900 underline cursor-pointer"
+                                    className="text-xs font-semibold text-warning hover:text-warning underline cursor-pointer"
                                   >
                                     Reject
                                   </button>
@@ -1211,7 +1211,7 @@ export default function AdminDashboard() {
                                 <button
                                   onClick={() => handleDeleteMedicine(medId, title)}
                                   disabled={isActionLoading}
-                                  className="text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer disabled:opacity-50 p-1"
+                                  className="text-xs font-semibold text-danger hover:text-danger transition cursor-pointer disabled:opacity-50 p-1"
                                   title="Permanently remove"
                                 >
                                   <TrashIcon className="w-3.5 h-3.5" />
@@ -1246,8 +1246,8 @@ export default function AdminDashboard() {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition cursor-pointer ${
                       orderStatusFilter === st
-                        ? "bg-[#0f4c42] text-white"
-                        : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                        ? "bg-brand text-white"
+                        : "bg-surface-alt text-ink-muted border border-line hover:bg-canvas"
                     }`}
                   >
                     {st}
@@ -1257,7 +1257,7 @@ export default function AdminDashboard() {
 
               {isLoadingOrders ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : orders.length > 0 ? (
                 <div className="space-y-3">
@@ -1275,12 +1275,12 @@ export default function AdminDashboard() {
                     return (
                       <div
                         key={orderId}
-                        className="p-5 rounded-xl border border-[#e4e2dd] bg-[#fafaf7] space-y-3"
+                        className="p-5 rounded-xl border border-line bg-surface-alt space-y-3"
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#e4e2dd] text-xs">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-line text-xs">
                           <div className="flex items-center gap-2 font-mono">
-                            <strong className="text-[#171717]">{orderNum}</strong>
-                            <span className="text-[#737373] font-sans">• {orderDate}</span>
+                            <strong className="text-ink">{orderNum}</strong>
+                            <span className="text-ink-subtle font-sans">• {orderDate}</span>
                           </div>
                           <div>
                             <Badge
@@ -1300,35 +1300,35 @@ export default function AdminDashboard() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#525252]">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-ink-muted">
                           <div>
-                            <div className="font-semibold text-[#171717]">
+                            <div className="font-semibold text-ink">
                               Recipient: {order.buyer?.name || order.shippingAddress?.fullName}
                             </div>
-                            <div className="text-[11px] text-[#737373]">
+                            <div className="text-[11px] text-ink-subtle">
                               {order.shippingAddress?.phone} • {order.shippingAddress?.address}, {order.shippingAddress?.city}
                             </div>
                           </div>
                           <div className="sm:text-right">
-                            <span className="text-sm font-bold text-[#0f4c42] font-mono">
+                            <span className="text-sm font-bold text-brand font-mono">
                               Total: ₹{order.totalAmount}
                             </span>
-                            <div className="text-[11px] text-[#737373]">
+                            <div className="text-[11px] text-ink-subtle">
                               Payment: {order.paymentMethod}
                             </div>
                           </div>
                         </div>
 
-                        <div className="pt-2 border-t border-[#e4e2dd] text-xs space-y-1">
+                        <div className="pt-2 border-t border-line text-xs space-y-1">
                           {order.items?.map((it, idx) => (
-                            <div key={idx} className="flex justify-between text-[#525252] text-[11px]">
+                            <div key={idx} className="flex justify-between text-ink-muted text-[11px]">
                               <span>
                                 • {it.brandName || it.medicineName} × {it.quantity}{" "}
-                                <span className="text-[#737373]">
+                                <span className="text-ink-subtle">
                                   (Donor: {it.seller?.name || "Donor"})
                                 </span>
                               </span>
-                              <span className="font-mono font-semibold text-[#171717]">
+                              <span className="font-mono font-semibold text-ink">
                                 ₹{it.price * it.quantity}
                               </span>
                             </div>
@@ -1352,12 +1352,12 @@ export default function AdminDashboard() {
             <div className="p-6">
               {isLoadingUsers ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : users.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Member Name</th>
                         <th className="py-3 px-4 font-bold">Contact Email / Phone</th>
@@ -1367,22 +1367,22 @@ export default function AdminDashboard() {
                         <th className="py-3 px-4 font-bold text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {users.map((u) => {
                         const isActionLoading = actionLoadingId === `verify-${u._id}`;
 
                         return (
-                          <tr key={u._id} className="hover:bg-[#fafaf7] transition">
-                            <td className="py-4 px-4 font-semibold text-[#171717]">
+                          <tr key={u._id} className="hover:bg-surface-alt transition">
+                            <td className="py-4 px-4 font-semibold text-ink">
                               <div className="flex items-center gap-2.5">
                                 {u.avatar ? (
                                   <img
                                     src={u.avatar}
                                     alt={u.name}
-                                    className="w-7 h-7 rounded-full object-cover border border-[#e4e2dd]"
+                                    className="w-7 h-7 rounded-full object-cover border border-line"
                                   />
                                 ) : (
-                                  <div className="w-7 h-7 rounded-full bg-[#0f4c42] text-white flex items-center justify-center font-bold text-xs">
+                                  <div className="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs">
                                     {u.name?.charAt(0).toUpperCase() || "U"}
                                   </div>
                                 )}
@@ -1390,14 +1390,14 @@ export default function AdminDashboard() {
                               </div>
                             </td>
 
-                            <td className="py-4 px-4 text-[#171717]">
+                            <td className="py-4 px-4 text-ink">
                               <div>{u.email}</div>
-                              <div className="text-[11px] text-[#737373]">
+                              <div className="text-[11px] text-ink-subtle">
                                 {u.phone || u.address?.split(",")[0] || "Pune, MH"}
                               </div>
                             </td>
 
-                            <td className="py-4 px-4 font-mono text-xs text-[#525252]">
+                            <td className="py-4 px-4 font-mono text-xs text-ink-muted">
                               {u.listingsCount || 0} listings • {u.ordersCount || 0} orders
                             </td>
 
@@ -1467,8 +1467,8 @@ export default function AdminDashboard() {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                       partnerFilter === f.id
-                        ? "bg-[#0f4c42] text-white"
-                        : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                        ? "bg-brand text-white"
+                        : "bg-surface-alt text-ink-muted border border-line hover:bg-canvas"
                     }`}
                   >
                     {f.label}
@@ -1478,12 +1478,12 @@ export default function AdminDashboard() {
 
               {isLoadingPartners ? (
                 <div className="py-12 flex justify-center items-center">
-                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : partners.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
-                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                  <table className="w-full text-left text-xs sm:text-sm text-ink-muted">
+                    <thead className="text-[11px] uppercase tracking-wider text-ink-subtle bg-surface-alt border-b border-line">
                       <tr>
                         <th className="py-3 px-4 font-bold">Organization & Rep</th>
                         <th className="py-3 px-4 font-bold">Type</th>
@@ -1493,32 +1493,32 @@ export default function AdminDashboard() {
                         <th className="py-3 px-4 font-bold text-right">Moderation Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e4e2dd]">
+                    <tbody className="divide-y divide-line">
                       {partners.map((p) => {
                         const isActionLoading = actionLoadingId === `partner-${p._id}`;
 
                         return (
-                          <tr key={p._id} className="hover:bg-[#fafaf7] transition">
-                            <td className="py-4 px-4 font-semibold text-[#171717]">
-                              <div className="font-bold text-sm text-[#0f4c42]">
+                          <tr key={p._id} className="hover:bg-surface-alt transition">
+                            <td className="py-4 px-4 font-semibold text-ink">
+                              <div className="font-bold text-sm text-brand">
                                 {p.organizationName || p.name}
                               </div>
-                              <div className="text-xs text-[#737373] font-normal">
+                              <div className="text-xs text-ink-subtle font-normal">
                                 Rep: {p.name}
                               </div>
                             </td>
 
-                            <td className="py-4 px-4 text-xs font-medium text-[#171717]">
+                            <td className="py-4 px-4 text-xs font-medium text-ink">
                               {p.organizationType || "Charitable Clinic"}
                             </td>
 
-                            <td className="py-4 px-4 text-xs font-medium text-[#525252]">
+                            <td className="py-4 px-4 text-xs font-medium text-ink-muted">
                               {p.locality || "Pune"}
                             </td>
 
-                            <td className="py-4 px-4 text-xs text-[#171717]">
+                            <td className="py-4 px-4 text-xs text-ink">
                               <div>{p.email}</div>
-                              <div className="text-[11px] text-[#737373]">{p.phone || "-"}</div>
+                              <div className="text-[11px] text-ink-subtle">{p.phone || "-"}</div>
                             </td>
 
                             <td className="py-4 px-4">
@@ -1547,7 +1547,7 @@ export default function AdminDashboard() {
                                     size="sm"
                                     onClick={() => handleModeratePartner(p._id, "verified")}
                                     disabled={isActionLoading}
-                                    className="bg-[#0f4c42] hover:bg-[#0a362f] text-xs py-1 px-2.5"
+                                    className="bg-brand hover:bg-brand-strong text-xs py-1 px-2.5"
                                   >
                                     Verify
                                   </Button>
@@ -1558,7 +1558,7 @@ export default function AdminDashboard() {
                                     size="sm"
                                     onClick={() => handleModeratePartner(p._id, "rejected")}
                                     disabled={isActionLoading}
-                                    className="text-xs py-1 px-2.5 text-rose-600 hover:bg-rose-50 border-rose-200"
+                                    className="text-xs py-1 px-2.5 text-danger hover:bg-danger-tint border-danger-line"
                                   >
                                     Reject
                                   </Button>
@@ -1589,7 +1589,7 @@ export default function AdminDashboard() {
         title="Reject Medicine Listing"
       >
         <div className="space-y-4 text-left">
-          <p className="text-xs text-[#525252] leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             Specify reason for rejecting{" "}
             <strong>
               {rejectModalMedicine?.brandName || rejectModalMedicine?.medicineName}
@@ -1598,7 +1598,7 @@ export default function AdminDashboard() {
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               Rejection Reason *
             </label>
             <textarea
@@ -1606,7 +1606,7 @@ export default function AdminDashboard() {
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="e.g. Illegible batch stamping, packaging damaged, or expired packaging..."
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
 
@@ -1623,7 +1623,7 @@ export default function AdminDashboard() {
               size="md"
               onClick={handleConfirmReject}
               disabled={actionLoadingId !== null}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
+              className="bg-danger hover:bg-danger text-white"
             >
               {actionLoadingId !== null ? "Rejecting..." : "Confirm Rejection"}
             </Button>
@@ -1644,14 +1644,14 @@ export default function AdminDashboard() {
         title={`Prescription Verification: ${previewModalPrescription?.patientName || "Document"}`}
       >
         <div className="space-y-4 text-left">
-          <div className="grid grid-cols-2 gap-3 p-3 bg-[#fafaf7] border border-[#e4e2dd] rounded-xl text-xs">
+          <div className="grid grid-cols-2 gap-3 p-3 bg-surface-alt border border-line rounded-xl text-xs">
             <div>
-              <span className="text-[#737373] block">Patient Name</span>
-              <strong className="text-[#171717]">{previewModalPrescription?.patientName}</strong>
+              <span className="text-ink-subtle block">Patient Name</span>
+              <strong className="text-ink">{previewModalPrescription?.patientName}</strong>
             </div>
             <div>
-              <span className="text-[#737373] block">Doctor & Reg No</span>
-              <strong className="text-[#171717]">
+              <span className="text-ink-subtle block">Doctor & Reg No</span>
+              <strong className="text-ink">
                 {previewModalPrescription?.doctorName || "Not specified"}{" "}
                 {previewModalPrescription?.doctorRegistrationNumber
                   ? `(${previewModalPrescription.doctorRegistrationNumber})`
@@ -1660,19 +1660,19 @@ export default function AdminDashboard() {
             </div>
             {previewModalPrescription?.prescribedSalts && (
               <div className="col-span-2">
-                <span className="text-[#737373] block">Prescribed Salts</span>
-                <span className="text-[#171717] font-medium">
+                <span className="text-ink-subtle block">Prescribed Salts</span>
+                <span className="text-ink font-medium">
                   {previewModalPrescription.prescribedSalts}
                 </span>
               </div>
             )}
           </div>
 
-          <div className="border border-[#e4e2dd] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[360px] max-h-[500px]">
+          <div className="border border-line rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[360px] max-h-[500px]">
             {isLoadingDoc ? (
               <div className="py-16 flex flex-col items-center gap-2">
-                <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-xs text-[#737373]">Streaming document...</span>
+                <div className="w-7 h-7 border-3 border-brand border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-xs text-ink-subtle">Streaming document...</span>
               </div>
             ) : previewBlobUrl ? (
               previewModalPrescription?.documentMimeType?.includes("pdf") ? (
@@ -1689,7 +1689,7 @@ export default function AdminDashboard() {
                 />
               )
             ) : (
-              <div className="p-8 text-center text-[#737373] text-xs">
+              <div className="p-8 text-center text-ink-subtle text-xs">
                 Unable to preview document.
               </div>
             )}
@@ -1702,7 +1702,7 @@ export default function AdminDashboard() {
                   href={previewBlobUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-semibold text-[#0f4c42] hover:underline"
+                  className="text-xs font-semibold text-brand hover:underline"
                 >
                   Open in New Tab / Fullscreen
                 </a>
@@ -1729,7 +1729,7 @@ export default function AdminDashboard() {
                     variant="outline"
                     size="md"
                     onClick={() => handleOpenRejectPrescriptionModal(previewModalPrescription)}
-                    className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                    className="text-danger border-danger-line hover:bg-danger-tint"
                   >
                     Reject
                   </Button>
@@ -1737,7 +1737,7 @@ export default function AdminDashboard() {
                     variant="primary"
                     size="md"
                     onClick={() => handleOpenApprovePrescriptionModal(previewModalPrescription)}
-                    className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                    className="bg-success hover:bg-success text-white"
                   >
                     Approve
                   </Button>
@@ -1755,13 +1755,13 @@ export default function AdminDashboard() {
         title="Approve Prescription Verification"
       >
         <div className="space-y-4 text-left">
-          <p className="text-xs text-[#525252] leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             Verify doctor credentials and approve prescription for{" "}
             <strong>{approveModalPrescription?.patientName}</strong>.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               Prescription Validity Expiry (Optional)
             </label>
             <input
@@ -1769,9 +1769,9 @@ export default function AdminDashboard() {
               min={new Date().toISOString().split("T")[0]}
               value={validityDate}
               onChange={(e) => setValidityDate(e.target.value)}
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
-            <p className="text-[11px] text-[#737373] mt-1">
+            <p className="text-[11px] text-ink-subtle mt-1">
               Leave blank if standard validity, or choose a specific future expiry date.
             </p>
           </div>
@@ -1789,7 +1789,7 @@ export default function AdminDashboard() {
               size="md"
               onClick={handleConfirmApprovePrescription}
               disabled={actionLoadingId !== null}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-success hover:bg-success text-white"
             >
               {actionLoadingId !== null ? "Approving..." : "Confirm & Approve"}
             </Button>
@@ -1804,13 +1804,13 @@ export default function AdminDashboard() {
         title="Reject Prescription Document"
       >
         <div className="space-y-4 text-left">
-          <p className="text-xs text-[#525252] leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             Specify the clinical or administrative reason for rejecting the prescription for{" "}
             <strong>{rejectModalPrescription?.patientName}</strong>. The patient will see this reason in their dashboard.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               Reason for Rejection *
             </label>
             <textarea
@@ -1818,7 +1818,7 @@ export default function AdminDashboard() {
               value={prescriptionRejectionReason}
               onChange={(e) => setPrescriptionRejectionReason(e.target.value)}
               placeholder="e.g. Doctor signature missing, registration number unverified, or illegible dosage..."
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] text-xs rounded-xl p-3 text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              className="w-full bg-surface-alt border border-line text-xs rounded-xl p-3 text-ink focus:outline-none focus:ring-2 focus:ring-brand"
             />
           </div>
 
@@ -1835,7 +1835,7 @@ export default function AdminDashboard() {
               size="md"
               onClick={handleConfirmRejectPrescription}
               disabled={actionLoadingId !== null}
-              className="bg-rose-600 hover:bg-rose-700 text-white"
+              className="bg-danger hover:bg-danger text-white"
             >
               {actionLoadingId !== null ? "Rejecting..." : "Reject Prescription"}
             </Button>

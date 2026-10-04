@@ -34,17 +34,17 @@ export default function WhyChoose() {
   ];
 
   return (
-    <section className="bg-[#fafaf7] border-t border-b border-[#e4e2dd] py-14 sm:py-18">
+    <section className="bg-surface-alt border-t border-b border-line py-14 sm:py-18">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-2xl mb-10 text-left">
-          <div className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider mb-1.5">
+          <div className="text-xs font-bold text-brand uppercase tracking-wider mb-1.5">
             Responsible Medicine Management
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#171717] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
             Why structured medicine recovery matters
           </h2>
-          <p className="mt-2 text-xs sm:text-sm text-[#525252] leading-relaxed">
+          <p className="mt-2 text-xs sm:text-sm text-ink-muted leading-relaxed">
             Bridging healthcare affordability and environmental responsibility through
             verified, safe, and transparent surplus medicine redistribution.
           </p>
@@ -57,16 +57,16 @@ export default function WhyChoose() {
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-[#e4e2dd] p-5 sm:p-6 flex flex-col justify-between hover:border-[#0f4c42] transition shadow-2xs text-left"
+                className="bg-white rounded-xl border border-line p-5 sm:p-6 flex flex-col justify-between hover:border-brand transition shadow-2xs text-left"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-lg bg-[#e8f3f1] border border-[#c4ded9] text-[#0f4c42] flex items-center justify-center mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-brand-tint border border-brand-line text-brand flex items-center justify-center mb-4">
                     <IconComponent className="w-5 h-5" />
                   </div>
-                  <h3 className="text-sm sm:text-base font-bold text-[#171717] mb-2 leading-snug">
+                  <h3 className="text-sm sm:text-base font-bold text-ink mb-2 leading-snug">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-[#525252] leading-relaxed">
+                  <p className="text-xs text-ink-muted leading-relaxed">
                     {item.description}
                   </p>
                 </div>

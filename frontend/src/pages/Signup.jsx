@@ -77,24 +77,24 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-[90vh] bg-[#f7f7f4] flex items-center justify-center px-4 py-12">
-      <div className="bg-white rounded-2xl border border-[#e4e2dd] shadow-sm max-w-lg w-full p-8 sm:p-10 text-left space-y-6">
+    <div className="min-h-[90vh] bg-canvas flex items-center justify-center px-4 py-12">
+      <div className="bg-white rounded-2xl border border-line shadow-sm max-w-lg w-full p-8 sm:p-10 text-left space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center mx-auto shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-brand text-white flex items-center justify-center mx-auto shadow-xs">
             <PillIcon className="w-6 h-6 transform -rotate-45" />
           </div>
-          <h1 className="text-2xl font-bold text-[#171717] tracking-tight">
+          <h1 className="text-2xl font-bold text-ink tracking-tight">
             Create your MEDISAVE account
           </h1>
-          <p className="text-xs text-[#525252]">
+          <p className="text-xs text-ink-muted">
             Join the community to list unexpired surplus medicines or request verified treatments.
           </p>
         </div>
 
         {/* Inline Error Alert */}
         {errorMessage && (
-          <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+          <div className="p-3.5 bg-danger-tint border border-danger-line rounded-xl text-xs text-danger font-medium">
             {errorMessage}
           </div>
         )}
@@ -102,8 +102,8 @@ export default function Signup() {
         {/* Signup Form */}
         <form onSubmit={handleSignup} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
-              Full Legal Name <span className="text-rose-600">*</span>
+            <label className="block text-xs font-semibold text-ink mb-1">
+              Full Legal Name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -112,14 +112,14 @@ export default function Signup() {
               onChange={handleChange}
               placeholder="e.g. Dr. Ananya Sharma"
               required
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+              className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#171717] mb-1">
-                Email Address <span className="text-rose-600">*</span>
+              <label className="block text-xs font-semibold text-ink mb-1">
+                Email Address <span className="text-danger">*</span>
               </label>
               <input
                 type="email"
@@ -128,12 +128,12 @@ export default function Signup() {
                 onChange={handleChange}
                 placeholder="name@example.com"
                 required
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#171717] mb-1">
+              <label className="block text-xs font-semibold text-ink mb-1">
                 Phone Number
               </label>
               <input
@@ -142,13 +142,13 @@ export default function Signup() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 98765 43210"
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               City & Residential Locality
             </label>
             <input
@@ -157,20 +157,20 @@ export default function Signup() {
               value={formData.address}
               onChange={handleChange}
               placeholder="e.g. Kothrud, Pune, Maharashtra"
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+              className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-[#171717]">
-                  Password <span className="text-rose-600">*</span>
+                <label className="block text-xs font-semibold text-ink">
+                  Password <span className="text-danger">*</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-[10px] text-[#0f4c42] hover:underline cursor-pointer"
+                  className="text-[10px] text-brand hover:underline cursor-pointer"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -182,13 +182,13 @@ export default function Signup() {
                 onChange={handleChange}
                 placeholder="Minimum 6 characters"
                 required
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#171717] mb-1">
-                Confirm Password <span className="text-rose-600">*</span>
+              <label className="block text-xs font-semibold text-ink mb-1">
+                Confirm Password <span className="text-danger">*</span>
               </label>
               <input
                 type={showPassword ? "text" : "password"}
@@ -197,28 +197,28 @@ export default function Signup() {
                 onChange={handleChange}
                 placeholder="Re-enter password"
                 required
-                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
               />
             </div>
           </div>
 
           <div className="pt-2">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-[#525252] leading-snug">
+            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-ink-muted leading-snug">
               <input
                 type="checkbox"
                 name="termsAgreed"
                 checked={formData.termsAgreed}
                 onChange={handleChange}
                 required
-                className="accent-[#0f4c42] mt-0.5"
+                className="accent-brand mt-0.5"
               />
               <span>
                 I agree to the{" "}
-                <Link to="/terms" className="text-[#0f4c42] underline font-medium">
+                <Link to="/terms" className="text-brand underline font-medium">
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-[#0f4c42] underline font-medium">
+                <Link to="/privacy" className="text-brand underline font-medium">
                   Privacy Policy
                 </Link>
                 , and certify that any medicines I list will be unexpired and in undamaged sealed
@@ -240,11 +240,11 @@ export default function Signup() {
         </form>
 
         {/* Footer Link to Login */}
-        <div className="pt-4 border-t border-[#e4e2dd] text-center text-xs text-[#737373]">
+        <div className="pt-4 border-t border-line text-center text-xs text-ink-subtle">
           Already registered?{" "}
           <Link
             to="/login"
-            className="font-bold text-[#0f4c42] hover:underline ml-1"
+            className="font-bold text-brand hover:underline ml-1"
           >
             Sign In Here
           </Link>

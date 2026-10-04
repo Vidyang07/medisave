@@ -55,18 +55,18 @@ export default function DisposalGuide() {
       : PUNE_DROP_OFF_BINS.filter((b) => b.locality.toLowerCase().includes(selectedLocality.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] text-[#171717] pb-16">
+    <div className="min-h-screen bg-canvas text-ink pb-16">
       {/* Top Hero Banner */}
       <div className="bg-[#1b4332] text-white pt-10 pb-12 px-4 sm:px-6 lg:px-8 border-b border-[#143225]">
         <div className="max-w-7xl mx-auto text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2d6a4f] text-[#b7e4c7] text-xs font-semibold uppercase tracking-wider mb-3">
-            <AlertTriangleIcon className="w-3.5 h-3.5 text-[#d8f3dc]" />
+            <AlertTriangleIcon className="w-3.5 h-3.5 text-success-line" />
             UN SDG 12: Responsible Consumption & Environmental Protection
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Safe Pharmaceutical Disposal & Green Healthcare Guide
           </h1>
-          <p className="mt-2 text-sm text-[#d8f3dc] max-w-3xl leading-relaxed">
+          <p className="mt-2 text-sm text-success-line max-w-3xl leading-relaxed">
             Flushing expired medicines down toilets or throwing them into domestic garbage pollutes Pune's Mula-Mutha river basin and fuels Anti-Microbial Resistance (AMR). Learn how to neutralize and safely drop off expired drugs.
           </p>
 
@@ -93,40 +93,40 @@ export default function DisposalGuide() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 text-left space-y-10">
         {/* Why Safe Disposal Matters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-[#e4e2dd] shadow-2xs">
-            <div className="w-10 h-10 rounded-lg bg-[#ffe4e6] text-[#be123c] flex items-center justify-center font-bold text-lg mb-3">
+          <div className="bg-white p-6 rounded-xl border border-line shadow-2xs">
+            <div className="w-10 h-10 rounded-lg bg-danger-tint text-danger flex items-center justify-center font-bold text-lg mb-3">
               ⚠️
             </div>
-            <h2 className="text-sm font-bold text-[#171717]">Anti-Microbial Resistance (AMR)</h2>
-            <p className="text-xs text-[#525252] mt-2 leading-relaxed">
+            <h2 className="text-sm font-bold text-ink">Anti-Microbial Resistance (AMR)</h2>
+            <p className="text-xs text-ink-muted mt-2 leading-relaxed">
               When leftover antibiotics are discarded into sewers, trace chemicals enter the local water supply. Bacteria mutate into multi-drug resistant superbugs that current medications cannot cure.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-[#e4e2dd] shadow-2xs">
-            <div className="w-10 h-10 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-lg mb-3">
+          <div className="bg-white p-6 rounded-xl border border-line shadow-2xs">
+            <div className="w-10 h-10 rounded-lg bg-brand-tint text-brand flex items-center justify-center font-bold text-lg mb-3">
               🌊
             </div>
-            <h2 className="text-sm font-bold text-[#171717]">Pune River Basin Contamination</h2>
-            <p className="text-xs text-[#525252] mt-2 leading-relaxed">
+            <h2 className="text-sm font-bold text-ink">Pune River Basin Contamination</h2>
+            <p className="text-xs text-ink-muted mt-2 leading-relaxed">
               Municipal sewage treatment plants cannot filter complex synthetic pharmaceutical compounds. Unchecked disposal poisons groundwater and aquatic flora in the Mula-Mutha river.
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-[#e4e2dd] shadow-2xs">
-            <div className="w-10 h-10 rounded-lg bg-[#fef3c7] text-[#92400e] flex items-center justify-center font-bold text-lg mb-3">
+          <div className="bg-white p-6 rounded-xl border border-line shadow-2xs">
+            <div className="w-10 h-10 rounded-lg bg-warning-tint text-warning flex items-center justify-center font-bold text-lg mb-3">
               🛡️
             </div>
-            <h2 className="text-sm font-bold text-[#171717]">Accidental Ingestion Prevention</h2>
-            <p className="text-xs text-[#525252] mt-2 leading-relaxed">
+            <h2 className="text-sm font-bold text-ink">Accidental Ingestion Prevention</h2>
+            <p className="text-xs text-ink-muted mt-2 leading-relaxed">
               Keeping expired or unlabelled medicines in home cabinets leads to dangerous accidental consumption by children, pets, or elderly family members with blurred vision.
             </p>
           </div>
         </div>
 
         {/* Conservative Medical Notice & Safe Disposal Steps */}
-        <div className="bg-white p-6 rounded-xl border border-[#e4e2dd] shadow-2xs space-y-4">
-          <div className="p-3.5 rounded-lg bg-[#fef2f2] border border-[#fecaca] text-[#991b1b] text-xs flex items-start gap-2.5">
+        <div className="bg-white p-6 rounded-xl border border-line shadow-2xs space-y-4">
+          <div className="p-3.5 rounded-lg bg-[#fef2f2] border border-[#fecaca] text-danger text-xs flex items-start gap-2.5">
             <AlertTriangleIcon className="w-4 h-4 text-[#dc2626] shrink-0 mt-0.5" />
             <div>
               <strong className="font-bold block">Medical Safety Advisory:</strong>
@@ -135,41 +135,41 @@ export default function DisposalGuide() {
           </div>
 
           <div className="flex items-center gap-2">
-            <CheckCircleIcon className="w-5 h-5 text-[#0f4c42]" />
-            <h2 className="text-base font-bold text-[#171717]">
+            <CheckCircleIcon className="w-5 h-5 text-brand" />
+            <h2 className="text-base font-bold text-ink">
               Safe Household Disposal Steps (When Dedicated Drop-Off Bins Are Inaccessible)
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd]">
-              <span className="text-xs font-black text-[#0f4c42] block mb-1">Step 01</span>
-              <h3 className="text-xs font-bold text-[#171717]">Do NOT Crush Tablets</h3>
-              <p className="text-[11px] text-[#525252] mt-1">
+            <div className="p-4 bg-surface-alt rounded-xl border border-line">
+              <span className="text-xs font-black text-brand block mb-1">Step 01</span>
+              <h3 className="text-xs font-bold text-ink">Do NOT Crush Tablets</h3>
+              <p className="text-[11px] text-ink-muted mt-1">
                 Keep tablets whole to avoid releasing active chemical airborne particles into household air.
               </p>
             </div>
 
-            <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd]">
-              <span className="text-xs font-black text-[#0f4c42] block mb-1">Step 02</span>
-              <h3 className="text-xs font-bold text-[#171717]">Mix with Undesirable Waste</h3>
-              <p className="text-[11px] text-[#525252] mt-1">
+            <div className="p-4 bg-surface-alt rounded-xl border border-line">
+              <span className="text-xs font-black text-brand block mb-1">Step 02</span>
+              <h3 className="text-xs font-bold text-ink">Mix with Undesirable Waste</h3>
+              <p className="text-[11px] text-ink-muted mt-1">
                 Mix tablets with used coffee grounds, wet soil, or cat litter to make them unpalatable to stray animals.
               </p>
             </div>
 
-            <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd]">
-              <span className="text-xs font-black text-[#0f4c42] block mb-1">Step 03</span>
-              <h3 className="text-xs font-bold text-[#171717]">Seal in a Container</h3>
-              <p className="text-[11px] text-[#525252] mt-1">
+            <div className="p-4 bg-surface-alt rounded-xl border border-line">
+              <span className="text-xs font-black text-brand block mb-1">Step 03</span>
+              <h3 className="text-xs font-bold text-ink">Seal in a Container</h3>
+              <p className="text-[11px] text-ink-muted mt-1">
                 Place the mixture in a leak-proof sealable pouch or plastic container to prevent liquid seepage.
               </p>
             </div>
 
-            <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd]">
-              <span className="text-xs font-black text-[#0f4c42] block mb-1">Step 04</span>
-              <h3 className="text-xs font-bold text-[#171717]">Scratch Out Patient Details</h3>
-              <p className="text-[11px] text-[#525252] mt-1">
+            <div className="p-4 bg-surface-alt rounded-xl border border-line">
+              <span className="text-xs font-black text-brand block mb-1">Step 04</span>
+              <h3 className="text-xs font-bold text-ink">Scratch Out Patient Details</h3>
+              <p className="text-[11px] text-ink-muted mt-1">
                 Deface prescription labels, doctor names, and patient PRNs with a permanent marker before recycling packaging.
               </p>
             </div>
@@ -180,11 +180,11 @@ export default function DisposalGuide() {
         <div id="drop-off-bins" className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-[#171717] flex items-center gap-2">
-                <MapPinIcon className="w-5 h-5 text-[#0f4c42]" />
+              <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+                <MapPinIcon className="w-5 h-5 text-brand" />
                 Pune Safe Pharmaceutical Drop-Off Bins & Collection Centers
               </h2>
-              <p className="text-xs text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-md mt-1 inline-block">
+              <p className="text-xs text-warning bg-warning-tint border border-warning-line px-3 py-1 rounded-md mt-1 inline-block">
                 ⚠️ <em>Example disposal locations — verify availability before visiting. Prototype educational guide for community awareness.</em>
               </p>
             </div>
@@ -193,7 +193,7 @@ export default function DisposalGuide() {
               <select
                 value={selectedLocality}
                 onChange={(e) => setSelectedLocality(e.target.value)}
-                className="text-xs bg-white border border-[#e4e2dd] rounded-lg px-3 py-1.5 font-medium text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+                className="text-xs bg-white border border-line rounded-lg px-3 py-1.5 font-medium text-ink focus:outline-none focus:ring-2 focus:ring-brand"
               >
                 <option value="All">All Localities</option>
                 <option value="Dhankawadi">Dhankawadi</option>
@@ -205,27 +205,27 @@ export default function DisposalGuide() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredBins.map((bin, idx) => (
-              <div key={idx} className="bg-white p-5 rounded-xl border border-[#e4e2dd] shadow-2xs space-y-3">
+              <div key={idx} className="bg-white p-5 rounded-xl border border-line shadow-2xs space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-bold text-[#171717]">{bin.name}</h3>
-                  <span className="text-[10px] bg-[#e8f3f1] text-[#0f4c42] font-bold px-2 py-0.5 rounded uppercase">
+                  <h3 className="text-sm font-bold text-ink">{bin.name}</h3>
+                  <span className="text-[10px] bg-brand-tint text-brand font-bold px-2 py-0.5 rounded uppercase">
                     {bin.locality}
                   </span>
                 </div>
 
-                <div className="text-xs text-[#525252] space-y-1">
+                <div className="text-xs text-ink-muted space-y-1">
                   <p className="flex items-center gap-1.5">
-                    <MapPinIcon className="w-3.5 h-3.5 text-[#0f4c42] shrink-0" />
+                    <MapPinIcon className="w-3.5 h-3.5 text-brand shrink-0" />
                     <span>{bin.address}</span>
                   </p>
                   <p>
-                    <span className="font-semibold text-[#171717]">Operating Hours:</span> {bin.timing}
+                    <span className="font-semibold text-ink">Operating Hours:</span> {bin.timing}
                   </p>
                   <p>
-                    <span className="font-semibold text-[#171717]">Accepted Items:</span> {bin.accepted}
+                    <span className="font-semibold text-ink">Accepted Items:</span> {bin.accepted}
                   </p>
-                  <p className="text-[11px] text-[#737373] pt-1">
-                    Managed by: <span className="font-semibold text-[#262626]">{bin.managedBy}</span>
+                  <p className="text-[11px] text-ink-subtle pt-1">
+                    Managed by: <span className="font-semibold text-ink">{bin.managedBy}</span>
                   </p>
                 </div>
               </div>

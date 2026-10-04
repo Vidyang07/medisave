@@ -44,7 +44,7 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <ToastProvider>
-          <div className="min-h-screen flex flex-col bg-[#f7f7f4] text-[#171717] font-sans">
+          <div className="min-h-screen flex flex-col bg-canvas text-ink font-sans">
             <ScrollToTop />
             <Navbar />
 

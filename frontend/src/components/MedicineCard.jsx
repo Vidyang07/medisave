@@ -34,8 +34,8 @@ export default function MedicineCard({ medicine }) {
 
     if (proximity.tier === "nearby") {
       return (
-        <span className="inline-flex items-center gap-1 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
-          <MapPinIcon className="w-3 h-3 text-emerald-200" />
+        <span className="inline-flex items-center gap-1 bg-success text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
+          <MapPinIcon className="w-3 h-3 text-success-line" />
           Nearby · {proximity.distanceKm} km
         </span>
       );
@@ -49,7 +49,7 @@ export default function MedicineCard({ medicine }) {
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 bg-amber-700 text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-2xs">
+      <span className="inline-flex items-center gap-1 bg-warning text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-2xs">
         <MapPinIcon className="w-3 h-3" />
         {proximity.distanceKm} km away
       </span>
@@ -57,10 +57,10 @@ export default function MedicineCard({ medicine }) {
   };
 
   return (
-    <div className="group bg-white rounded-xl border border-[#e4e2dd] hover:border-[#0f4c42] transition-all duration-150 flex flex-col justify-between overflow-hidden shadow-2xs">
+    <div className="group bg-white rounded-xl border border-line hover:border-brand transition-all duration-150 flex flex-col justify-between overflow-hidden shadow-2xs">
       <div>
         {/* Card Header & Product Image */}
-        <div className="relative bg-[#f7f7f4] border-b border-[#eceae5] overflow-hidden aspect-16/10">
+        <div className="relative bg-canvas border-b border-line-soft overflow-hidden aspect-16/10">
           <img
             src={image}
             alt={title}
@@ -73,8 +73,8 @@ export default function MedicineCard({ medicine }) {
             {proximity ? (
               getProximityBadge()
             ) : (
-              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-2xs text-[#0f4c42] text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs border border-[#c4ded9]">
-                <ShieldCheckIcon className="w-3 h-3 text-[#0f4c42]" />
+              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-2xs text-brand text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs border border-brand-line">
+                <ShieldCheckIcon className="w-3 h-3 text-brand" />
                 Verified Pack
               </span>
             )}
@@ -88,8 +88,8 @@ export default function MedicineCard({ medicine }) {
           {/* Expiry Pill */}
           {expiryDisplay && (
             <div className="absolute bottom-2.5 right-2.5">
-              <span className="inline-flex items-center gap-1 bg-[#171717]/85 backdrop-blur-2xs text-white text-[10px] font-medium px-2 py-0.5 rounded">
-                <ClockIcon className="w-3 h-3 text-[#a7f3d0]" />
+              <span className="inline-flex items-center gap-1 bg-ink/85 backdrop-blur-2xs text-white text-[10px] font-medium px-2 py-0.5 rounded">
+                <ClockIcon className="w-3 h-3 text-success-line" />
                 Exp: {expiryDisplay}
               </span>
             </div>
@@ -99,12 +99,12 @@ export default function MedicineCard({ medicine }) {
         {/* Card Body */}
         <div className="p-3.5 sm:p-4 space-y-2 text-left">
           {/* Category & Dosage Tag */}
-          <div className="flex items-center justify-between text-[11px] text-[#737373]">
-            <span className="font-bold text-[#0f4c42] uppercase tracking-wider text-[10px]">
+          <div className="flex items-center justify-between text-[11px] text-ink-subtle">
+            <span className="font-bold text-brand uppercase tracking-wider text-[10px]">
               {category}
             </span>
             {dosageForm && (
-              <span className="text-[#737373]">{dosageForm}</span>
+              <span className="text-ink-subtle">{dosageForm}</span>
             )}
           </div>
 
@@ -112,35 +112,35 @@ export default function MedicineCard({ medicine }) {
           <div>
             <Link
               to={`/medicine/${medId}`}
-              className="font-bold text-[#171717] text-sm sm:text-base leading-snug group-hover:text-[#0f4c42] transition line-clamp-1"
+              className="font-bold text-ink text-sm sm:text-base leading-snug group-hover:text-brand transition line-clamp-1"
             >
               {title}
             </Link>
-            <p className="text-xs text-[#525252] truncate mt-0.5" title={generic}>
+            <p className="text-xs text-ink-muted truncate mt-0.5" title={generic}>
               {generic}
             </p>
           </div>
 
           {/* Manufacturer & Strength */}
-          <div className="flex items-center justify-between text-xs text-[#525252] pt-1.5 border-t border-[#eceae5]">
+          <div className="flex items-center justify-between text-xs text-ink-muted pt-1.5 border-t border-line-soft">
             <span className="truncate max-w-[140px] font-medium">
               {company}
             </span>
             {strength && (
-              <span className="font-mono text-[11px] bg-[#f2f1ec] px-1.5 py-0.5 rounded text-[#262626] font-semibold">
+              <span className="font-mono text-[11px] bg-sunken px-1.5 py-0.5 rounded text-ink font-semibold">
                 {strength}
               </span>
             )}
           </div>
 
           {/* Handover Point & Locality */}
-          <div className="flex items-start gap-1 text-[11px] text-[#525252] bg-[#fafaf7] p-2 rounded-lg border border-[#e4e2dd]">
-            <MapPinIcon className="w-3.5 h-3.5 text-[#0f4c42] shrink-0 mt-0.5" />
+          <div className="flex items-start gap-1 text-[11px] text-ink-muted bg-surface-alt p-2 rounded-lg border border-line">
+            <MapPinIcon className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <span className="font-semibold text-[#171717] block truncate">
+              <span className="font-semibold text-ink block truncate">
                 Handover: {handoverPoint}
               </span>
-              <span className="text-[10px] text-[#737373] block truncate">
+              <span className="text-[10px] text-ink-subtle block truncate">
                 Locality: {locality}
               </span>
             </div>
@@ -149,12 +149,12 @@ export default function MedicineCard({ medicine }) {
       </div>
 
       {/* Card Footer: 100% Free Donation Status & Action CTA */}
-      <div className="p-3.5 sm:p-4 pt-2.5 border-t border-[#eceae5] bg-[#fafaf7] flex items-center justify-between gap-2">
+      <div className="p-3.5 sm:p-4 pt-2.5 border-t border-line-soft bg-surface-alt flex items-center justify-between gap-2">
         <div className="flex flex-col text-left">
-          <span className="text-xs font-bold text-[#065f46] bg-[#d1fae5] px-2 py-0.5 rounded-md inline-block">
+          <span className="text-xs font-bold text-success bg-success-tint px-2 py-0.5 rounded-md inline-block">
             🎁 100% Free Donation
           </span>
-          <span className="text-[10px] text-[#737373] mt-0.5">
+          <span className="text-[10px] text-ink-subtle mt-0.5">
             Available: {quantity} {unit}
           </span>
         </div>
@@ -162,7 +162,7 @@ export default function MedicineCard({ medicine }) {
         <div className="flex items-center gap-1.5">
           <Link
             to={`/medicine/${medId}`}
-            className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-[#0f4c42] hover:bg-[#0a362f] text-white transition shadow-2xs flex items-center gap-1"
+            className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-brand hover:bg-brand-strong text-white transition shadow-2xs flex items-center gap-1"
           >
             <span>View Details</span>
           </Link>

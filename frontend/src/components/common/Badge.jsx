@@ -11,14 +11,14 @@ export function Badge({
   };
 
   const variantStyles = {
-    default: "bg-[#f2f1ec] text-[#525252] border-[#e4e2dd]",
-    success: "bg-[#ecfdf5] text-[#065f46] border-[#a7f3d0]",
-    verified: "bg-[#e8f3f1] text-[#0f4c42] border-[#c4ded9] font-semibold",
-    warning: "bg-[#fffbeb] text-[#92400e] border-[#fde68a]",
-    danger: "bg-[#fff1f2] text-[#9f1239] border-[#fecdd3]",
+    default: "bg-sunken text-ink-muted border-line",
+    success: "bg-success-tint text-success border-success-line",
+    verified: "bg-brand-tint text-brand border-brand-line font-semibold",
+    warning: "bg-warning-tint text-warning border-warning-line",
+    danger: "bg-danger-tint text-danger border-danger-line",
     info: "bg-[#f0f9ff] text-[#0369a1] border-[#bae6fd]",
-    brand: "bg-[#0f4c42] text-white border-transparent",
-    outline: "bg-transparent text-[#525252] border-[#e4e2dd]",
+    brand: "bg-brand text-white border-transparent",
+    outline: "bg-transparent text-ink-muted border-line",
     prescription: "bg-[#f5f3ff] text-[#5b21b6] border-[#ddd6fe] font-medium",
   };
 

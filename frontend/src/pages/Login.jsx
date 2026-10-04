@@ -48,30 +48,30 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[85vh] bg-[#f7f7f4] flex items-center justify-center px-4 py-12">
-      <div className="bg-white rounded-2xl border border-[#e4e2dd] shadow-sm max-w-md w-full p-8 sm:p-10 text-left space-y-6">
+    <div className="min-h-[85vh] bg-canvas flex items-center justify-center px-4 py-12">
+      <div className="bg-white rounded-2xl border border-line shadow-sm max-w-md w-full p-8 sm:p-10 text-left space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center mx-auto shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-brand text-white flex items-center justify-center mx-auto shadow-xs">
             <PillIcon className="w-6 h-6 transform -rotate-45" />
           </div>
-          <h1 className="text-2xl font-bold text-[#171717] tracking-tight">
+          <h1 className="text-2xl font-bold text-ink tracking-tight">
             Sign in to MEDISAVE
           </h1>
-          <p className="text-xs text-[#525252]">
+          <p className="text-xs text-ink-muted">
             Access your medicine listings, orders, prescriptions, and verified requests.
           </p>
         </div>
 
         {/* Security Notice */}
-        <div className="p-3 bg-[#fafaf7] border border-[#e4e2dd] rounded-xl flex items-center gap-2 text-xs text-[#525252]">
-          <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0" />
+        <div className="p-3 bg-surface-alt border border-line rounded-xl flex items-center gap-2 text-xs text-ink-muted">
+          <ShieldCheckIcon className="w-4 h-4 text-brand shrink-0" />
           <span>Encrypted healthcare authentication and community verification.</span>
         </div>
 
         {/* Inline Error Alert */}
         {errorMessage && (
-          <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+          <div className="p-3.5 bg-danger-tint border border-danger-line rounded-xl text-xs text-danger font-medium">
             {errorMessage}
           </div>
         )}
@@ -79,7 +79,7 @@ export default function Login() {
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-[#171717] mb-1">
+            <label className="block text-xs font-semibold text-ink mb-1">
               Email Address
             </label>
             <input
@@ -89,19 +89,19 @@ export default function Login() {
               placeholder="name@example.com"
               required
               autoComplete="email"
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+              className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-[#171717]">
+              <label className="block text-xs font-semibold text-ink">
                 Password
               </label>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-[11px] text-[#0f4c42] hover:underline cursor-pointer"
+                className="text-[11px] text-brand hover:underline cursor-pointer"
               >
                 {showPassword ? "Hide password" : "Show password"}
               </button>
@@ -113,16 +113,16 @@ export default function Login() {
               placeholder="Enter your password"
               required
               autoComplete="current-password"
-              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+              className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-[#525252] pt-1">
+          <div className="flex items-center justify-between text-xs text-ink-muted pt-1">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 defaultChecked
-                className="accent-[#0f4c42]"
+                className="accent-brand"
               />
               <span>Remember this device</span>
             </label>
@@ -141,11 +141,11 @@ export default function Login() {
         </form>
 
         {/* Footer Link to Signup */}
-        <div className="pt-4 border-t border-[#e4e2dd] text-center text-xs text-[#737373]">
+        <div className="pt-4 border-t border-line text-center text-xs text-ink-subtle">
           Don't have an account yet?{" "}
           <Link
             to="/signup"
-            className="font-bold text-[#0f4c42] hover:underline ml-1"
+            className="font-bold text-brand hover:underline ml-1"
           >
             Create an Account
           </Link>
