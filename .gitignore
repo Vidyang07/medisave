@@ -14,11 +14,12 @@ frontend/.env
 frontend/.env.*
 !frontend/.env.example
 
-# Production Builds
+# Production Builds & Archives
 dist/
 dist-ssr/
 frontend/dist/
 build/
+*.zip
 
 # Uploads & User Generated Documents
 backend/uploads/prescriptions/*

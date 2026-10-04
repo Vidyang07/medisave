@@ -908,3 +908,45 @@ export const moderatePartner = async (req, res) => {
   }
 };
 
+// @desc    Unlock handover verification for a medicine after failed attempts lockout
+// @route   POST /api/admin/medicines/:id/unlock-handover
+// @access  Private (Admin only)
+export const unlockMedicineHandover = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid medicine ID format",
+      });
+    }
+
+    const medicine = await Medicine.findById(id);
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "Medicine not found",
+      });
+    }
+
+    medicine.handoverFailedAttempts = 0;
+    medicine.handoverLocked = false;
+    await medicine.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Handover verification successfully unlocked by platform administrator.",
+      data: medicine,
+    });
+  } catch (error) {
+    console.error("Unlock Handover Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error unlocking handover verification",
+      error: error.message,
+    });
+  }
+};
+
+

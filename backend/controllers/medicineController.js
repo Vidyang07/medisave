@@ -11,6 +11,52 @@ import {
   getProximityInfo,
 } from "../config/localityConstants.js";
 
+export const COLD_CHAIN_KEYWORDS = [
+  "insulin",
+  "human insulin",
+  "glargine",
+  "lispro",
+  "aspart",
+  "erythropoietin",
+  "filgrastim",
+  "interferon",
+  "monoclonal",
+  "vaccine",
+  "rituximab",
+  "trastuzumab",
+  "octreotide",
+  "somatropin",
+  "enoxaparin",
+  "immunoglobulin",
+  "botox",
+  "botulinum",
+];
+
+export const SCHEDULE_X_KEYWORDS = [
+  "fentanyl",
+  "morphine",
+  "methadone",
+  "oxycodone",
+  "pethidine",
+  "ketamine",
+  "methylphenidate",
+  "amphetamine",
+  "secobarbital",
+  "pentobarbital",
+  "phencyclidine",
+  "codeine",
+  "buprenorphine",
+  "diazepam",
+  "lorazepam",
+  "alprazolam",
+  "clonazepam",
+  "tramadol",
+  "zolpidem",
+  "pentazocine",
+  "hydrocodone",
+  "oxymorphone",
+];
+
 // @desc    Get all medicines with search, filters, sorting & pagination
 // @route   GET /api/medicines
 // @access  Public
@@ -32,8 +78,8 @@ export const getMedicines = async (req, res) => {
 
     const query = {};
 
-    // 1. Status filter: Default to approved medicines for public marketplace
-    if (status && ["pending", "approved", "rejected", "sold"].includes(status)) {
+    // 1. Status filter: For public catalog, strictly restrict to approved medicines
+    if (req.user && req.user.role === "admin" && status && ["pending", "approved", "rejected", "accepted", "completed"].includes(status)) {
       query.status = status;
     } else {
       query.status = "approved";
@@ -41,7 +87,8 @@ export const getMedicines = async (req, res) => {
 
     // 2. Text Search (matches medicineName, brandName, company, genericName, locality, or category)
     if (search && search.trim()) {
-      const searchRegex = new RegExp(search.trim(), "i");
+      const sanitizedSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = new RegExp(sanitizedSearch, "i");
       query.$or = [
         { medicineName: searchRegex },
         { brandName: searchRegex },
@@ -77,7 +124,7 @@ export const getMedicines = async (req, res) => {
 
     // 7. Locality Filter (if specified)
     if (locality && locality !== "All Localities" && locality !== "All") {
-      query.locality = new RegExp(locality.trim(), "i");
+      query.locality = new RegExp(locality.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     }
 
     // 8. Listing Type Filter (free_donation vs subsidized_community_rate)
@@ -86,7 +133,7 @@ export const getMedicines = async (req, res) => {
       query.listingType = listingType;
     }
 
-    // 8. Sorting & Proximity
+    // 9. Sorting & Proximity
     const isNearbySort = sort === "nearby";
     let sortOptions = { createdAt: -1 };
     if (sort === "price-low") {
@@ -109,7 +156,7 @@ export const getMedicines = async (req, res) => {
     if (isNearbySort) {
       // For nearby sorting: fetch candidates and sort deterministically by Haversine distance
       const allCandidates = await Medicine.find(query)
-        .populate("seller", "name email phone address avatar isVerified createdAt");
+        .populate("seller", "name locality avatar isVerified createdAt");
 
       const enriched = allCandidates.map((med) => {
         const medObj = med.toObject ? med.toObject({ virtuals: true }) : med;
@@ -150,7 +197,7 @@ export const getMedicines = async (req, res) => {
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum)
-      .populate("seller", "name email phone address avatar isVerified createdAt");
+      .populate("seller", "name locality avatar isVerified createdAt");
 
     const mapped = medicines.map((med) => {
       const medObj = med.toObject ? med.toObject({ virtuals: true }) : med;
@@ -203,7 +250,7 @@ export const getMedicineById = async (req, res) => {
 
     const medicine = await Medicine.findById(id).populate(
       "seller",
-      "name email phone address avatar isVerified createdAt"
+      "name locality avatar isVerified createdAt"
     );
 
     if (!medicine) {
@@ -271,11 +318,12 @@ export const getPartnerAvailableDonations = async (req, res) => {
     }
 
     if (locality && locality !== "All Localities" && locality !== "All") {
-      query.locality = new RegExp(locality.trim(), "i");
+      query.locality = new RegExp(locality.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     }
 
     if (search && search.trim()) {
-      const searchRegex = new RegExp(search.trim(), "i");
+      const sanitizedSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = new RegExp(sanitizedSearch, "i");
       query.$or = [
         { medicineName: searchRegex },
         { brandName: searchRegex },
@@ -287,7 +335,7 @@ export const getPartnerAvailableDonations = async (req, res) => {
     }
 
     const medicines = await Medicine.find(query)
-      .populate("seller", "name email phone address locality isVerified")
+      .populate("seller", "name locality isVerified avatar")
       .sort({ expiryDate: 1, createdAt: -1 });
 
     const enriched = medicines.map((med) => {
@@ -379,7 +427,7 @@ export const acceptDonationByPartner = async (req, res) => {
     await medicine.save();
 
     const populated = await Medicine.findById(medicine._id)
-      .populate("seller", "name email phone address locality isVerified")
+      .populate("seller", "name phone locality isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
@@ -541,7 +589,7 @@ export const verifyDonationHandover = async (req, res) => {
     await medicine.save();
 
     const populated = await Medicine.findById(medicine._id)
-      .populate("seller", "name email phone address locality isVerified")
+      .populate("seller", "name phone locality isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
@@ -573,7 +621,7 @@ export const getPartnerAcceptedDonations = async (req, res) => {
 
     const medicines = await Medicine.find(query)
       .sort({ acceptedAt: -1, createdAt: -1 })
-      .populate("seller", "name email phone address locality isVerified")
+      .populate("seller", "name phone locality isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
@@ -615,7 +663,7 @@ export const calculatePricingProposal = async (req, res) => {
   }
 };
 
-// @desc    Create / list a new medicine
+// @desc    Create / list a new medicine (100% Free Community Donation)
 // @route   POST /api/medicines
 // @access  Private
 export const createMedicine = async (req, res) => {
@@ -630,7 +678,6 @@ export const createMedicine = async (req, res) => {
       dosageForm,
       quantity,
       unit,
-      price,
       originalMrp,
       expiryDate,
       batchNumber,
@@ -643,30 +690,24 @@ export const createMedicine = async (req, res) => {
       pinCode,
       handoverPoint,
       handoverRadiusKm,
-      pricingRationale,
-      suggestedCommunityPrice,
-      listingType,
       targetBeneficiary,
     } = req.body;
 
     const finalName = medicineName || brandName;
 
     // 1. Required field validation
-    if (!finalName || !company || !category || quantity === undefined || price === undefined || !expiryDate) {
+    if (!finalName || !company || !category || quantity === undefined || !expiryDate) {
       return res.status(400).json({
         success: false,
-        message: "Please fill all required fields: name, company, category, quantity, price, and expiry date",
+        message: "Please fill all required fields: name, company, category, quantity, and expiry date",
       });
     }
 
     // 2. Numeric validation
     const numQty = Number(quantity);
-    const numPrice = Number(price);
     const numMrp =
       originalMrp !== undefined && originalMrp !== "" && Number(originalMrp) > 0
         ? Number(originalMrp)
-        : numPrice > 0
-        ? Math.round(numPrice * 1.5)
         : 50;
 
     if (isNaN(numQty) || numQty < 1) {
@@ -676,14 +717,7 @@ export const createMedicine = async (req, res) => {
       });
     }
 
-    if (isNaN(numPrice) || numPrice < 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Price cannot be negative",
-      });
-    }
-
-    // 3. Expiry date validation
+    // 3. Expiry date validation with 90-day minimum buffer
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const expiry = new Date(expiryDate);
@@ -702,18 +736,30 @@ export const createMedicine = async (req, res) => {
       });
     }
 
-    // 3.1 Safety checks: Cold-chain, Schedule X, and Opened Packages
-    if (req.body.isColdChain) {
+    const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 90) {
       return res.status(400).json({
         success: false,
-        message: "Cold-chain medicines requiring specialized temperature maintenance cannot be accepted for community redistribution. Eligibility rules implemented for this academic prototype.",
+        message: `Medicine expires in ${diffDays} days. MEDISAVE requires at least 90 days remaining shelf life for community donation safety.`,
       });
     }
 
-    if (req.body.isScheduleX) {
+    // 4. Safety checks: Cold-chain, Schedule X, and Opened Packages
+    const combinedSafetyText = `${finalName} ${brandName || ""} ${genericName || ""} ${company || ""} ${description || ""}`.toLowerCase();
+
+    const isCold = Boolean(req.body.isColdChain) || COLD_CHAIN_KEYWORDS.some((kw) => combinedSafetyText.includes(kw));
+    if (isCold) {
       return res.status(400).json({
         success: false,
-        message: "Schedule X narcotics and heavily controlled substances cannot be listed on MEDISAVE. Eligibility rules implemented for this academic prototype.",
+        message: "Cold-chain medicines requiring specialized temperature maintenance cannot be accepted for community redistribution. Eligibility rules enforced for safety.",
+      });
+    }
+
+    const isNarcotic = Boolean(req.body.isScheduleX) || SCHEDULE_X_KEYWORDS.some((kw) => combinedSafetyText.includes(kw));
+    if (isNarcotic) {
+      return res.status(400).json({
+        success: false,
+        message: "Schedule X narcotics and heavily controlled substances cannot be listed on MEDISAVE. Eligibility rules enforced for safety.",
       });
     }
 
@@ -731,28 +777,7 @@ export const createMedicine = async (req, res) => {
       });
     }
 
-    // 4. Backend Pricing Policy Validation
-    const priceValidation = validateSubmittedPrice({
-      price: numPrice,
-      originalMrp: numMrp,
-      expiryDate: expiry,
-    });
-
-    if (!priceValidation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: priceValidation.error,
-        maxAllowedPrice: priceValidation.maxAllowedPrice,
-      });
-    }
-
-    // 5. Deterministic Suggested Price and Locality Resolution
-    const suggestedCalc = calculateSuggestedPrice({
-      originalMrp: numMrp,
-      packageCondition: packageCondition || "Intact Sealed Blister Pack",
-      expiryDate: expiry,
-    });
-
+    // 5. Locality Resolution
     const locData = findLocality(locality || "Katraj");
     const resolvedLocality = locData?.name || locality?.trim() || "Katraj";
     const resolvedPin = pinCode?.trim() || locData?.pinCode || "411046";
@@ -763,7 +788,7 @@ export const createMedicine = async (req, res) => {
     const resolvedHandoverPoint = handoverPoint?.trim() || locData?.defaultHandover || "Community Landmark / Main Gate";
     const resolvedRadius = Number(handoverRadiusKm) || 5;
 
-    // 6. Create medicine with seller bound to authenticated user
+    // 6. Create medicine with seller bound to authenticated user (Forced 100% Free Donation)
     const medicine = await Medicine.create({
       medicineName: finalName.trim(),
       brandName: (brandName || finalName).trim(),
@@ -774,7 +799,7 @@ export const createMedicine = async (req, res) => {
       dosageForm: dosageForm || "Tablet",
       quantity: numQty,
       unit: unit ? unit.trim() : "1 pack",
-      price: numPrice,
+      price: 0,
       originalMrp: numMrp,
       expiryDate: expiry,
       batchNumber: batchNumber ? batchNumber.trim() : "",
@@ -790,15 +815,15 @@ export const createMedicine = async (req, res) => {
       handoverPoint: resolvedHandoverPoint,
       handoverRadiusKm: resolvedRadius,
       locationCoordinates: resolvedCoords,
-      pricingRationale: pricingRationale || suggestedCalc.rationale,
-      suggestedCommunityPrice: suggestedCommunityPrice !== undefined ? Number(suggestedCommunityPrice) : suggestedCalc.suggestedPrice,
-      listingType: listingType || (numPrice === 0 ? "free_donation" : "subsidized_community_rate"),
+      pricingRationale: "100% Free Verified Community Medicine Donation",
+      suggestedCommunityPrice: 0,
+      listingType: "free_donation",
       targetBeneficiary: targetBeneficiary || "General Community",
     });
 
     const populatedMedicine = await Medicine.findById(medicine._id).populate(
       "seller",
-      "name email phone address avatar isVerified createdAt"
+      "name locality avatar isVerified createdAt"
     );
 
     return res.status(201).json({
@@ -816,7 +841,7 @@ export const createMedicine = async (req, res) => {
   }
 };
 
-// @desc    Update an existing medicine listing
+// @desc    Update an existing medicine listing (Donors cannot bypass moderation or set price)
 // @route   PUT /api/medicines/:id
 // @access  Private (Owner or Admin)
 export const updateMedicine = async (req, res) => {
@@ -863,31 +888,52 @@ export const updateMedicine = async (req, res) => {
           message: "Updated expiry date must be a valid future date",
         });
       }
+
+      const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays < 90) {
+        return res.status(400).json({
+          success: false,
+          message: `Updated medicine expires in ${diffDays} days. MEDISAVE requires at least 90 days remaining shelf life.`,
+        });
+      }
       targetExpiry = expiry;
     }
 
-    const targetPrice = req.body.price !== undefined ? Number(req.body.price) : medicine.price;
-    const targetMrp = req.body.originalMrp !== undefined ? Number(req.body.originalMrp) : medicine.originalMrp;
+    // Safety checks on updated contents
+    const combinedSafetyText = `${req.body.medicineName || medicine.medicineName || ""} ${req.body.brandName || medicine.brandName || ""} ${req.body.genericName || medicine.genericName || ""} ${req.body.description || medicine.description || ""}`.toLowerCase();
 
-    // Validate pricing rules if price or MRP is changed
-    if (req.body.price !== undefined || req.body.originalMrp !== undefined || req.body.expiryDate !== undefined) {
-      const priceValidation = validateSubmittedPrice({
-        price: targetPrice,
-        originalMrp: targetMrp,
-        expiryDate: targetExpiry,
+    if (req.body.isColdChain || COLD_CHAIN_KEYWORDS.some((kw) => combinedSafetyText.includes(kw))) {
+      return res.status(400).json({
+        success: false,
+        message: "Cold-chain medicines requiring specialized temperature maintenance cannot be accepted for community redistribution.",
       });
+    }
 
-      if (!priceValidation.valid) {
+    if (req.body.isScheduleX || SCHEDULE_X_KEYWORDS.some((kw) => combinedSafetyText.includes(kw))) {
+      return res.status(400).json({
+        success: false,
+        message: "Schedule X narcotics and heavily controlled substances cannot be listed on MEDISAVE.",
+      });
+    }
+
+    if (req.body.packageCondition) {
+      const cond = req.body.packageCondition.toLowerCase();
+      if (
+        cond.includes("opened") ||
+        cond.includes("cut strip") ||
+        cond.includes("broken") ||
+        cond.includes("unsealed") ||
+        cond.includes("punctured")
+      ) {
         return res.status(400).json({
           success: false,
-          message: priceValidation.error,
-          maxAllowedPrice: priceValidation.maxAllowedPrice,
+          message: "Opened, cut, or unsealed packages are strictly ineligible for community redistribution.",
         });
       }
     }
 
-    // Update allowed fields
-    const updatableFields = [
+    // Safe allowed fields for donors (disallow status, price, handoverCode, acceptedBy bypass)
+    const allowedDonorFields = [
       "medicineName",
       "brandName",
       "genericName",
@@ -897,29 +943,45 @@ export const updateMedicine = async (req, res) => {
       "dosageForm",
       "quantity",
       "unit",
-      "price",
       "originalMrp",
-      "expiryDate",
       "batchNumber",
       "packageCondition",
       "storageCondition",
       "isPrescriptionRequired",
       "image",
       "description",
-      "status",
       "locality",
       "pinCode",
       "handoverPoint",
       "handoverRadiusKm",
-      "pricingRationale",
-      "suggestedCommunityPrice",
+      "targetBeneficiary",
     ];
 
-    updatableFields.forEach((field) => {
+    allowedDonorFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         medicine[field] = req.body[field];
       }
     });
+
+    if (req.body.expiryDate) {
+      medicine.expiryDate = targetExpiry;
+    }
+
+    // Enforce 100% free donation platform rules
+    medicine.price = 0;
+    medicine.listingType = "free_donation";
+    medicine.suggestedCommunityPrice = 0;
+    medicine.pricingRationale = "100% Free Verified Community Medicine Donation";
+
+    // If donor edits listing details, reset status to pending for coordinator re-moderation
+    if (!isAdmin) {
+      medicine.status = "pending";
+      medicine.acceptedBy = null;
+      medicine.acceptedAt = null;
+      medicine.handoverCode = null;
+    } else if (req.body.status && ["pending", "approved", "rejected", "accepted", "completed"].includes(req.body.status)) {
+      medicine.status = req.body.status;
+    }
 
     // If locality was updated, update coordinates
     if (req.body.locality) {
@@ -935,12 +997,12 @@ export const updateMedicine = async (req, res) => {
     const updatedMedicine = await medicine.save();
     const populated = await Medicine.findById(updatedMedicine._id).populate(
       "seller",
-      "name email phone address avatar isVerified createdAt"
+      "name locality avatar isVerified createdAt"
     );
 
     return res.status(200).json({
       success: true,
-      message: "Medicine updated successfully",
+      message: isAdmin ? "Medicine updated successfully" : "Medicine updated and resubmitted for community moderation",
       data: populated,
     });
   } catch (error) {

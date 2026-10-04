@@ -114,6 +114,11 @@ export const registerUser = async (req, res) => {
   }
 };
 
+// In-memory rate limiting map for login attempts: max 5 failed attempts per 15-minute window
+const loginAttempts = new Map();
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
 // @desc    Authenticate user & get token
 // @route   POST /api/auth/login
 // @access  Public
@@ -128,10 +133,37 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    const clientIp = req.ip || req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "local";
+    const normalizedEmail = email.toLowerCase().trim();
+    const rateKey = `${clientIp}_${normalizedEmail}`;
+    const now = Date.now();
+
+    const attemptRecord = loginAttempts.get(rateKey);
+
+    if (attemptRecord && attemptRecord.lockedUntil && now < attemptRecord.lockedUntil) {
+      const remainingMinutes = Math.ceil((attemptRecord.lockedUntil - now) / (60 * 1000));
+      return res.status(429).json({
+        success: false,
+        message: `Too many failed login attempts. Account temporarily locked. Please try again in ${remainingMinutes} minute(s).`,
+      });
+    }
+
     // Check for user
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
+      const currentCount = (attemptRecord && now - attemptRecord.firstAttempt < LOCKOUT_WINDOW_MS) ? attemptRecord.count + 1 : 1;
+      const firstAttempt = (attemptRecord && now - attemptRecord.firstAttempt < LOCKOUT_WINDOW_MS) ? attemptRecord.firstAttempt : now;
+      const lockedUntil = currentCount >= MAX_LOGIN_ATTEMPTS ? now + LOCKOUT_WINDOW_MS : null;
+      loginAttempts.set(rateKey, { count: currentCount, firstAttempt, lockedUntil });
+
+      if (lockedUntil) {
+        return res.status(429).json({
+          success: false,
+          message: "Too many failed login attempts. Account temporarily locked for 15 minutes.",
+        });
+      }
+
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
@@ -141,11 +173,26 @@ export const loginUser = async (req, res) => {
     // Verify password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
+      const currentCount = (attemptRecord && now - attemptRecord.firstAttempt < LOCKOUT_WINDOW_MS) ? attemptRecord.count + 1 : 1;
+      const firstAttempt = (attemptRecord && now - attemptRecord.firstAttempt < LOCKOUT_WINDOW_MS) ? attemptRecord.firstAttempt : now;
+      const lockedUntil = currentCount >= MAX_LOGIN_ATTEMPTS ? now + LOCKOUT_WINDOW_MS : null;
+      loginAttempts.set(rateKey, { count: currentCount, firstAttempt, lockedUntil });
+
+      if (lockedUntil) {
+        return res.status(429).json({
+          success: false,
+          message: "Too many failed login attempts. Account temporarily locked for 15 minutes.",
+        });
+      }
+
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
+
+    // Successful login: clear attempt record
+    loginAttempts.delete(rateKey);
 
     const token = generateToken(user._id);
 

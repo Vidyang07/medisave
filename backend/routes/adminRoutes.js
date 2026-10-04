@@ -15,6 +15,7 @@ import {
   rejectPrescription,
   getAdminPartners,
   moderatePartner,
+  unlockMedicineHandover,
 } from "../controllers/adminController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { admin } from "../middleware/adminMiddleware.js";
@@ -28,6 +29,8 @@ router.get("/stats", getAdminStats);
 router.get("/medicines", getAdminMedicines);
 router.patch("/medicines/:id/status", moderateMedicine);
 router.delete("/medicines/:id", deleteAdminMedicine);
+router.post("/medicines/:id/unlock-handover", unlockMedicineHandover);
+router.patch("/medicines/:id/unlock-handover", unlockMedicineHandover);
 router.get("/orders", getAdminOrders);
 router.get("/users", getAdminUsers);
 router.patch("/users/:id/verify", toggleUserVerification);

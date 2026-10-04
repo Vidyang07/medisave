@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/medicines", medicineRoutes);
-app.use("/api/orders", orderRoutes);
+// Commercial marketplace checkout unmounted: MEDISAVE is a 100% free verified community donation platform
+// app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/ngo-requests", ngoRequestRoutes);

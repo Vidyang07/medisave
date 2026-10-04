@@ -80,23 +80,26 @@ async function runAdminModerationTests() {
     });
     const sellerToken = sellerReg.data?.data?.token;
 
-    const buyerReg = await request("/auth/register", {
+    const partnerReg = await request("/auth/register", {
       method: "POST",
       body: {
-        name: "Mr. Anand Rathi (Buyer)",
-        email: `buyer_mod_${ts}@test.medisave.org`,
+        name: "Pune Charitable Clinic (Partner)",
+        email: `partner_mod_${ts}@test.medisave.org`,
         password: "Password123!",
         phone: "9822222222",
-        address: "Deccan, Pune",
+        address: "Katraj, Pune",
+        role: "partner",
+        organizationName: "Pune Charitable Clinic",
+        organizationType: "Charitable Clinic",
+        locality: "Katraj",
       },
     });
-    const buyerToken = buyerReg.data?.data?.token;
+    const partnerId = partnerReg.data?.data?.user?._id;
+    const partnerToken = partnerReg.data?.data?.token;
 
-    assert(adminToken && sellerToken && buyerToken, "Created test accounts for Admin, Seller, and Buyer");
+    assert(adminToken && sellerToken && partnerToken, "Created test accounts for Admin, Seller, and Partner");
 
-    // Promote admin user in MongoDB
-    // Import User model via node helper if needed or via mongo
-    // Let's use a quick node runner or internal script to promote adminId
+    // Promote admin and verify partner in MongoDB
     const { default: mongoose } = await import("../backend/node_modules/mongoose/index.js");
     const { default: User } = await import("../backend/models/User.js");
     const { default: Medicine } = await import("../backend/models/Medicine.js");
@@ -105,6 +108,7 @@ async function runAdminModerationTests() {
       await mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/medisave");
     }
     await User.findByIdAndUpdate(adminId, { role: "admin", isVerified: true });
+    await User.findByIdAndUpdate(partnerId, { role: "partner", partnerStatus: "verified", isVerified: true });
     await mongoose.disconnect();
     
     // Re-login as admin to get fresh token with admin role
@@ -183,23 +187,14 @@ async function runAdminModerationTests() {
     const foundInPublic = publicCatalogRes.data?.data?.some((m) => m._id === pendingMed._id);
     assert(!foundInPublic, "Pending medicine is NOT visible to public buyers in marketplace");
 
-    // Buyer attempts to purchase pending medicine -> Must fail (400)
-    const buyPendingRes = await request("/orders", {
+    // Partner attempts to accept pending medicine -> Must fail (400)
+    const acceptPendingRes = await request(`/medicines/${pendingMed._id}/accept-donation`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${buyerToken}` },
-      body: {
-        items: [{ medicineId: pendingMed._id, quantity: 1 }],
-        shippingAddress: {
-          fullName: "Mr. Anand Rathi",
-          phone: "9822222222",
-          address: "Deccan Gymkhana",
-          city: "Pune",
-        },
-      },
+      headers: { Authorization: `Bearer ${partnerToken}` },
     });
     assert(
-      buyPendingRes.status === 400 && buyPendingRes.data?.message?.includes("unavailable"),
-      `Purchase attempt on unapproved medicine rejected with 400: "${buyPendingRes.data?.message}"`
+      acceptPendingRes.status === 400 && acceptPendingRes.data?.message?.includes("no longer available"),
+      `Accept attempt on unapproved medicine rejected with 400: "${acceptPendingRes.data?.message}"`
     );
 
     // -------------------------------------------------------------
@@ -230,21 +225,12 @@ async function runAdminModerationTests() {
     const foundInPublicAfterApproval = publicApprovedRes.data?.data?.some((m) => m._id === pendingMed._id);
     assert(foundInPublicAfterApproval, "Approved medicine is immediately live in public marketplace");
 
-    // Buyer can now purchase the approved medicine
-    const buyApprovedRes = await request("/orders", {
+    // Verified partner can now accept the approved donation
+    const acceptApprovedRes = await request(`/medicines/${pendingMed._id}/accept-donation`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${buyerToken}` },
-      body: {
-        items: [{ medicineId: pendingMed._id, quantity: 2 }],
-        shippingAddress: {
-          fullName: "Mr. Anand Rathi",
-          phone: "9822222222",
-          address: "Deccan Gymkhana",
-          city: "Pune",
-        },
-      },
+      headers: { Authorization: `Bearer ${partnerToken}` },
     });
-    assert(buyApprovedRes.status === 201, "Buyer successfully placed order for approved medicine");
+    assert(acceptApprovedRes.status === 200, "Verified partner successfully accepted approved donation");
 
     // -------------------------------------------------------------
     // Step 8: Admin Rejection Workflow (PENDING -> REJECTED with Reason)

@@ -19,9 +19,9 @@ export const getCepProofs = async (req, res) => {
 
     const liveImpact = {
       ...cepProofsData.quantifiableImpact,
-      livePlatformMedicines: totalMedicines || 12,
-      liveApprovedListings: totalApproved || 9,
-      liveFreeDonationsAvailable: totalDonations || 4,
+      livePlatformMedicines: totalMedicines,
+      liveApprovedListings: totalApproved,
+      liveFreeDonationsAvailable: totalDonations,
     };
 
     res.json({
