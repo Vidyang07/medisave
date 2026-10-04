@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
-export default function ProtectedRoute({ children, adminOnly = false }) {
+export default function ProtectedRoute({ children, adminOnly = false, partnerOnly = false }) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
@@ -24,6 +24,14 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   if (adminOnly && user?.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  if (partnerOnly) {
+    const isPartner = user?.role === "partner";
+    const isAdmin = user?.role === "admin";
+    if (!isPartner && !isAdmin) {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;

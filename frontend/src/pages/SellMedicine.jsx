@@ -11,9 +11,10 @@ import {
   UploadIcon,
   CheckIcon,
   SparklesIcon,
+  HeartIcon,
 } from "../components/common/Icons";
 import { PUNE_LOCALITIES, findLocality } from "../utils/localityConstants";
-import { calculateSuggestedPrice, PRICING_CONSTANTS } from "../utils/pricingPolicy";
+import { PRICING_CONSTANTS } from "../utils/pricingPolicy";
 
 export default function SellMedicine() {
   const { showToast } = useToast();
@@ -29,8 +30,10 @@ export default function SellMedicine() {
     expiryDate: "",
     quantity: "",
     unit: "Tablets (1 strip)",
-    originalMrp: "",
-    price: "",
+    listingType: "free_donation",
+    targetBeneficiary: "General Community",
+    originalMrp: "50",
+    price: "0",
     packageCondition: "Intact Sealed Blister Pack",
     storageCondition: "Stored in cool, dry place (<25°C)",
     isPrescriptionRequired: false,
@@ -53,15 +56,6 @@ export default function SellMedicine() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState(null);
 
-  // Deterministic Pricing Policy Calculation
-  const pricingEval = useMemo(() => {
-    return calculateSuggestedPrice({
-      originalMrp: formData.originalMrp,
-      expiryDate: formData.expiryDate,
-      packageCondition: formData.packageCondition,
-    });
-  }, [formData.originalMrp, formData.expiryDate, formData.packageCondition]);
-
   // Expiry evaluation
   const expiryCheck = useMemo(() => {
     if (!formData.expiryDate) return { status: "empty", message: "" };
@@ -74,25 +68,25 @@ export default function SellMedicine() {
     if (diffDays <= 0) {
       return {
         status: "expired",
-        message: "Expired medicines cannot be listed under any circumstances.",
+        message: "Expired medicines cannot be donated. Please refer to our Safe Disposal Guide below.",
       };
     }
     if (diffDays < PRICING_CONSTANTS.MIN_EXPIRY_DAYS) {
       return {
         status: "short",
-        message: `Medicine expires in ${diffDays} days. MEDISAVE requires at least ${PRICING_CONSTANTS.MIN_EXPIRY_DAYS} days remaining shelf life for community safety.`,
+        message: `Medicine expires in ${diffDays} days. MEDISAVE requires at least ${PRICING_CONSTANTS.MIN_EXPIRY_DAYS} days (3 months) remaining shelf life for community safety.`,
       };
     }
     return {
       status: "valid",
-      message: `Shelf life: ${diffDays} days remaining (${Math.round(diffDays / 30.44)} months).`,
+      message: `Safety check passed: ${diffDays} days remaining (${Math.round(diffDays / 30.44)} months shelf life).`,
     };
   }, [formData.expiryDate]);
 
   const handleAiEstimate = async (medicineTitle, customQuantity = null) => {
     const query = (medicineTitle || aiQuery || formData.brandName || "").trim();
     if (!query) {
-      showToast("Please enter a medicine name (e.g. Dolomide or Dolo 650)", "info");
+      showToast("Please enter a medicine name (e.g. Dolo 650 or Augmentin 625)", "info");
       return;
     }
 
@@ -111,7 +105,7 @@ export default function SellMedicine() {
         setAiQuery(est.brandName || query);
 
         setFormData((prev) => {
-          const updated = {
+          return {
             ...prev,
             brandName: est.brandName || prev.brandName || query,
             genericName: est.genericName || prev.genericName,
@@ -119,9 +113,10 @@ export default function SellMedicine() {
             category: est.category || prev.category,
             dosageForm: est.dosageForm || prev.dosageForm,
             strength: est.strength || prev.strength,
-            quantity: est.quantity !== undefined ? est.quantity : prev.quantity,
+            quantity: est.quantity !== undefined ? est.quantity : prev.quantity || 10,
             unit: est.unit || prev.unit,
-            originalMrp: prev.originalMrp || est.originalMrp || "",
+            originalMrp: est.originalMrp ? String(est.originalMrp) : prev.originalMrp || "50",
+            price: "0",
             isPrescriptionRequired:
               est.isPrescriptionRequired !== undefined
                 ? est.isPrescriptionRequired
@@ -130,21 +125,10 @@ export default function SellMedicine() {
             storageCondition: est.storageCondition || prev.storageCondition,
             description: est.description || prev.description,
           };
-
-          // If originalMrp wasn't manually entered yet and AI found one, calculate community price
-          if (!prev.originalMrp && est.originalMrp) {
-            const rulePrice = Math.round(Number(est.originalMrp) * 0.6);
-            updated.originalMrp = est.originalMrp;
-            if (!prev.price) {
-              updated.price = rulePrice;
-            }
-          }
-
-          return updated;
         });
 
         showToast(
-          `✨ AI identified ${est.brandName || query}! Verify printed MRP and select handover point below.`,
+          `✨ AI identified ${est.brandName || query}! Verified packaging details auto-filled.`,
           "success"
         );
       } else {
@@ -182,16 +166,6 @@ export default function SellMedicine() {
     }));
   };
 
-  const handleApplySuggestedPrice = () => {
-    if (pricingEval.isValid && pricingEval.suggestedPrice > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        price: pricingEval.suggestedPrice,
-      }));
-      showToast(`Applied MEDISAVE Suggested Price: ₹${pricingEval.suggestedPrice}`, "info");
-    }
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -212,12 +186,12 @@ export default function SellMedicine() {
     setServerError("");
 
     if (!formData.storageConfirmed) {
-      showToast("Please confirm that the medicine was stored under appropriate conditions.", "error");
+      showToast("Please confirm that the medicine was stored in appropriate temperature conditions.", "error");
       return;
     }
 
     if (expiryCheck.status === "expired") {
-      showToast("Cannot submit expired medicines.", "error");
+      showToast("Cannot submit expired medicines. Please consult the Safe Disposal Guide.", "error");
       return;
     }
 
@@ -226,23 +200,10 @@ export default function SellMedicine() {
       return;
     }
 
-    const numPrice = Number(formData.price);
-    const numMrp = Number(formData.originalMrp) || numPrice;
-
-    if (numMrp > 0 && numPrice > numMrp * PRICING_CONSTANTS.MAX_ALLOWED_PRICE_RATIO) {
-      const maxAllowed = Math.round(numMrp * PRICING_CONSTANTS.MAX_ALLOWED_PRICE_RATIO);
-      showToast(
-        `Offered price cannot exceed 85% of MRP (₹${maxAllowed}). Please adjust your price.`,
-        "error"
-      );
-      return;
-    }
-
     if (
       !formData.brandName ||
       !formData.company ||
       !formData.category ||
-      formData.price === "" ||
       !formData.quantity ||
       !formData.expiryDate ||
       !formData.locality
@@ -262,12 +223,12 @@ export default function SellMedicine() {
         category: formData.category,
         dosageForm: formData.dosageForm,
         strength: formData.strength,
-        batchNumber: formData.batchNumber,
+        batchNumber: formData.batchNumber || "UNSPECIFIED",
         expiryDate: formData.expiryDate,
         quantity: Number(formData.quantity) || 1,
         unit: formData.unit,
-        price: numPrice,
-        originalMrp: numMrp,
+        price: 0,
+        originalMrp: Number(formData.originalMrp) || 50,
         packageCondition: formData.packageCondition,
         storageCondition: formData.storageCondition,
         isPrescriptionRequired: Boolean(formData.isPrescriptionRequired),
@@ -276,8 +237,10 @@ export default function SellMedicine() {
         pinCode: formData.pinCode,
         handoverPoint: formData.handoverPoint,
         handoverRadiusKm: Number(formData.handoverRadiusKm) || 5,
-        pricingRationale: pricingEval.pricingRationale,
-        suggestedCommunityPrice: pricingEval.suggestedPrice || undefined,
+        listingType: "free_donation",
+        targetBeneficiary: formData.targetBeneficiary || "General Community",
+        pricingRationale: "100% Free Community Donation",
+        suggestedCommunityPrice: 0,
         image: imagePreview || undefined,
       };
 
@@ -286,19 +249,19 @@ export default function SellMedicine() {
       if (res.data?.success) {
         const createdMed = res.data.data;
         const refCode = createdMed._id
-          ? `#MED-${createdMed._id.slice(-6).toUpperCase()}`
-          : `#MED-${Math.floor(1000 + Math.random() * 9000)}`;
+          ? `#DON-${createdMed._id.slice(-6).toUpperCase()}`
+          : `#DON-${Math.floor(1000 + Math.random() * 9000)}`;
         setSubmissionReference(refCode);
         setIsSubmittedSuccess(true);
-        showToast("Medicine listing submitted for community moderation!", "success");
+        showToast("Donation submitted for coordinator review!", "success");
       } else {
-        const msg = res.data?.message || "Failed to submit medicine listing.";
+        const msg = res.data?.message || "Failed to submit medicine donation.";
         setServerError(msg);
         showToast(msg, "error");
       }
     } catch (error) {
       const msg =
-        error.response?.data?.message || "Server error while submitting medicine listing.";
+        error.response?.data?.message || "Server error while submitting medicine donation.";
       setServerError(msg);
       showToast(msg, "error");
     } finally {
@@ -316,19 +279,19 @@ export default function SellMedicine() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-[#171717] tracking-tight">
-              Listing Submitted for Community Moderation
+              Donation Submitted for Coordinator Review
             </h2>
             <p className="text-xs sm:text-sm text-[#525252] leading-relaxed max-w-md mx-auto">
-              Thank you for contributing to MEDISAVE. Your listing for{" "}
+              Thank you for contributing to MEDISAVE. Your medicine donation for{" "}
               <strong className="text-[#171717]">{formData.brandName || "Medicine"}</strong> has
-              been submitted. Once approved, it will appear with priority to nearby buyers in{" "}
+              been submitted. Once verified by a platform coordinator, it will become available to verified community partners in{" "}
               <strong>{formData.locality}</strong>.
             </p>
           </div>
 
           <div className="bg-[#fafaf7] rounded-xl p-4 text-xs text-left text-[#525252] border border-[#e4e2dd] space-y-2.5">
             <div className="flex justify-between">
-              <span className="text-[#737373]">Reference Code:</span>
+              <span className="text-[#737373]">Donation Reference:</span>
               <span className="font-mono font-bold text-[#171717]">{submissionReference}</span>
             </div>
             <div className="flex justify-between">
@@ -338,7 +301,7 @@ export default function SellMedicine() {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[#737373]">Handover Point:</span>
+              <span className="text-[#737373]">Designated Handover:</span>
               <span className="font-medium text-[#171717] truncate max-w-[200px]">
                 {formData.handoverPoint}
               </span>
@@ -346,7 +309,7 @@ export default function SellMedicine() {
             <div className="flex justify-between items-center">
               <span className="text-[#737373]">Status:</span>
               <span className="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                Pending Admin Review
+                Pending Coordinator Review
               </span>
             </div>
           </div>
@@ -354,7 +317,7 @@ export default function SellMedicine() {
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Link to="/dashboard" className="flex-1">
               <Button variant="primary" size="md" className="w-full">
-                Go to Dashboard
+                View My Donations
               </Button>
             </Link>
             <Button
@@ -374,8 +337,10 @@ export default function SellMedicine() {
                   expiryDate: "",
                   quantity: "",
                   unit: "Tablets (1 strip)",
-                  originalMrp: "",
-                  price: "",
+                  listingType: "free_donation",
+                  targetBeneficiary: "General Community",
+                  originalMrp: "50",
+                  price: "0",
                   packageCondition: "Intact Sealed Blister Pack",
                   storageCondition: "Stored in cool, dry place (<25°C)",
                   isPrescriptionRequired: false,
@@ -390,7 +355,7 @@ export default function SellMedicine() {
                 setAiSuggestion(null);
               }}
             >
-              List Another Medicine
+              Donate Another Medicine
             </Button>
           </div>
         </div>
@@ -402,26 +367,24 @@ export default function SellMedicine() {
     <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Breadcrumb Header */}
-        <Breadcrumb items={[{ label: "List an Unused Medicine", href: "/sell" }]} />
+        <Breadcrumb items={[{ label: "Home", to: "/" }, { label: "Donate Medicine" }]} />
 
         {/* Page Title */}
         <div className="max-w-3xl text-left">
           <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
-            Community Medicine Exchange · Pune
+            MEDISAVE Community Medicine Intake · Pune
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#171717] tracking-tight mt-1">
-            List an unexpired surplus medicine
+            Donate unexpired surplus medicine
           </h1>
           <p className="text-xs sm:text-sm text-[#525252] mt-1.5 leading-relaxed">
-            Help patients in your community access genuine surplus medications at fair rates while
-            preventing pharmaceutical waste. MEDISAVE is a community exchange platform connecting
-            nearby donors and buyers through mutually agreed handover points.
+            Redirect eligible unexpired medications to verified community health desks, senior care centers, and non-profit partners in Pune. Every donation is 100% free and verified by platform coordinators.
           </p>
         </div>
 
         {/* Two-Column Form Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Multi-Section Listing Form (8 cols) */}
+          {/* Left Column: Multi-Section Donation Form (8 cols) */}
           <main className="lg:col-span-8 bg-white rounded-2xl border border-[#e4e2dd] p-6 sm:p-8 text-left space-y-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               {serverError && (
@@ -431,8 +394,8 @@ export default function SellMedicine() {
                 </div>
               )}
 
-              {/* AI SMART AUTO-FILL & PHARMACEUTICAL ASSISTANT BANNER */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4c42]/10 via-[#0f4c42]/5 to-amber-500/10 border border-[#0f4c42]/20 p-5 sm:p-6 shadow-xs space-y-4">
+              {/* AI SMART AUTO-FILL BANNER */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4c42]/10 via-[#0f4c42]/5 to-emerald-500/10 border border-[#0f4c42]/20 p-5 sm:p-6 shadow-xs space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-xl bg-[#0f4c42] text-white flex items-center justify-center shadow-xs">
@@ -441,24 +404,17 @@ export default function SellMedicine() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h2 className="text-sm sm:text-base font-bold text-[#171717]">
-                          AI Medicine Identification Assistant
+                          AI Medicine Intake Assistant
                         </h2>
                         <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#0f4c42] text-white">
-                          OpenRouter AI
+                          Auto-Fill Helper
                         </span>
                       </div>
                       <p className="text-xs text-[#525252] mt-0.5">
-                        Type any medicine name — AI assists with generic salt identification, manufacturer, and standard packaging details.
+                        Type any medicine name — AI assists with active salt formula, manufacturer, and standard packaging details.
                       </p>
                     </div>
                   </div>
-                </div>
-
-                {/* AI Assistant Explanation Banner */}
-                <div className="p-3 bg-white/80 rounded-xl border border-[#c4ded9] text-xs text-[#0a362f] leading-relaxed">
-                  <p className="font-medium">
-                    MEDISAVE uses AI to help identify medicine details and suggest a community price. Final listings remain subject to expiry, pricing, prescription and admin verification rules.
-                  </p>
                 </div>
 
                 {/* AI Search & Trigger Input Bar */}
@@ -474,7 +430,7 @@ export default function SellMedicine() {
                           handleAiEstimate(aiQuery);
                         }
                       }}
-                      placeholder="Enter medicine name (e.g. Dolomide, Dolo 650, Augmentin 625)..."
+                      placeholder="Enter medicine name (e.g. Dolo 650, Augmentin 625, Pan-D, Shelcal)..."
                       className="w-full bg-white border border-[#c4ded9] rounded-xl pl-3.5 pr-4 py-2.5 text-sm text-[#171717] placeholder:text-[#a3a3a3] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:border-transparent transition shadow-xs"
                     />
                   </div>
@@ -493,8 +449,8 @@ export default function SellMedicine() {
 
                 {/* Quick 1-Click Suggestions */}
                 <div className="flex items-center flex-wrap gap-1.5 pt-1">
-                  <span className="text-[11px] font-medium text-[#737373]">Try 1-click test:</span>
-                  {["Dolomide", "Dolo 650", "Augmentin 625", "Pan-D", "Shelcal 500", "Azee 500"].map((sample) => (
+                  <span className="text-[11px] font-medium text-[#737373]">Try quick auto-fill:</span>
+                  {["Dolo 650", "Augmentin 625", "Pan-D", "Shelcal 500", "Azee 500", "Cetirizine 10mg"].map((sample) => (
                     <button
                       key={sample}
                       type="button"
@@ -502,101 +458,32 @@ export default function SellMedicine() {
                         setAiQuery(sample);
                         handleAiEstimate(sample);
                       }}
-                      className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-[#0f4c42] border border-[#0f4c42]/20 hover:border-[#0f4c42] transition shadow-2xs"
+                      className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-[#0f4c42] border border-[#0f4c42]/20 hover:border-[#0f4c42] transition shadow-2xs cursor-pointer"
                     >
                       {sample}
                     </button>
                   ))}
                 </div>
 
-                {/* AI ESTIMATION REFERENCE CARD */}
+                {/* AI Suggestion Box */}
                 {aiSuggestion && (
-                  <div className="mt-3 p-4 bg-white/95 backdrop-blur-sm rounded-xl border border-[#0f4c42]/25 shadow-xs space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-[#e4e2dd]">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
-                          AI Identification & Reference Data
-                        </span>
-                      </div>
-                      <span className="text-[11px] font-semibold text-[#0f4c42] bg-[#f0f9f8] border border-[#c4ded9] px-2.5 py-0.5 rounded-full">
-                        AI-assisted · Seller confirmation required
+                  <div className="mt-3 p-3.5 bg-white rounded-xl border border-[#c4ded9] text-xs space-y-1.5 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#0f4c42]">
+                        ✨ AI Suggestion: {aiSuggestion.brandName || aiQuery}
+                      </span>
+                      <span className="text-[10px] text-[#737373]">
+                        {aiSuggestion.company || "Standard Manufacturer"}
                       </span>
                     </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-                      <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                        <span className="text-[10px] text-[#737373] block uppercase font-medium">Catalog MRP Ref</span>
-                        <span className="text-sm font-bold text-[#171717]">₹{aiSuggestion.originalMrp || "—"}</span>
-                      </div>
-                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-200">
-                        <span className="text-[10px] text-emerald-800 block uppercase font-bold">Standard Pack Qty</span>
-                        <span className="text-sm font-extrabold text-[#0f4c42]">
-                          {aiSuggestion.quantity || 10} units
-                        </span>
-                      </div>
-                      <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                        <span className="text-[10px] text-[#737373] block uppercase font-medium">Manufacturer</span>
-                        <span className="text-xs font-bold text-[#171717] truncate block">{aiSuggestion.company || "Standard"}</span>
-                      </div>
-                      <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                        <span className="text-[10px] text-[#737373] block uppercase font-medium">Rx Requirement</span>
-                        <span className={`text-xs font-bold ${aiSuggestion.isPrescriptionRequired ? "text-amber-800" : "text-emerald-700"}`}>
-                          {aiSuggestion.isPrescriptionRequired ? "Schedule H (Rx)" : "OTC (No Rx)"}
-                        </span>
-                      </div>
-                    </div>
-
                     {aiSuggestion.genericName && (
-                      <div className="text-xs text-[#525252] bg-[#fafaf7] p-2.5 rounded-lg border border-[#e4e2dd] space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <strong className="text-[#171717]">Generic Salt:</strong>
-                          <span className="font-mono text-[#0f4c42] bg-[#e8f3f1] px-1.5 py-0.5 rounded text-[11px]">
-                            {aiSuggestion.genericName}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-[#525252] pt-1 border-t border-[#e4e2dd]/60">
-                          ℹ️ <em>AI-generated information is reference assistance only and not medically verified. Please review and confirm your actual physical medicine details below.</em>
-                        </p>
-                      </div>
+                      <p className="text-[11px] text-[#525252]">
+                        <strong>Active Salt:</strong> {aiSuggestion.genericName}
+                      </p>
                     )}
                   </div>
                 )}
               </div>
-
-              {/* 3-WAY TRANSPARENT BREAKDOWN CARD: AI Suggestion vs Seller-Confirmed vs Policy Price */}
-              {formData.originalMrp > 0 && (
-                <div className="p-4 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] space-y-3 text-left">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#e4e2dd]">
-                    <span className="text-xs font-bold text-[#171717] uppercase tracking-wider">
-                      Price Transparency: AI vs Seller vs Policy
-                    </span>
-                    <span className="text-[10px] font-bold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded">
-                      AI-assisted, policy-constrained
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div className="p-3 bg-white rounded-lg border border-[#e4e2dd] space-y-1">
-                      <span className="text-[10px] font-bold text-[#737373] uppercase block">1. AI Reference Suggestion</span>
-                      <p className="text-xs text-[#171717] font-semibold">{formData.brandName || "Medicine"} ({formData.dosageForm || "Tablet"})</p>
-                      <p className="text-[11px] text-[#737373]">Identifies salt, typical packaging & catalog MRP.</p>
-                    </div>
-
-                    <div className="p-3 bg-white rounded-lg border border-[#e4e2dd] space-y-1">
-                      <span className="text-[10px] font-bold text-[#737373] uppercase block">2. Seller-Confirmed Info</span>
-                      <p className="text-xs text-[#171717] font-semibold">Printed MRP: ₹{formData.originalMrp} • {formData.packageCondition.split(" ")[0]}</p>
-                      <p className="text-[11px] text-[#737373]">Expiry: {formData.expiryDate || "Not set"}</p>
-                    </div>
-
-                    <div className="p-3 bg-[#e8f3f1] rounded-lg border border-[#c4ded9] space-y-1">
-                      <span className="text-[10px] font-bold text-[#0f4c42] uppercase block">3. Final Policy-Constrained Price</span>
-                      <p className="text-sm font-bold text-[#0f4c42] font-mono">Suggested: ₹{pricingEval.suggestedPrice || "—"}</p>
-                      <p className="text-[11px] text-[#0a362f]">Hard Cap: ₹{pricingEval.maxAllowedPrice || "—"} (Max 85% MRP)</p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* SECTION 1: Medicine Identification */}
               <div className="space-y-4">
@@ -609,33 +496,13 @@ export default function SellMedicine() {
                       Medicine Identification
                     </h2>
                   </div>
-                  {formData.brandName && (
-                    <button
-                      type="button"
-                      onClick={() => handleAiEstimate(formData.brandName)}
-                      className="text-xs font-semibold text-[#0f4c42] hover:text-[#0a362f] flex items-center gap-1 hover:underline cursor-pointer"
-                    >
-                      <SparklesIcon className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Re-check with AI</span>
-                    </button>
-                  )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="block text-xs font-semibold text-[#171717]">
-                        Brand / Trade Name <span className="text-rose-600">*</span>
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => handleAiEstimate(formData.brandName)}
-                        className="text-[11px] font-semibold text-[#0f4c42] hover:underline flex items-center gap-1"
-                      >
-                        <SparklesIcon className="w-3 h-3 text-amber-500" />
-                        AI Auto-Fill
-                      </button>
-                    </div>
+                    <label className="block text-xs font-semibold text-[#171717] mb-1">
+                      Brand / Trade Name <span className="text-rose-600">*</span>
+                    </label>
                     <input
                       type="text"
                       name="brandName"
@@ -646,7 +513,7 @@ export default function SellMedicine() {
                           handleAiEstimate(e.target.value);
                         }
                       }}
-                      placeholder="e.g. Crocin 500, Dolo 650, Dolomide, Azee 500"
+                      placeholder="e.g. Dolo 650, Crocin Advance, Augmentin 625"
                       required
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
                     />
@@ -661,7 +528,7 @@ export default function SellMedicine() {
                       name="genericName"
                       value={formData.genericName}
                       onChange={handleChange}
-                      placeholder="e.g. Paracetamol IP, Azithromycin Dihydrate"
+                      placeholder="e.g. Paracetamol IP, Amoxicillin + Clavulanic Acid"
                       required
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
                     />
@@ -678,7 +545,7 @@ export default function SellMedicine() {
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      placeholder="e.g. Cipla, Sun Pharma, GSK"
+                      placeholder="e.g. Cipla, Sun Pharma, Micro Labs"
                       required
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
                     />
@@ -713,7 +580,7 @@ export default function SellMedicine() {
                       name="strength"
                       value={formData.strength}
                       onChange={handleChange}
-                      placeholder="e.g. Tablet (500mg)"
+                      placeholder="e.g. Tablet (650mg)"
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
                     />
                   </div>
@@ -727,14 +594,14 @@ export default function SellMedicine() {
                     2
                   </span>
                   <h2 className="font-bold text-[#171717] text-base">
-                    Batch & Expiry Information
+                    Batch & Expiry Guardrails
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Batch Number (Printed on Pack) <span className="text-rose-600">*</span>
+                      Batch Number (Printed on Packaging) <span className="text-rose-600">*</span>
                     </label>
                     <input
                       type="text"
@@ -746,13 +613,13 @@ export default function SellMedicine() {
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] font-mono focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
                     />
                     <span className="text-[11px] text-[#737373]">
-                      Must match the printed stamping on physical packaging.
+                      Must match printed stamping on physical blister or foil.
                     </span>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Expiry Date <span className="text-rose-600">*</span>
+                      Printed Expiry Date <span className="text-rose-600">*</span>
                     </label>
                     <input
                       type="date"
@@ -767,7 +634,7 @@ export default function SellMedicine() {
 
                 {expiryCheck.message && (
                   <div
-                    className={`p-3 rounded-xl border text-xs leading-snug flex items-start gap-2 ${
+                    className={`p-3.5 rounded-xl border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                       expiryCheck.status === "expired"
                         ? "bg-rose-50 border-rose-200 text-rose-900"
                         : expiryCheck.status === "short"
@@ -775,8 +642,18 @@ export default function SellMedicine() {
                         : "bg-emerald-50 border-emerald-200 text-emerald-900"
                     }`}
                   >
-                    <AlertCircleIcon className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{expiryCheck.message}</span>
+                    <div className="flex items-start gap-2">
+                      <AlertCircleIcon className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{expiryCheck.message}</span>
+                    </div>
+                    {(expiryCheck.status === "expired" || expiryCheck.status === "short") && (
+                      <Link
+                        to="/disposal-guide"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0f4c42] text-white hover:bg-[#0a362f] rounded-lg text-[11px] font-bold shrink-0 transition"
+                      >
+                        <span>🌱 Safe Disposal Guide</span>
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>
@@ -794,7 +671,7 @@ export default function SellMedicine() {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#171717] mb-1">
-                    Packaging Condition <span className="text-rose-600">*</span>
+                    Packaging Type & Integrity <span className="text-rose-600">*</span>
                   </label>
                   <select
                     name="packageCondition"
@@ -819,23 +696,38 @@ export default function SellMedicine() {
                 </div>
               </div>
 
-              {/* SECTION 4: Quantity & Fair Community Pricing Engine */}
+              {/* SECTION 4: Quantity & Purpose */}
               <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
-                <div className="flex items-center justify-between pb-2 border-b border-[#e4e2dd]">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
-                      4
-                    </span>
-                    <h2 className="font-bold text-[#171717] text-base">
-                      Quantity & Fair Community Pricing
-                    </h2>
-                  </div>
+                <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
+                  <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
+                    4
+                  </span>
+                  <h2 className="font-bold text-[#171717] text-base">
+                    Quantity & Donation Purpose
+                  </h2>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl bg-[#e8f3f1] border border-[#c4ded9] space-y-3 text-left">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <HeartIcon className="w-5 h-5 text-[#0f4c42]" />
+                      <span className="text-xs font-bold text-[#0f4c42] uppercase tracking-wider">
+                        100% Free Community Donation
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#a7f3d0] text-[#0a362f]">
+                      Non-Profit Welfare
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#525252]">
+                    All medicine donations on MEDISAVE are 100% free for patients in need. We do not support peer-to-peer buying or selling.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Available Quantity / Units <span className="text-rose-600">*</span>
+                      Available Units / Strips <span className="text-rose-600">*</span>
                     </label>
                     <input
                       type="number"
@@ -854,170 +746,32 @@ export default function SellMedicine() {
 
                   <div>
                     <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Actual Printed MRP (₹) <span className="text-rose-600">*</span>
+                      Preferred Target Beneficiary Group
                     </label>
-                    <input
-                      type="number"
-                      name="originalMrp"
-                      min="1"
-                      value={formData.originalMrp}
+                    <select
+                      name="targetBeneficiary"
+                      value={formData.targetBeneficiary}
                       onChange={handleChange}
-                      placeholder="e.g. 95"
-                      required
                       className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
-                    />
-                    <span className="text-[11px] text-[#737373] mt-1 block">
-                      Printed on box/strip (Authoritative base)
-                    </span>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="block text-xs font-semibold text-[#171717]">
-                        Offered Listing Price (₹) <span className="text-rose-600">*</span>
-                      </label>
-                      {formData.originalMrp > 0 && formData.price > 0 && (
-                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          {Math.round(((formData.originalMrp - formData.price) / formData.originalMrp) * 100)}% off MRP
-                        </span>
-                      )}
-                    </div>
-                    <input
-                      type="number"
-                      name="price"
-                      min="0"
-                      value={formData.price}
-                      onChange={handleChange}
-                      placeholder="e.g. 45"
-                      required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
-                    />
-                    <span className="text-[11px] text-[#737373] mt-1 block">
-                      Max allowed: ₹{pricingEval.maxAllowedPrice || "—"} (85% of MRP)
-                    </span>
-                  </div>
-                </div>
-
-                {/* DETERMINISTIC MEDISAVE SUGGESTED COMMUNITY PRICE BOX */}
-                {formData.originalMrp > 0 && (
-                  <div className="p-4 bg-[#f0f9f8] rounded-xl border border-[#c4ded9] space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#c4ded9]/60">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0f4c42]">
-                          MEDISAVE Policy Pricing Engine
-                        </span>
-                        <h4 className="text-sm font-bold text-[#171717] flex items-center gap-1.5">
-                          <span>MEDISAVE Suggested Community Price:</span>
-                          <span className="text-base text-[#0f4c42] font-mono">
-                            ₹{pricingEval.suggestedPrice}
-                          </span>
-                          <span className="text-xs font-normal text-emerald-700">
-                            ({pricingEval.discountPercentage}% discount)
-                          </span>
-                        </h4>
-                      </div>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleApplySuggestedPrice}
-                        className="bg-white hover:bg-emerald-50 text-[#0f4c42] border-[#0f4c42]/30 text-xs shrink-0"
-                      >
-                        Apply Suggested (₹{pricingEval.suggestedPrice})
-                      </Button>
-                    </div>
-
-                    <div className="text-xs text-[#0a362f] space-y-1">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
-                        <div>
-                          <span className="text-[#525252]">Original MRP: </span>
-                          <strong className="text-[#171717]">₹{formData.originalMrp}</strong>
-                        </div>
-                        <div>
-                          <span className="text-[#525252]">Condition: </span>
-                          <strong className="text-[#171717]">{formData.packageCondition.split(" ")[0]}</strong>
-                        </div>
-                        <div>
-                          <span className="text-[#525252]">Remaining: </span>
-                          <strong className="text-[#171717]">{pricingEval.monthsRemaining} months</strong>
-                        </div>
-                      </div>
-
-                      <p className="text-[11px] text-[#525252] pt-1.5 border-t border-[#c4ded9]/40 italic">
-                        <strong>Pricing Rationale:</strong> {pricingEval.pricingRationale}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* HOW IS THE COMMUNITY PRICE CALCULATED? EXPLANATORY SECTION */}
-                <div className="p-4 bg-[#fafaf7] rounded-xl border border-[#e4e2dd] space-y-2.5 text-xs text-left">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-[#e4e2dd]">
-                    <h4 className="font-bold text-[#171717] text-xs uppercase tracking-wider flex items-center gap-1.5">
-                      <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42]" />
-                      How is the community price calculated?
-                    </h4>
-                    <span className="text-[10px] font-semibold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded">
-                      Deterministic Formula
-                    </span>
-                  </div>
-
-                  <p className="text-[11px] text-[#525252] leading-relaxed">
-                    MEDISAVE uses an <strong>AI-assisted, policy-constrained</strong> deterministic pricing formula. The physical printed MRP on your pack is the authoritative base, and community discounts are applied based on remaining shelf life:
-                  </p>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
-                      <span className="font-bold text-[#171717] block">12+ Months</span>
-                      <span className="text-[11px] text-emerald-700 font-semibold">40% Discount</span>
-                      <span className="text-[10px] text-[#737373] block">60% of MRP</span>
-                    </div>
-                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
-                      <span className="font-bold text-[#171717] block">6–12 Months</span>
-                      <span className="text-[11px] text-emerald-700 font-semibold">50% Discount</span>
-                      <span className="text-[10px] text-[#737373] block">50% of MRP</span>
-                    </div>
-                    <div className="p-2 bg-white rounded border border-[#e4e2dd]">
-                      <span className="font-bold text-[#171717] block">3–6 Months</span>
-                      <span className="text-[11px] text-emerald-700 font-semibold">65% Discount</span>
-                      <span className="text-[10px] text-[#737373] block">35% of MRP</span>
-                    </div>
-                    <div className="p-2 bg-rose-50 rounded border border-rose-200">
-                      <span className="font-bold text-rose-900 block">&lt; 90 Days</span>
-                      <span className="text-[11px] text-rose-700 font-semibold">Rejected</span>
-                      <span className="text-[10px] text-rose-600 block">Safety Cutoff</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#e4e2dd] text-[11px] text-[#737373] flex flex-col sm:flex-row justify-between gap-1">
-                    <span>• <strong>Condition factor:</strong> Sealed blister packs retain 100% rate.</span>
-                    <span>• <strong>Hard price cap:</strong> Offered price cannot exceed <strong>85% of MRP</strong>.</span>
+                    >
+                      <option value="General Community">General Community (Open Redistribution)</option>
+                      <option value="Local Old Age Home">Local Old Age Home (Matoshree Vriddhashram)</option>
+                      <option value="Student Health Center">Student Health Desk & Hostel Clinic</option>
+                      <option value="Slum Health Camp">Community Outreach Health Camp (Anand Ashram)</option>
+                    </select>
                   </div>
                 </div>
               </div>
 
-              {/* SECTION 5: Community Handover (Pune Locality & Non-Logistics Model) */}
+              {/* SECTION 5: Community Handover Point */}
               <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
                 <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
                   <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
                     5
                   </span>
                   <h2 className="font-bold text-[#171717] text-base">
-                    Community Handover (Pune)
+                    Community Handover Point (Pune)
                   </h2>
-                </div>
-
-                {/* NON-LOGISTICS COMMUNITY DISCLAIMER BANNER */}
-                <div className="p-3.5 bg-amber-50/80 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-1">
-                  <strong className="block font-bold text-amber-900">
-                    Community Exchange Policy:
-                  </strong>
-                  <p className="text-[11px] leading-relaxed text-amber-900/90">
-                    MEDISAVE is designed for community-based handover. Buyers and sellers agree on a
-                    convenient handover point. MEDISAVE does not currently operate its own delivery
-                    network.
-                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1038,9 +792,6 @@ export default function SellMedicine() {
                         </option>
                       ))}
                     </select>
-                    <span className="text-[11px] text-[#737373] mt-1 block">
-                      Used to prioritize nearby buyers (Katraj, Hinjewadi, Kothrud, etc.)
-                    </span>
                   </div>
 
                   <div>
@@ -1059,52 +810,33 @@ export default function SellMedicine() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Preferred Handover Point <span className="text-rose-600">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="handoverPoint"
-                      value={formData.handoverPoint}
-                      onChange={handleChange}
-                      placeholder="e.g. College Main Gate / Vanaz Metro Station / Bharti Vidyapeeth Gate"
-                      required
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
-                    />
-                    <span className="text-[11px] text-[#737373] mt-1 block">
-                      Public landmark where you can meet the buyer
-                    </span>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#171717] mb-1">
-                      Handover Radius
-                    </label>
-                    <select
-                      name="handoverRadiusKm"
-                      value={formData.handoverRadiusKm}
-                      onChange={handleChange}
-                      className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
-                    >
-                      <option value="2">2 km (Immediate Walking)</option>
-                      <option value="5">5 km (Nearby Community)</option>
-                      <option value="10">10 km (Extended Neighborhood)</option>
-                      <option value="15">15 km (Wider City Area)</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#171717] mb-1">
+                    Designated Public Handover Landmark <span className="text-rose-600">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="handoverPoint"
+                    value={formData.handoverPoint}
+                    onChange={handleChange}
+                    placeholder="e.g. City Pride Kothrud / Vanaz Metro Station / Community Health Desk"
+                    required
+                    className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3.5 py-2.5 text-sm text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition"
+                  />
+                  <span className="text-[11px] text-[#737373] mt-1 block">
+                    Public landmark where verified coordinators or partners will accept physical handover.
+                  </span>
                 </div>
               </div>
 
-              {/* SECTION 6: Rx & Storage Certification */}
+              {/* SECTION 6: Medical Safety Compliance */}
               <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
                 <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
                   <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
                     6
                   </span>
                   <h2 className="font-bold text-[#171717] text-base">
-                    Safety & Medical Compliance
+                    Medical Safety & Storage Certification
                   </h2>
                 </div>
 
@@ -1123,9 +855,7 @@ export default function SellMedicine() {
                         Schedule H / Rx Prescription Required
                       </span>
                       <span className="text-[11px] text-[#525252]">
-                        Check this box if this medication requires a valid doctor prescription for
-                        dispensation. Buyers will be required to upload an approved prescription at
-                        checkout.
+                        Check this box if this medication requires a valid doctor prescription for dispensation.
                       </span>
                     </div>
                   </label>
@@ -1143,15 +873,13 @@ export default function SellMedicine() {
                       className="accent-[#0f4c42] mt-0.5"
                     />
                     <span className="text-xs font-medium text-[#0a362f] leading-snug">
-                      I solemnly certify that this medicine was stored in a clean,
-                      temperature-controlled domestic environment below 25°C and has never been
-                      opened, diluted, or exposed to excessive heat or moisture.
+                      I certify that this medicine was stored in a clean, temperature-controlled environment below 25°C and has never been opened, diluted, or exposed to excessive heat or moisture.
                     </span>
                   </label>
                 </div>
               </div>
 
-              {/* SECTION 7: Photo Upload */}
+              {/* SECTION 7: Packaging Photo Verification */}
               <div className="space-y-4 pt-4 border-t border-[#e4e2dd]">
                 <div className="flex items-center gap-2 pb-2 border-b border-[#e4e2dd]">
                   <span className="w-6 h-6 rounded-full bg-[#0f4c42] text-white font-bold text-xs flex items-center justify-center font-mono">
@@ -1195,11 +923,10 @@ export default function SellMedicine() {
                         <UploadIcon className="w-6 h-6" />
                       </div>
                       <span className="text-sm font-bold text-[#171717]">
-                        Upload clear packaging photograph
+                        Upload packaging photograph
                       </span>
                       <span className="text-xs text-[#737373] mt-1 max-w-sm">
-                        Ensure batch number, expiry date, and intact packaging seal are clearly
-                        visible. (PNG, JPG up to 5 MB)
+                        Ensure batch number, expiry date, and intact packaging seal are visible. (PNG, JPG up to 5 MB)
                       </span>
                       <input
                         type="file"
@@ -1238,7 +965,7 @@ export default function SellMedicine() {
                   className="w-full shadow-sm"
                   isLoading={isSubmitting}
                 >
-                  Submit Medicine Listing for Moderation
+                  Submit Medicine Donation for Coordinator Review
                 </Button>
                 <p className="text-[11px] text-[#737373] text-center mt-2">
                   By submitting, you confirm compliance with MEDISAVE Community Verification Guidelines.
@@ -1252,7 +979,7 @@ export default function SellMedicine() {
             <div className="flex items-center gap-2 pb-3 border-b border-[#e4e2dd]">
               <ShieldCheckIcon className="w-5 h-5 text-[#0f4c42]" />
               <h2 className="font-bold text-[#171717] text-sm">
-                Listing Guidelines
+                Donation Guidelines
               </h2>
             </div>
 
@@ -1262,8 +989,8 @@ export default function SellMedicine() {
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Physical Printed MRP Authoritative</strong>
-                  The physical MRP on the pack is the ground truth. Pricing rules calculate community rates deterministically.
+                  <strong className="text-[#171717] block">100% Free Community Donation</strong>
+                  Donated medicines are distributed to non-profit partners and clinics without charges.
                 </div>
               </div>
 
@@ -1272,8 +999,8 @@ export default function SellMedicine() {
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Community Handover Points</strong>
-                  Handover takes place at public landmarks agreed between buyer and seller in Pune.
+                  <strong className="text-[#171717] block">Minimum 90-Day Expiry Buffer</strong>
+                  Must have at least 90 days remaining shelf life from today before expiration.
                 </div>
               </div>
 
@@ -1282,8 +1009,8 @@ export default function SellMedicine() {
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Check Expiry Date</strong>
-                  Must have at least 90 days remaining from today before expiration.
+                  <strong className="text-[#171717] block">Intact Blister / Foil Seal</strong>
+                  No cut strips, punctured foil bubbles, or broken tamper seals are accepted.
                 </div>
               </div>
 
@@ -1292,18 +1019,8 @@ export default function SellMedicine() {
                   ✓
                 </div>
                 <div>
-                  <strong className="text-[#171717] block">Foil & Blister Integrity</strong>
-                  No cut strips, punctured bubbles, or missing aluminum backing.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                  ✓
-                </div>
-                <div>
-                  <strong className="text-[#171717] block">Coordinator Moderation</strong>
-                  All listings are reviewed before appearing publicly in the catalogue.
+                  <strong className="text-[#171717] block">Physical Handover Verification</strong>
+                  Coordinator or partner confirms handover in person using a 6-digit verification code.
                 </div>
               </div>
             </div>
@@ -1315,10 +1032,10 @@ export default function SellMedicine() {
                 Strictly Prohibited Items:
               </strong>
               <ul className="list-disc list-inside space-y-1 text-[11px] text-rose-800/90 pl-1">
-                <li>Opened syrups or liquid bottles</li>
-                <li>Biologics requiring cold-chain (Insulin)</li>
+                <li>Opened liquid syrups or reconstituted suspensions</li>
+                <li>Biologics requiring strict cold-chain (e.g. Insulin)</li>
                 <li>Schedule X psychotropics and narcotics</li>
-                <li>Loose, unlabeled individual tablets</li>
+                <li>Loose, cut, or unlabelled individual tablets</li>
               </ul>
             </div>
           </aside>

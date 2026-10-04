@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
@@ -22,6 +22,7 @@ import {
 export default function Dashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const [searchParams] = useSearchParams();
 
   const currentUser = user || {
     name: "Community Member",
@@ -31,8 +32,162 @@ export default function Dashboard() {
     avatar: "",
   };
 
-  const [activeTab, setActiveTab] = useState("listings"); // 'listings', 'seller-orders', 'orders', 'prescriptions'
+  const initialTab = searchParams.get("tab") || "cabinet";
+  const [activeTab, setActiveTab] = useState(initialTab); // 'cabinet', 'listings', 'seller-orders', 'orders', 'prescriptions'
   const [listingFilter, setListingFilter] = useState("all");
+
+  // Medicine Cabinet State with Expiry Calculation
+  const [cabinetItems, setCabinetItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem("medisave_cabinet_items");
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // Fallback
+    }
+    const today = new Date();
+    const addDays = (d) => {
+      const target = new Date(today.getTime() + d * 86400000);
+      return target.toISOString().split("T")[0];
+    };
+
+    return [
+      {
+        id: "cab-1",
+        name: "Dolo 650 (Paracetamol)",
+        quantity: 15,
+        unit: "tablets",
+        expiryDate: addDays(240), // >6 months: Green
+        category: "Pain & Fever",
+        form: "Tablet",
+      },
+      {
+        id: "cab-2",
+        name: "Cetirizine 10mg",
+        quantity: 10,
+        unit: "tablets",
+        expiryDate: addDays(120), // 3-6 months: Amber
+        category: "Allergy & Cold",
+        form: "Tablet",
+      },
+      {
+        id: "cab-3",
+        name: "Amoxicillin 500mg",
+        quantity: 6,
+        unit: "capsules",
+        expiryDate: addDays(40), // <3 months: Red
+        category: "Antibiotics",
+        form: "Capsule",
+      },
+    ];
+  });
+
+  const [isAddCabinetModalOpen, setIsAddCabinetModalOpen] = useState(false);
+  const [cabinetFormData, setCabinetFormData] = useState({
+    name: "",
+    quantity: 10,
+    unit: "tablets",
+    expiryDate: "",
+    category: "General Health",
+    form: "Tablet",
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("medisave_cabinet_items", JSON.stringify(cabinetItems));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [cabinetItems]);
+
+  const getCabinetItemStatus = (expiryDateStr) => {
+    if (!expiryDateStr) {
+      return {
+        tier: "critical",
+        label: "No Date / Expired",
+        color: "red",
+        daysLeft: 0,
+        eligible: false,
+      };
+    }
+    const exp = new Date(expiryDateStr);
+    const now = new Date();
+    const diffMs = exp.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) {
+      return {
+        tier: "expired",
+        label: `Expired (${Math.abs(diffDays)}d ago)`,
+        color: "red",
+        daysLeft: diffDays,
+        eligible: false,
+      };
+    }
+    if (diffDays < 90) {
+      return {
+        tier: "critical",
+        label: `Less than 3 months (${diffDays}d left)`,
+        color: "red",
+        daysLeft: diffDays,
+        eligible: false,
+      };
+    }
+    if (diffDays <= 180) {
+      return {
+        tier: "warning",
+        label: `3–6 months (${diffDays}d left)`,
+        color: "amber",
+        daysLeft: diffDays,
+        eligible: true,
+      };
+    }
+    return {
+      tier: "healthy",
+      label: `More than 6 months (${diffDays}d left)`,
+      color: "green",
+      daysLeft: diffDays,
+      eligible: true,
+    };
+  };
+
+  const handleAddCabinetSubmit = (e) => {
+    e.preventDefault();
+    if (!cabinetFormData.name.trim()) {
+      showToast("Please enter medicine name", "error");
+      return;
+    }
+    if (!cabinetFormData.expiryDate) {
+      showToast("Please select expiry date", "error");
+      return;
+    }
+
+    const newItem = {
+      id: `cab-${Date.now()}`,
+      name: cabinetFormData.name.trim(),
+      quantity: Number(cabinetFormData.quantity) || 1,
+      unit: cabinetFormData.unit || "tablets",
+      expiryDate: cabinetFormData.expiryDate,
+      category: cabinetFormData.category || "General Health",
+      form: cabinetFormData.form || "Tablet",
+    };
+
+    setCabinetItems((prev) => [newItem, ...prev]);
+    showToast(`Added "${newItem.name}" to Medicine Cabinet`, "success");
+    setIsAddCabinetModalOpen(false);
+    setCabinetFormData({
+      name: "",
+      quantity: 10,
+      unit: "tablets",
+      expiryDate: "",
+      category: "General Health",
+      form: "Tablet",
+    });
+  };
+
+  const handleDeleteCabinetItem = (id, medName) => {
+    setCabinetItems((prev) => prev.filter((item) => item.id !== id));
+    showToast(`Removed "${medName}" from Cabinet`, "info");
+  };
 
   const [listings, setListings] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -351,14 +506,18 @@ export default function Dashboard() {
   };
 
   const activeCount = listings.filter((l) => l.status === "approved").length;
+  const acceptedCount = listings.filter((l) => l.status === "accepted").length;
+  const completedCount = listings.filter((l) => l.status === "completed" || l.status === "sold").length;
   const pendingCount = listings.filter((l) => l.status === "pending").length;
   const rejectedCount = listings.filter((l) => l.status === "rejected").length;
-  const fulfilledCount = listings.filter((l) => l.status === "sold").length;
 
   const filteredListings = listings.filter((l) => {
     if (listingFilter === "all") return true;
+    if (listingFilter === "sold") return l.status === "sold" || l.status === "completed";
     return l.status === listingFilter;
   });
+
+  const acceptedListings = listings.filter((l) => l.status === "accepted");
 
   return (
     <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
@@ -420,7 +579,7 @@ export default function Dashboard() {
             <Link to="/sell" className="flex-1 sm:flex-none">
               <Button variant="primary" size="md" className="w-full shadow-xs">
                 <PlusIcon className="w-4 h-4" />
-                List Medicine
+                Donate Medicine
               </Button>
             </Link>
           </div>
@@ -430,14 +589,27 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left">
           <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
             <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
-              <span>Active Listings</span>
+              <span>Cabinet Tracker</span>
               <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
                 <PackageIcon className="w-4 h-4" />
               </div>
             </div>
+            <div className="text-2xl font-black text-[#171717]">{cabinetItems.length}</div>
+            <span className="text-[11px] text-[#0f4c42] font-medium">
+              Household medicines logged
+            </span>
+          </div>
+
+          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
+            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
+              <span>Active Donations</span>
+              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
+                <ShieldCheckIcon className="w-4 h-4" />
+              </div>
+            </div>
             <div className="text-2xl font-black text-[#171717]">{activeCount}</div>
             <span className="text-[11px] text-[#0f4c42] font-medium">
-              Live in public catalogue
+              Approved for redistribution
             </span>
           </div>
 
@@ -451,19 +623,6 @@ export default function Dashboard() {
             <div className="text-2xl font-black text-[#171717]">{pendingCount}</div>
             <span className="text-[11px] text-amber-800 font-medium">
               Under coordinator inspection
-            </span>
-          </div>
-
-          <div className="bg-white rounded-xl border border-[#e4e2dd] p-5 shadow-xs">
-            <div className="flex items-center justify-between text-[#737373] text-xs font-semibold mb-2">
-              <span>Incoming Orders</span>
-              <div className="w-8 h-8 rounded-lg bg-[#e8f3f1] text-[#0f4c42] flex items-center justify-center">
-                <ShieldCheckIcon className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-[#0f4c42]">{sellerOrders.length}</div>
-            <span className="text-[11px] text-[#0f4c42] font-medium">
-              Requiring handover fulfillment
             </span>
           </div>
 
@@ -486,6 +645,16 @@ export default function Dashboard() {
           {/* Tabs Bar */}
           <div className="flex border-b border-[#e4e2dd] px-6 overflow-x-auto bg-[#fafaf7]">
             <button
+              onClick={() => setActiveTab("cabinet")}
+              className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                activeTab === "cabinet"
+                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
+                  : "border-transparent text-[#737373] hover:text-[#171717]"
+              }`}
+            >
+              💊 My Medicine Cabinet ({cabinetItems.length})
+            </button>
+            <button
               onClick={() => setActiveTab("listings")}
               className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === "listings"
@@ -493,27 +662,7 @@ export default function Dashboard() {
                   : "border-transparent text-[#737373] hover:text-[#171717]"
               }`}
             >
-              My Listings ({listings.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("seller-orders")}
-              className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
-                activeTab === "seller-orders"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
-              }`}
-            >
-              Seller Orders ({sellerOrders.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("orders")}
-              className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
-                activeTab === "orders"
-                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
-                  : "border-transparent text-[#737373] hover:text-[#171717]"
-              }`}
-            >
-              My Buyer Orders ({orders.length})
+              Donation Listings ({listings.length})
             </button>
             <button
               onClick={() => setActiveTab("prescriptions")}
@@ -527,17 +676,201 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* TAB 1: MY MEDICINE LISTINGS */}
+          {/* TAB: MY MEDICINE CABINET */}
+          {activeTab === "cabinet" && (
+            <div className="p-6 space-y-6">
+              {/* Header & Controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#fafaf7] p-5 rounded-2xl border border-[#e4e2dd]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base sm:text-lg font-bold text-[#171717]">
+                      Household Medicine Cabinet Tracker
+                    </h2>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#e8f3f1] text-[#0f4c42]">
+                      {cabinetItems.length} Logged
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#525252] mt-1 max-w-2xl leading-relaxed">
+                    Keep track of unused household medicines. Items with ≥3 months remaining are eligible for verified community donation. Expired or unsealed medicines route to safe household disposal.
+                  </p>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setIsAddCabinetModalOpen(true)}
+                  className="shrink-0 bg-[#0f4c42] hover:bg-[#0a362f]"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  Add Medicine to Cabinet
+                </Button>
+              </div>
+
+              {/* Status Color Key / Legend */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 rounded-xl border border-[#bbf7d0] bg-[#f0fdf4] text-[#166534] flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full bg-[#16a34a] shrink-0"></div>
+                  <div>
+                    <strong className="block font-bold">GREEN: &gt;6 Months Shelf Life</strong>
+                    <span className="text-[11px] text-[#15803d]">Healthy stock · Eligible for donation</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl border border-[#fde68a] bg-[#fffbeb] text-[#92400e] flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full bg-[#d97706] shrink-0"></div>
+                  <div>
+                    <strong className="block font-bold">AMBER: 3–6 Months Shelf Life</strong>
+                    <span className="text-[11px] text-[#b45309]">Expiring Soon · Action Recommended</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl border border-[#fecdd3] bg-[#fff1f2] text-[#9f1239] flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full bg-[#e11d48] shrink-0"></div>
+                  <div>
+                    <strong className="block font-bold">RED: &lt;3 Months or Expired</strong>
+                    <span className="text-[11px] text-[#be123c]">Ineligible · Follow Safe Disposal</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cabinet Items Grid */}
+              {cabinetItems.length === 0 ? (
+                <EmptyState
+                  icon={PackageIcon}
+                  title="Your Medicine Cabinet is empty"
+                  description="Keep track of household medicines to donate before expiry or dispose safely."
+                  actionLabel="Add Medicine"
+                  onAction={() => setIsAddCabinetModalOpen(true)}
+                />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {cabinetItems.map((item) => {
+                    const status = getCabinetItemStatus(item.expiryDate);
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-4 rounded-xl border-2 transition flex flex-col justify-between shadow-2xs ${
+                          status.color === "green"
+                            ? "border-[#bbf7d0] bg-[#f0fdf4]/60"
+                            : status.color === "amber"
+                            ? "border-[#fde68a] bg-[#fffbeb]/60"
+                            : "border-[#fecdd3] bg-[#fff1f2]/60"
+                        }`}
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                status.color === "green"
+                                  ? "bg-[#dcfce7] text-[#15803d]"
+                                  : status.color === "amber"
+                                  ? "bg-[#fef3c7] text-[#92400e]"
+                                  : "bg-[#ffe4e6] text-[#9f1239]"
+                              }`}
+                            >
+                              {status.label}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteCabinetItem(item.id, item.name)}
+                              className="text-[#a3a3a3] hover:text-[#e11d48] transition p-1"
+                              title="Remove from cabinet"
+                            >
+                              <TrashIcon className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          <h3 className="text-sm font-bold text-[#171717]">{item.name}</h3>
+
+                          <div className="text-xs text-[#525252] space-y-0.5">
+                            <div>
+                              <span className="font-semibold text-[#171717]">Quantity:</span> {item.quantity} {item.unit || "units"} ({item.form || "Tablet"})
+                            </div>
+                            <div>
+                              <span className="font-semibold text-[#171717]">Category:</span> {item.category || "General Health"}
+                            </div>
+                            <div className="font-mono text-[11px] pt-1">
+                              <span className="font-semibold text-[#171717]">Expiry:</span> {item.expiryDate}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action CTA */}
+                        <div className="pt-3 mt-3 border-t border-[#e4e2dd]">
+                          {status.eligible ? (
+                            <Link
+                              to={`/sell?name=${encodeURIComponent(item.name)}&quantity=${item.quantity}&category=${encodeURIComponent(item.category || "General Health")}&form=${encodeURIComponent(item.form || "Tablet")}`}
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#0f4c42] hover:bg-[#0a362f] text-white text-xs font-bold rounded-lg transition shadow-2xs"
+                            >
+                              <span>🎁 Donate This</span>
+                            </Link>
+                          ) : (
+                            <Link
+                              to="/disposal-guide"
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#e11d48] hover:bg-[#be123c] text-white text-xs font-bold rounded-lg transition shadow-2xs"
+                            >
+                              <span>♻️ Safe Disposal Guide</span>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB: DONATION LISTINGS */}
           {activeTab === "listings" && (
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-6">
+              {/* Active Accepted Handovers Banner for Donor */}
+              {acceptedListings.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#065f46] uppercase tracking-wider">
+                    <ShieldCheckIcon className="w-4 h-4 text-[#0f4c42]" />
+                    <span>Action Required: Physical Medicine Handover</span>
+                  </div>
+
+                  {acceptedListings.map((accItem) => (
+                    <div
+                      key={accItem._id || accItem.id}
+                      className="bg-[#ecfdf5] border-2 border-[#a7f3d0] rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5"
+                    >
+                      <div className="space-y-1.5">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#d1fae5] text-[#065f46]">
+                          🤝 Accepted by {accItem.acceptedBy?.organizationName || accItem.acceptedBy?.name || "Verified Partner Organization"}
+                        </div>
+                        <h3 className="text-base font-bold text-[#064e3b]">
+                          {accItem.brandName || accItem.medicineName} ({accItem.quantity} {accItem.unit || "units"})
+                        </h3>
+                        <p className="text-xs text-[#047857]">
+                          Please hand over this medicine at: <strong>{accItem.handoverPoint || accItem.locality || "Designated Location"}</strong>. Provide the secure code below to the partner during physical collection:
+                        </p>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#a7f3d0] text-center shadow-xs shrink-0 space-y-1">
+                        <span className="text-[10px] font-bold text-[#065f46] uppercase tracking-wider block">
+                          6-Digit Handover Code
+                        </span>
+                        <div className="text-2xl font-mono font-black text-[#0f4c42] tracking-widest px-3 py-0.5 bg-[#f0fdf4] rounded-lg border border-[#bbf7d0]">
+                          {accItem.handoverCode || "Pending"}
+                        </div>
+                        <span className="text-[10px] text-[#737373] block">
+                          Give to partner representative
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* Filter Sub-Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
                 {[
                   { id: "all", label: `All (${listings.length})` },
                   { id: "approved", label: `Active (${activeCount})` },
+                  { id: "accepted", label: `Accepted (${acceptedCount})` },
+                  { id: "sold", label: `Completed (${completedCount})` },
                   { id: "pending", label: `Pending (${pendingCount})` },
                   { id: "rejected", label: `Rejected (${rejectedCount})` },
-                  { id: "sold", label: `Sold (${fulfilledCount})` },
                 ].map((f) => (
                   <button
                     key={f.id}
@@ -564,7 +897,7 @@ export default function Dashboard() {
                       <tr>
                         <th className="py-3 px-4 font-bold">Medicine Name</th>
                         <th className="py-3 px-4 font-bold">Category</th>
-                        <th className="py-3 px-4 font-bold">Price / MRP</th>
+                        <th className="py-3 px-4 font-bold">Type</th>
                         <th className="py-3 px-4 font-bold">Expiry Date</th>
                         <th className="py-3 px-4 font-bold">Status</th>
                         <th className="py-3 px-4 font-bold text-right">Actions</th>
@@ -583,7 +916,7 @@ export default function Dashboard() {
                             <td className="py-4 px-4 font-semibold text-[#171717]">
                               <div>{title}</div>
                               <div className="text-xs text-[#737373] font-normal">
-                                {item.company} {item.strength ? `(${item.strength})` : ""}
+                                {item.company} {item.strength ? `(${item.strength})` : ""} · {item.quantity} {item.unit || "units"}
                               </div>
                               {item.isPrescriptionRequired && (
                                 <span className="inline-block mt-0.5 text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200 px-1.5 py-0.2 rounded">
@@ -592,19 +925,33 @@ export default function Dashboard() {
                               )}
                             </td>
                             <td className="py-4 px-4 text-xs text-[#525252]">{item.category}</td>
-                            <td className="py-4 px-4 font-bold text-[#0f4c42]">
-                              ₹{item.price}{" "}
-                              {item.originalMrp && item.originalMrp > item.price && (
-                                <span className="text-xs text-[#737373] line-through font-normal">
-                                  ₹{item.originalMrp}
-                                </span>
-                              )}
+                            <td className="py-4 px-4">
+                              <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] border border-[#a7f3d0]">
+                                🎁 Free Donation
+                              </span>
                             </td>
                             <td className="py-4 px-4 text-xs font-mono">{expiryStr}</td>
                             <td className="py-4 px-4">
                               {item.status === "approved" && (
                                 <Badge variant="success" size="sm">
-                                  Active / Approved
+                                  Active / Available
+                                </Badge>
+                              )}
+                              {item.status === "accepted" && (
+                                <div className="space-y-1">
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
+                                    🤝 Accepted by Partner
+                                  </span>
+                                  {item.handoverCode && (
+                                    <div className="text-[11px] font-mono font-bold text-[#0f4c42]">
+                                      Code: <span className="underline">{item.handoverCode}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              {item.status === "completed" && (
+                                <Badge variant="default" size="sm">
+                                  ✅ Handover Completed
                                 </Badge>
                               )}
                               {item.status === "pending" && (
@@ -626,7 +973,7 @@ export default function Dashboard() {
                               )}
                               {item.status === "sold" && (
                                 <Badge variant="default" size="sm">
-                                  Fulfilled / Sold
+                                  Completed
                                 </Badge>
                               )}
                             </td>
@@ -638,14 +985,16 @@ export default function Dashboard() {
                                 >
                                   View
                                 </Link>
-                                <button
-                                  onClick={() => handleDeleteListing(medId, title)}
-                                  disabled={deletingId === medId}
-                                  className="text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer disabled:opacity-50"
-                                  title="Delete listing"
-                                >
-                                  <TrashIcon className="w-3.5 h-3.5" />
-                                </button>
+                                {item.status !== "accepted" && item.status !== "completed" && (
+                                  <button
+                                    onClick={() => handleDeleteListing(medId, title)}
+                                    disabled={deletingId === medId}
+                                    className="text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer disabled:opacity-50"
+                                    title="Delete listing"
+                                  >
+                                    <TrashIcon className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -658,7 +1007,7 @@ export default function Dashboard() {
                 <EmptyState
                   title="No medicine listings in this category"
                   description="Have unused, unexpired surplus medicine? List it on MEDISAVE to assist patients in need."
-                  actionLabel="List a Medicine"
+                  actionLabel="Donate a Medicine"
                   actionLink="/sell"
                 />
               )}
@@ -678,7 +1027,7 @@ export default function Dashboard() {
                     <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
                       <tr>
                         <th className="py-3 px-4 font-bold">Order Ref</th>
-                        <th className="py-3 px-4 font-bold">Buyer Details</th>
+                        <th className="py-3 px-4 font-bold">Recipient Details</th>
                         <th className="py-3 px-4 font-bold">Medicine Requested</th>
                         <th className="py-3 px-4 font-bold">Qty</th>
                         <th className="py-3 px-4 font-bold">Amount</th>
@@ -1025,9 +1374,9 @@ export default function Dashboard() {
                           <div className="py-2.5 px-3 bg-white rounded-lg border border-[#e4e2dd] space-y-2">
                             <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-[#737373] tracking-tight">
                               <span className={currentIdx >= 0 ? "text-[#0f4c42]" : ""}>1. ORDER PLACED</span>
-                              <span className={currentIdx >= 1 ? "text-[#0f4c42]" : ""}>2. SELLER CONFIRMS</span>
+                              <span className={currentIdx >= 1 ? "text-[#0f4c42]" : ""}>2. DONOR CONFIRMS</span>
                               <span className={currentIdx >= 2 ? "text-[#0f4c42]" : ""}>3. READY FOR HANDOVER</span>
-                              <span className={currentIdx >= 3 ? "text-[#0f4c42]" : ""}>4. BUYER + SELLER COORDINATE</span>
+                              <span className={currentIdx >= 3 ? "text-[#0f4c42]" : ""}>4. DONOR + RECIPIENT COORDINATE</span>
                               <span className={currentIdx >= 4 ? "text-emerald-700" : ""}>5. HANDOVER COMPLETED</span>
                             </div>
                             <div className="w-full bg-[#e4e2dd] h-2 rounded-full overflow-hidden flex">
@@ -1127,7 +1476,7 @@ export default function Dashboard() {
                   </h2>
                   <p className="text-xs text-[#737373]">
                     Prescriptions verified by coordinators can be used to request Schedule H and Rx
-                    medications at checkout.
+                    medications during redistribution.
                   </p>
                 </div>
                 <Button
@@ -1458,6 +1807,115 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Add Medicine to Cabinet Modal */}
+      <Modal
+        isOpen={isAddCabinetModalOpen}
+        onClose={() => setIsAddCabinetModalOpen(false)}
+        title="Add Medicine to Cabinet Tracker"
+      >
+        <form onSubmit={handleAddCabinetSubmit} className="space-y-4 text-left">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+              Medicine Brand / Name *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Paracetamol 650mg, Dolo 650, Azithromycin 500mg"
+              value={cabinetFormData.name}
+              onChange={(e) => setCabinetFormData({ ...cabinetFormData, name: e.target.value })}
+              className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+                Quantity *
+              </label>
+              <input
+                type="number"
+                min="1"
+                required
+                value={cabinetFormData.quantity}
+                onChange={(e) => setCabinetFormData({ ...cabinetFormData, quantity: e.target.value })}
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+                Unit
+              </label>
+              <select
+                value={cabinetFormData.unit}
+                onChange={(e) => setCabinetFormData({ ...cabinetFormData, unit: e.target.value })}
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              >
+                <option value="tablets">Tablets</option>
+                <option value="capsules">Capsules</option>
+                <option value="strip">Sealed Strip</option>
+                <option value="bottle">Bottle (Sealed)</option>
+                <option value="units">Units</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+                Expiry Date *
+              </label>
+              <input
+                type="date"
+                required
+                value={cabinetFormData.expiryDate}
+                onChange={(e) => setCabinetFormData({ ...cabinetFormData, expiryDate: e.target.value })}
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#171717] mb-1">
+                Category
+              </label>
+              <select
+                value={cabinetFormData.category}
+                onChange={(e) => setCabinetFormData({ ...cabinetFormData, category: e.target.value })}
+                className="w-full bg-[#fafaf7] border border-[#e4e2dd] rounded-lg px-3 py-2 text-xs text-[#171717] focus:outline-none focus:ring-2 focus:ring-[#0f4c42]"
+              >
+                <option value="General Health">General Health</option>
+                <option value="Pain & Fever">Pain & Fever</option>
+                <option value="Antibiotics">Antibiotics</option>
+                <option value="Allergy & Cold">Allergy & Cold</option>
+                <option value="Cardiovascular">Cardiovascular</option>
+                <option value="Diabetes">Diabetes</option>
+                <option value="Gastrointestinal">Gastrointestinal</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-[#e4e2dd] flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              onClick={() => setIsAddCabinetModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="md"
+              className="bg-[#0f4c42] hover:bg-[#0a362f]"
+            >
+              Save to Cabinet
+            </Button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

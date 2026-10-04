@@ -13,7 +13,17 @@ const generateToken = (id) => {
 // @access  Public
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      address,
+      role = "user",
+      organizationName,
+      organizationType,
+      locality,
+    } = req.body;
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -49,6 +59,9 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    const assignedRole = ["user", "partner"].includes(role) ? role : "user";
+    const assignedPartnerStatus = assignedRole === "partner" ? "pending" : "none";
+
     // Create user
     const user = await User.create({
       name: name.trim(),
@@ -56,6 +69,11 @@ export const registerUser = async (req, res) => {
       password,
       phone: phone ? phone.trim() : "",
       address: address ? address.trim() : "",
+      role: assignedRole,
+      organizationName: organizationName ? organizationName.trim() : "",
+      organizationType: organizationType || "",
+      locality: locality ? locality.trim() : "Katraj",
+      partnerStatus: assignedPartnerStatus,
       avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80`,
     });
 
@@ -63,7 +81,10 @@ export const registerUser = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "User registered successfully",
+      message:
+        assignedRole === "partner"
+          ? "Partner account registered and submitted for verification"
+          : "User registered successfully",
       data: {
         user: {
           _id: user._id,
@@ -74,6 +95,10 @@ export const registerUser = async (req, res) => {
           address: user.address,
           avatar: user.avatar,
           isVerified: user.isVerified,
+          organizationName: user.organizationName,
+          organizationType: user.organizationType,
+          locality: user.locality,
+          partnerStatus: user.partnerStatus,
           createdAt: user.createdAt,
         },
         token,
@@ -137,6 +162,10 @@ export const loginUser = async (req, res) => {
           address: user.address,
           avatar: user.avatar,
           isVerified: user.isVerified,
+          organizationName: user.organizationName,
+          organizationType: user.organizationType,
+          locality: user.locality,
+          partnerStatus: user.partnerStatus,
           createdAt: user.createdAt,
         },
         token,
@@ -172,6 +201,10 @@ export const getMe = async (req, res) => {
           address: user.address,
           avatar: user.avatar,
           isVerified: user.isVerified,
+          organizationName: user.organizationName,
+          organizationType: user.organizationType,
+          locality: user.locality,
+          partnerStatus: user.partnerStatus,
           createdAt: user.createdAt,
         },
       },

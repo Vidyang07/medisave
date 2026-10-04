@@ -812,3 +812,99 @@ export const rejectPrescription = async (req, res) => {
   }
 };
 
+// ==========================================
+// PARTNER VERIFICATION & MANAGEMENT
+// ==========================================
+
+// @desc    Get all registered partner organizations for admin verification
+// @route   GET /api/admin/partners
+// @access  Private (Admin only)
+export const getAdminPartners = async (req, res) => {
+  try {
+    const { status, search } = req.query;
+    const query = { role: "partner" };
+
+    if (status && ["pending", "verified", "rejected"].includes(status.toLowerCase())) {
+      query.partnerStatus = status.toLowerCase();
+    }
+
+    if (search && search.trim()) {
+      const regex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { name: regex },
+        { email: regex },
+        { organizationName: regex },
+        { locality: regex },
+      ];
+    }
+
+    const partners = await User.find(query)
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: partners.length,
+      data: partners,
+    });
+  } catch (error) {
+    console.error("Get Admin Partners Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching partner organizations",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Moderate / verify a partner organization
+// @route   PATCH /api/admin/partners/:id/verify
+// @access  Private (Admin only)
+export const moderatePartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { partnerStatus } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid partner ID format",
+      });
+    }
+
+    if (!["verified", "rejected", "pending"].includes(partnerStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid partnerStatus. Allowed: 'verified', 'rejected', 'pending'",
+      });
+    }
+
+    const partner = await User.findById(id).select("-password");
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner account not found",
+      });
+    }
+
+    partner.partnerStatus = partnerStatus;
+    if (partnerStatus === "verified") {
+      partner.isVerified = true;
+    }
+    await partner.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Partner organization status updated to "${partnerStatus}"`,
+      data: partner,
+    });
+  } catch (error) {
+    console.error("Moderate Partner Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error moderating partner organization",
+      error: error.message,
+    });
+  }
+};
+

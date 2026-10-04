@@ -17,10 +17,16 @@ import MedicineDetails from "./pages/MedicineDetails";
 import AdminDashboard from "./pages/AdminDashboard";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import CepProofs from "./pages/CepProofs";
+import NgoRequests from "./pages/NgoRequests";
+import DisposalGuide from "./pages/DisposalGuide";
+import PartnerDashboard from "./pages/PartnerDashboard";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/ToastContext";
+
+import { FEATURES } from "./config/features";
 
 // Scroll to top helper on route navigation
 function ScrollToTop() {
@@ -48,6 +54,9 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/buy" element={<BuyMedicine />} />
                 <Route path="/medicine/:id" element={<MedicineDetails />} />
+                <Route path="/cep-proofs" element={<CepProofs />} />
+                <Route path="/ngo-requests" element={<NgoRequests />} />
+                <Route path="/disposal-guide" element={<DisposalGuide />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/terms" element={<Terms />} />
@@ -79,6 +88,14 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="/partner"
+                  element={
+                    <ProtectedRoute partnerOnly>
+                      <PartnerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/profile"
                   element={
                     <ProtectedRoute>
@@ -89,7 +106,7 @@ export default function App() {
               </Routes>
             </main>
 
-            <CartDrawer />
+            {FEATURES.ENABLE_COMMERCIAL_MARKETPLACE && <CartDrawer />}
             <Footer />
           </div>
         </ToastProvider>

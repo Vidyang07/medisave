@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { useCart } from "../context/useCart";
 import {
   PillIcon,
   SearchIcon,
-  ShoppingBagIcon,
   UserIcon,
   LogOutIcon,
   MenuIcon,
@@ -17,7 +15,6 @@ import {
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
-  const { itemCount, openCart } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [navSearch, setNavSearch] = useState("");
@@ -53,6 +50,12 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 bg-[#fafaf7]/95 backdrop-blur-md border-b border-[#e4e2dd] shadow-2xs">
+      {/* Top Visible Community Notice Banner */}
+      <div className="bg-[#0f4c42] text-white text-[11px] font-medium py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-2">
+        <ShieldCheckIcon className="w-3.5 h-3.5 text-[#a7f3d0] shrink-0" />
+        <span>No buying or selling. MEDISAVE connects eligible unused medicines with verified community healthcare partners.</span>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Brand Logo */}
@@ -66,7 +69,7 @@ export default function Navbar() {
                   MEDI<span className="text-[#0f4c42]">SAVE</span>
                 </span>
                 <span className="text-[10px] font-semibold text-[#737373] tracking-wider uppercase leading-tight mt-0.5">
-                  Medicine Exchange
+                  Verified Donation Platform
                 </span>
               </div>
             </Link>
@@ -77,11 +80,34 @@ export default function Navbar() {
                 Home
               </NavLink>
               <NavLink to="/buy" className={navLinkClass}>
-                Browse Medicines
+                Browse Donations
               </NavLink>
               <NavLink to="/sell" className={navLinkClass}>
-                Sell Medicine
+                Donate Medicine
               </NavLink>
+              {isAuthenticated && (
+                <NavLink to="/dashboard" className={navLinkClass}>
+                  My Cabinet
+                </NavLink>
+              )}
+              <NavLink to="/disposal-guide" className={navLinkClass}>
+                Safe Disposal
+              </NavLink>
+              {isAuthenticated && (user?.role === "partner" || user?.role === "admin") && (
+                <NavLink
+                  to="/partner"
+                  className={({ isActive }) =>
+                    `text-xs font-bold transition-colors px-3 py-1.5 rounded-lg flex items-center gap-1.5 ${
+                      isActive
+                        ? "text-[#0f4c42] bg-[#d1fae5] font-extrabold shadow-2xs"
+                        : "text-[#065f46] bg-[#ecfdf5] hover:bg-[#d1fae5]"
+                    }`
+                  }
+                >
+                  <PackageIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
+                  Partner Portal
+                </NavLink>
+              )}
               {isAuthenticated && user?.role === "admin" && (
                 <NavLink
                   to="/admin"
@@ -108,7 +134,7 @@ export default function Navbar() {
             <SearchIcon className="w-3.5 h-3.5 text-[#737373] absolute left-3 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search medicines, salts..."
+              placeholder="Search donations, salts..."
               value={navSearch}
               onChange={(e) => setNavSearch(e.target.value)}
               className="w-full bg-[#f2f1ec] border border-[#e4e2dd] text-xs text-[#171717] rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0f4c42] focus:bg-white transition placeholder-[#737373]"
@@ -117,21 +143,6 @@ export default function Navbar() {
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Cart Trigger */}
-            <button
-              onClick={openCart}
-              className="relative p-2 rounded-lg text-[#262626] hover:text-[#0f4c42] hover:bg-[#f2f1ec] transition cursor-pointer"
-              title="View Medicine Requests"
-              aria-label="View Cart"
-            >
-              <ShoppingBagIcon className="w-5 h-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#0f4c42] text-white text-[10px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center ring-2 ring-white">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-
             {/* Authentication / User Profile */}
             {isAuthenticated && user ? (
               <div className="relative" ref={dropdownRef}>
@@ -155,7 +166,11 @@ export default function Navbar() {
                       {user.name}
                     </span>
                     <span className="text-[10px] text-[#0f4c42] font-medium leading-none">
-                      {user.role === "admin" ? "Admin" : "Member"}
+                      {user.role === "admin"
+                        ? "Admin"
+                        : user.role === "partner"
+                        ? "Partner Org"
+                        : "Donor / Member"}
                     </span>
                   </div>
                   <ChevronDownIcon className="w-3.5 h-3.5 text-[#737373] hidden sm:block" />
@@ -180,8 +195,18 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 px-4 py-2 text-xs text-[#262626] hover:bg-[#f2f1ec] hover:text-[#0f4c42] transition"
                       >
                         <PackageIcon className="w-4 h-4 text-[#737373]" />
-                        Dashboard & Listings
+                        Donor Dashboard
                       </Link>
+                      {(user?.role === "partner" || user?.role === "admin") && (
+                        <Link
+                          to="/partner"
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs text-[#065f46] hover:bg-[#ecfdf5] transition font-semibold"
+                        >
+                          <PackageIcon className="w-4 h-4 text-[#0f4c42]" />
+                          Partner Portal
+                        </Link>
+                      )}
                       {user?.role === "admin" && (
                         <Link
                           to="/admin"
@@ -277,14 +302,14 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg text-xs font-medium text-[#262626] hover:bg-[#e8f3f1] hover:text-[#0f4c42] transition"
             >
-              Browse Medicines
+              Browse Donations
             </Link>
             <Link
               to="/sell"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg text-xs font-medium text-[#262626] hover:bg-[#e8f3f1] hover:text-[#0f4c42] transition"
             >
-              List an Unused Medicine
+              Donate Medicine
             </Link>
             {isAuthenticated && (
               <Link
@@ -292,7 +317,24 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg text-xs font-medium text-[#262626] hover:bg-[#e8f3f1] hover:text-[#0f4c42] transition"
               >
-                Member Dashboard
+                My Cabinet
+              </Link>
+            )}
+            <Link
+              to="/disposal-guide"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-lg text-xs font-medium text-[#262626] hover:bg-[#e8f3f1] hover:text-[#0f4c42] transition"
+            >
+              Safe Disposal Guide
+            </Link>
+            {isAuthenticated && (user?.role === "partner" || user?.role === "admin") && (
+              <Link
+                to="/partner"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg text-xs font-bold text-[#065f46] bg-[#ecfdf5] transition flex items-center gap-1.5"
+              >
+                <PackageIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
+                Partner Portal
               </Link>
             )}
             {user?.role === "admin" && (

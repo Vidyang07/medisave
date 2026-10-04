@@ -55,7 +55,7 @@ export default function Privacy() {
             <ul className="list-disc pl-5 text-xs sm:text-sm text-[#525252] space-y-1.5">
               <li>Prescription documents are stored in private, unexposed server directories and are never served via public static URLs.</li>
               <li>Only the authenticated owner who uploaded the prescription and authorized platform coordinators reviewing the verification request may access the document stream.</li>
-              <li>Other platform sellers, buyers, or third parties cannot view or download your uploaded prescription files.</li>
+              <li>Other platform members, recipients, or third parties cannot view or download your uploaded prescription files.</li>
             </ul>
           </section>
 

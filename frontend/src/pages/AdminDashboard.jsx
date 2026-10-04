@@ -51,6 +51,11 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
+  // Partner Organizations State
+  const [partners, setPartners] = useState([]);
+  const [isLoadingPartners, setIsLoadingPartners] = useState(true);
+  const [partnerFilter, setPartnerFilter] = useState("all");
+
   // Action Loading & Modal State
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [rejectModalMedicine, setRejectModalMedicine] = useState(null);
@@ -159,6 +164,42 @@ export default function AdminDashboard() {
       });
   };
 
+  const fetchPartners = (status = partnerFilter) => {
+    setIsLoadingPartners(true);
+    const params = {};
+    if (status && status !== "all") params.status = status;
+
+    api
+      .get("/admin/partners", { params })
+      .then((res) => {
+        if (res.data?.success) {
+          setPartners(res.data.data || []);
+        }
+        setIsLoadingPartners(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch admin partners:", err.message);
+        setIsLoadingPartners(false);
+      });
+  };
+
+  const handleModeratePartner = async (partnerId, targetStatus) => {
+    setActionLoadingId(`partner-${partnerId}`);
+    try {
+      const res = await api.patch(`/admin/partners/${partnerId}/verify`, {
+        partnerStatus: targetStatus,
+      });
+      if (res.data?.success) {
+        showToast(`Partner organization marked as "${targetStatus}"`, "success");
+        fetchPartners();
+      }
+    } catch (err) {
+      showToast(err.response?.data?.message || "Failed to update partner organization", "error");
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -208,6 +249,18 @@ export default function AdminDashboard() {
       })
       .catch(() => {
         if (isMounted) setIsLoadingUsers(false);
+      });
+
+    api
+      .get("/admin/partners")
+      .then((res) => {
+        if (isMounted) {
+          if (res.data?.success) setPartners(res.data.data || []);
+          setIsLoadingPartners(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsLoadingPartners(false);
       });
 
     api
@@ -445,6 +498,8 @@ export default function AdminDashboard() {
   const pendingPrescriptionsList = prescriptions.filter((p) => p.status === "pending");
   const pendingPrescriptionCount =
     stats?.prescriptions?.pending ?? pendingPrescriptionsList.length;
+  const pendingPartnerCount =
+    partners.filter((p) => p.partnerStatus === "pending").length;
 
   return (
     <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-10">
@@ -652,6 +707,24 @@ export default function AdminDashboard() {
             >
               User Management ({stats?.users?.total || users.length})
             </button>
+            <button
+              onClick={() => {
+                setActiveTab("partners");
+                fetchPartners();
+              }}
+              className={`py-4 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+                activeTab === "partners"
+                  ? "border-[#0f4c42] text-[#0f4c42] bg-white"
+                  : "border-transparent text-[#737373] hover:text-[#171717]"
+              }`}
+            >
+              <span>Partner Organizations ({partners.length})</span>
+              {pendingPartnerCount > 0 && (
+                <span className="px-2 py-0.5 text-[11px] font-extrabold rounded-full bg-amber-100 text-amber-900">
+                  {pendingPartnerCount}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* TAB 1: PENDING LISTING QUEUE */}
@@ -679,10 +752,10 @@ export default function AdminDashboard() {
                       <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
                         <tr>
                           <th className="py-3 px-4 font-bold">Medicine & Batch</th>
-                          <th className="py-3 px-4 font-bold">Donor Seller</th>
+                          <th className="py-3 px-4 font-bold">Donor</th>
                           <th className="py-3 px-4 font-bold">Category & Form</th>
                           <th className="py-3 px-4 font-bold">Expiry Date</th>
-                          <th className="py-3 px-4 font-bold">Offered Price / MRP</th>
+                          <th className="py-3 px-4 font-bold">Donation Type</th>
                           <th className="py-3 px-4 font-bold text-right">Moderation Action</th>
                         </tr>
                       </thead>
@@ -734,13 +807,10 @@ export default function AdminDashboard() {
                                     : "-")}
                               </td>
 
-                              <td className="py-4 px-4 font-bold text-[#0f4c42] font-mono">
-                                ₹{med.price}{" "}
-                                {med.originalMrp && med.originalMrp > med.price && (
-                                  <span className="text-xs text-[#737373] line-through font-normal">
-                                    ₹{med.originalMrp}
-                                  </span>
-                                )}
+                              <td className="py-4 px-4 font-bold text-[#065f46]">
+                                <span className="inline-block text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] px-2 py-0.5 rounded border border-[#a7f3d0]">
+                                  🎁 Free Donation
+                                </span>
                               </td>
 
                               <td className="py-4 px-4 text-right whitespace-nowrap">
@@ -848,7 +918,7 @@ export default function AdminDashboard() {
                     <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
                       <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
                         <tr>
-                          <th className="py-3 px-4 font-bold">Patient & Buyer</th>
+                          <th className="py-3 px-4 font-bold">Patient & Recipient</th>
                           <th className="py-3 px-4 font-bold">Doctor & Reg No</th>
                           <th className="py-3 px-4 font-bold">Prescribed Salts & Meds</th>
                           <th className="py-3 px-4 font-bold">Uploaded Document</th>
@@ -880,7 +950,7 @@ export default function AdminDashboard() {
                               <td className="py-4 px-4 font-semibold text-[#171717]">
                                 <div className="text-[#171717] font-bold">{rx.patientName}</div>
                                 <div className="text-[11px] text-[#737373] font-normal">
-                                  Buyer: {rx.buyer?.name || "Patient Member"}
+                                  Recipient: {rx.buyer?.name || "Patient Member"}
                                 </div>
                                 <div className="text-[10px] text-[#737373] font-normal">
                                   {rx.buyer?.email} {rx.buyer?.phone ? `• ${rx.buyer?.phone}` : ""}
@@ -1055,9 +1125,9 @@ export default function AdminDashboard() {
                     <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
                       <tr>
                         <th className="py-3 px-4 font-bold">Medicine</th>
-                        <th className="py-3 px-4 font-bold">Seller</th>
+                        <th className="py-3 px-4 font-bold">Donor</th>
                         <th className="py-3 px-4 font-bold">Stock</th>
-                        <th className="py-3 px-4 font-bold">Price</th>
+                        <th className="py-3 px-4 font-bold">Donation Type</th>
                         <th className="py-3 px-4 font-bold">Status</th>
                         <th className="py-3 px-4 font-bold text-right">Moderator Actions</th>
                       </tr>
@@ -1089,8 +1159,10 @@ export default function AdminDashboard() {
                               {med.quantity} units
                             </td>
 
-                            <td className="py-4 px-4 font-bold text-[#0f4c42] font-mono">
-                              ₹{med.price}
+                            <td className="py-4 px-4 font-bold text-[#065f46]">
+                              <span className="inline-block text-[11px] font-bold bg-[#ecfdf5] text-[#065f46] px-2 py-0.5 rounded border border-[#a7f3d0]">
+                                🎁 Free Donation
+                              </span>
                             </td>
 
                             <td className="py-4 px-4">
@@ -1231,7 +1303,7 @@ export default function AdminDashboard() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#525252]">
                           <div>
                             <div className="font-semibold text-[#171717]">
-                              Buyer: {order.buyer?.name || order.shippingAddress?.fullName}
+                              Recipient: {order.buyer?.name || order.shippingAddress?.fullName}
                             </div>
                             <div className="text-[11px] text-[#737373]">
                               {order.shippingAddress?.phone} • {order.shippingAddress?.address}, {order.shippingAddress?.city}
@@ -1253,7 +1325,7 @@ export default function AdminDashboard() {
                               <span>
                                 • {it.brandName || it.medicineName} × {it.quantity}{" "}
                                 <span className="text-[#737373]">
-                                  (Seller: {it.seller?.name || "Donor"})
+                                  (Donor: {it.seller?.name || "Donor"})
                                 </span>
                               </span>
                               <span className="font-mono font-semibold text-[#171717]">
@@ -1372,6 +1444,137 @@ export default function AdminDashboard() {
                 <EmptyState
                   title="No users found"
                   description="No registered members found on the platform."
+                />
+              )}
+            </div>
+          )}
+
+          {/* TAB 6: PARTNER ORGANIZATIONS MANAGEMENT */}
+          {activeTab === "partners" && (
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
+                {[
+                  { id: "all", label: `All (${partners.length})` },
+                  { id: "pending", label: `Pending (${partners.filter((p) => p.partnerStatus === "pending").length})` },
+                  { id: "verified", label: `Verified (${partners.filter((p) => p.partnerStatus === "verified").length})` },
+                  { id: "rejected", label: `Rejected (${partners.filter((p) => p.partnerStatus === "rejected").length})` },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => {
+                      setPartnerFilter(f.id);
+                      fetchPartners(f.id);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      partnerFilter === f.id
+                        ? "bg-[#0f4c42] text-white"
+                        : "bg-[#fafaf7] text-[#525252] border border-[#e4e2dd] hover:bg-[#f7f7f4]"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {isLoadingPartners ? (
+                <div className="py-12 flex justify-center items-center">
+                  <div className="w-7 h-7 border-3 border-[#0f4c42] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : partners.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm text-[#525252]">
+                    <thead className="text-[11px] uppercase tracking-wider text-[#737373] bg-[#fafaf7] border-b border-[#e4e2dd]">
+                      <tr>
+                        <th className="py-3 px-4 font-bold">Organization & Rep</th>
+                        <th className="py-3 px-4 font-bold">Type</th>
+                        <th className="py-3 px-4 font-bold">Locality</th>
+                        <th className="py-3 px-4 font-bold">Contact</th>
+                        <th className="py-3 px-4 font-bold">Status</th>
+                        <th className="py-3 px-4 font-bold text-right">Moderation Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#e4e2dd]">
+                      {partners.map((p) => {
+                        const isActionLoading = actionLoadingId === `partner-${p._id}`;
+
+                        return (
+                          <tr key={p._id} className="hover:bg-[#fafaf7] transition">
+                            <td className="py-4 px-4 font-semibold text-[#171717]">
+                              <div className="font-bold text-sm text-[#0f4c42]">
+                                {p.organizationName || p.name}
+                              </div>
+                              <div className="text-xs text-[#737373] font-normal">
+                                Rep: {p.name}
+                              </div>
+                            </td>
+
+                            <td className="py-4 px-4 text-xs font-medium text-[#171717]">
+                              {p.organizationType || "Charitable Clinic"}
+                            </td>
+
+                            <td className="py-4 px-4 text-xs font-medium text-[#525252]">
+                              {p.locality || "Pune"}
+                            </td>
+
+                            <td className="py-4 px-4 text-xs text-[#171717]">
+                              <div>{p.email}</div>
+                              <div className="text-[11px] text-[#737373]">{p.phone || "-"}</div>
+                            </td>
+
+                            <td className="py-4 px-4">
+                              {p.partnerStatus === "verified" && (
+                                <Badge variant="success" size="sm">
+                                  Verified Partner
+                                </Badge>
+                              )}
+                              {p.partnerStatus === "pending" && (
+                                <Badge variant="warning" size="sm">
+                                  Pending Review
+                                </Badge>
+                              )}
+                              {p.partnerStatus === "rejected" && (
+                                <Badge variant="danger" size="sm">
+                                  Rejected
+                                </Badge>
+                              )}
+                            </td>
+
+                            <td className="py-4 px-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {p.partnerStatus !== "verified" && (
+                                  <Button
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={() => handleModeratePartner(p._id, "verified")}
+                                    disabled={isActionLoading}
+                                    className="bg-[#0f4c42] hover:bg-[#0a362f] text-xs py-1 px-2.5"
+                                  >
+                                    Verify
+                                  </Button>
+                                )}
+                                {p.partnerStatus !== "rejected" && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleModeratePartner(p._id, "rejected")}
+                                    disabled={isActionLoading}
+                                    className="text-xs py-1 px-2.5 text-rose-600 hover:bg-rose-50 border-rose-200"
+                                  >
+                                    Reject
+                                  </Button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <EmptyState
+                  title="No partner organizations found"
+                  description="No registered clinic, NGO, or healthcare partner accounts match this filter."
                 />
               )}
             </div>

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/axios";
-import { useCart } from "../context/useCart";
-import { useToast } from "../context/useToast";
 import { Breadcrumb } from "../components/common/Breadcrumb";
 import { Badge } from "../components/common/Badge";
 import { Button } from "../components/common/Button";
@@ -10,26 +8,21 @@ import MedicineCard from "../components/MedicineCard";
 import {
   ShieldCheckIcon,
   ClockIcon,
-  ShoppingBagIcon,
   PackageIcon,
   AlertCircleIcon,
   CheckIcon,
-  PlusIcon,
-  MinusIcon,
   FileTextIcon,
+  MapPinIcon,
 } from "../components/common/Icons";
 
 export default function MedicineDetails() {
   const { id } = useParams();
-  const { addToCart, openCart } = useCart();
-  const { showToast } = useToast();
 
   const [medicine, setMedicine] = useState(null);
   const [relatedMedicines, setRelatedMedicines] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("info"); // 'info', 'seller', 'safety'
+  const [activeTab, setActiveTab] = useState("info"); // 'info', 'donor', 'safety'
 
   useEffect(() => {
     let isMounted = true;
@@ -95,14 +88,14 @@ export default function MedicineDetails() {
             <AlertCircleIcon className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-bold text-[#171717] mb-1.5">
-            Medicine Listing Not Found
+            Donation Listing Not Found
           </h2>
           <p className="text-xs text-[#525252] mb-5 leading-relaxed">
-            The requested medicine listing may have been reserved, fulfilled, or removed from the community catalogue.
+            The requested medicine donation may have been fulfilled, expired, or relocated within the community network.
           </p>
           <Link to="/buy">
             <Button variant="primary" size="md">
-              Browse Available Medicines
+              Browse Available Donations
             </Button>
           </Link>
         </div>
@@ -110,59 +103,14 @@ export default function MedicineDetails() {
     );
   }
 
-  const medId = medicine._id || medicine.id;
   const title = medicine.brandName || medicine.medicineName || medicine.name || "Medicine";
   const generic = medicine.genericName || medicine.medicineName || medicine.name;
-  const price = medicine.price !== undefined ? medicine.price : 0;
-  const originalMrp = medicine.originalMrp || price;
   const availableQty = medicine.quantity || 1;
-  const unit = medicine.unit || "1 pack";
+  const unit = medicine.unit || "pack(s)";
   const image = medicine.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80";
   const sellerName = medicine.seller?.name || "Community Donor";
   const sellerLocation = medicine.seller?.address || medicine.seller?.location || "Pune, Maharashtra";
   const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Valid");
-
-  const discountPercent = originalMrp > price
-    ? Math.round(((originalMrp - price) / originalMrp) * 100)
-    : 0;
-
-  const handleAddToCart = () => {
-    addToCart(
-      {
-        ...medicine,
-        id: medId,
-        name: title,
-        brandName: title,
-        company: medicine.company,
-        strength: medicine.strength,
-        price,
-        originalMrp,
-        image,
-        isPrescriptionRequired: Boolean(medicine.isPrescriptionRequired),
-      },
-      quantity
-    );
-    showToast(`Added ${quantity} pack(s) of ${title} to cart`, "success");
-  };
-
-  const handleBuyNow = () => {
-    addToCart(
-      {
-        ...medicine,
-        id: medId,
-        name: title,
-        brandName: title,
-        company: medicine.company,
-        strength: medicine.strength,
-        price,
-        originalMrp,
-        image,
-        isPrescriptionRequired: Boolean(medicine.isPrescriptionRequired),
-      },
-      quantity
-    );
-    openCart();
-  };
 
   return (
     <div className="min-h-screen bg-[#f7f7f4] py-6 sm:py-8">
@@ -171,7 +119,7 @@ export default function MedicineDetails() {
         <Breadcrumb
           items={[
             { label: "Home", to: "/" },
-            { label: "Browse Medicines", to: "/buy" },
+            { label: "Browse Donations", to: "/buy" },
             { label: medicine.category || "General", to: `/buy?category=${encodeURIComponent(medicine.category || "")}` },
             { label: title },
           ]}
@@ -193,7 +141,7 @@ export default function MedicineDetails() {
                 <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
                   <Badge variant="verified" size="md">
                     <ShieldCheckIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
-                    Verified Genuine
+                    Verified Genuine Pack
                   </Badge>
                   {medicine.isPrescriptionRequired && (
                     <Badge variant="prescription" size="sm">
@@ -215,19 +163,19 @@ export default function MedicineDetails() {
                 <div className="flex items-center justify-between text-[#171717] font-semibold">
                   <span className="flex items-center gap-1.5">
                     <PackageIcon className="w-4 h-4 text-[#0f4c42]" />
-                    Physical Package Condition:
+                    Packaging Condition:
                   </span>
                   <span className="text-[#065f46] font-bold bg-[#ecfdf5] px-2 py-0.5 rounded border border-[#a7f3d0]">
                     {medicine.packageCondition || "Intact Sealed Blister Pack"}
                   </span>
                 </div>
                 <p className="text-[11px] text-[#525252] leading-normal">
-                  Inspected to guarantee unpunctured blister foil, undamaged manufacturer labeling, and tamper seal verification.
+                  Verified undamaged manufacturer blister foil and tamper seal integrity.
                 </p>
               </div>
             </div>
 
-            {/* Right Column: Specification & Purchasing Controls (7 cols) */}
+            {/* Right Column: Specification & Action Controls (7 cols) */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-5 text-left">
               <div>
                 {/* Category & Manufacturer Tag */}
@@ -247,47 +195,35 @@ export default function MedicineDetails() {
                   {title}
                 </h1>
                 <p className="text-xs sm:text-sm font-medium text-[#525252] mt-1">
-                  Formula: <span className="text-[#171717] font-semibold">{generic}</span>
+                  Active Formula: <span className="text-[#171717] font-semibold">{generic}</span>
                 </p>
                 <p className="text-xs text-[#737373] mt-0.5">
                   Manufactured by <strong className="text-[#525252]">{medicine.company}</strong>
                 </p>
 
-                {/* Pricing & MRP Discount Showcase */}
-                <div className="mt-5 p-4 rounded-lg bg-[#e8f3f1] border border-[#c4ded9] flex items-center justify-between">
+                {/* 100% FREE COMMUNITY DONATION SHOWCASE CARD */}
+                <div className="mt-5 p-4 rounded-xl bg-[#e8f3f1] border border-[#c4ded9] flex items-center justify-between">
                   <div>
-                    <div className="flex items-baseline gap-2.5">
-                      <span className="text-2xl sm:text-3xl font-bold text-[#0f4c42]">
-                        ₹{price}
-                      </span>
-                      {originalMrp > price && (
-                        <span className="text-xs sm:text-sm text-[#737373] line-through">
-                          MRP ₹{originalMrp}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] text-[#525252]">
-                      MEDISAVE Community Fair Resale Rate
+                    <span className="text-lg sm:text-xl font-extrabold text-[#0f4c42] flex items-center gap-1.5">
+                      🎁 100% Free Donation
+                    </span>
+                    <span className="text-xs text-[#525252] block mt-0.5">
+                      Verified community surplus medicine for non-profit redistribution
                     </span>
                   </div>
 
-                  {discountPercent > 0 && (
-                    <div className="text-right">
-                      <span className="inline-block bg-[#0f4c42] text-white font-bold text-xs px-2.5 py-1 rounded-md">
-                        {discountPercent}% OFF MRP
-                      </span>
-                      <p className="text-[11px] font-semibold text-[#065f46] mt-0.5">
-                        Save ₹{originalMrp - price} vs retail
-                      </p>
-                    </div>
-                  )}
+                  <div className="text-right">
+                    <span className="inline-block bg-[#0f4c42] text-[#a7f3d0] font-bold text-xs px-2.5 py-1 rounded-md">
+                      {availableQty} {unit} Available
+                    </span>
+                  </div>
                 </div>
 
                 {/* COMMUNITY HANDOVER SPECIFICATION CARD */}
-                <div className="mt-4 p-4 rounded-xl bg-amber-50/80 border border-amber-200 space-y-2.5 text-xs text-left">
+                <div className="mt-4 p-4 rounded-xl bg-[#fafaf7] border border-[#e4e2dd] space-y-2.5 text-xs text-left">
                   <div className="flex items-center justify-between">
-                    <strong className="text-amber-950 font-bold flex items-center gap-1.5">
-                      <PackageIcon className="w-4 h-4 text-amber-800" />
+                    <strong className="text-[#171717] font-bold flex items-center gap-1.5">
+                      <MapPinIcon className="w-4 h-4 text-[#0f4c42]" />
                       Community Handover Point:
                     </strong>
                     <span className="font-semibold text-[#0f4c42] bg-[#e8f3f1] px-2 py-0.5 rounded border border-[#c4ded9]">
@@ -295,10 +231,10 @@ export default function MedicineDetails() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-[#525252] bg-white/80 p-2.5 rounded-lg border border-amber-200/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-[#525252] bg-white p-2.5 rounded-lg border border-[#e4e2dd]">
                     <div>
-                      <span className="text-[#737373] block">Preferred Handover:</span>
-                      <strong className="text-[#171717]">{medicine.handoverPoint || "Mutually agreed landmark"}</strong>
+                      <span className="text-[#737373] block">Designated Landmark:</span>
+                      <strong className="text-[#171717]">{medicine.handoverPoint || "Mutually agreed public landmark"}</strong>
                     </div>
                     <div>
                       <span className="text-[#737373] block">Locality & PIN:</span>
@@ -306,8 +242,8 @@ export default function MedicineDetails() {
                     </div>
                   </div>
 
-                  <p className="text-[10px] text-amber-900/90 leading-relaxed italic border-t border-amber-200/60 pt-1.5">
-                    💡 <em>MEDISAVE is designed for community-based handover. Buyers and sellers agree on a convenient handover point. MEDISAVE does not currently operate its own delivery network.</em>
+                  <p className="text-[10px] text-[#737373] leading-relaxed italic border-t border-[#eceae5] pt-1.5">
+                    💡 <em>MEDISAVE coordinates physical medicine handovers using 6-digit verification codes. Verified non-profit partners and coordinators accept and inspect donations in person.</em>
                   </p>
                 </div>
 
@@ -326,9 +262,9 @@ export default function MedicineDetails() {
                     </span>
                   </div>
                   <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#e4e2dd]">
-                    <span className="text-[#737373] block text-[11px]">Available Stock</span>
+                    <span className="text-[#737373] block text-[11px]">Target Beneficiary</span>
                     <span className="font-bold text-[#065f46] text-xs">
-                      {availableQty} {unit}
+                      {medicine.targetBeneficiary || "General Community"}
                     </span>
                   </div>
                 </div>
@@ -341,65 +277,36 @@ export default function MedicineDetails() {
                     {medicine.storageCondition || "Store in cool, dry place away from sunlight (<25°C)"}
                   </div>
                 </div>
-
-                {/* Pricing Policy Rationale Callout */}
-                {medicine.pricingRationale && (
-                  <div className="mt-2.5 p-3 bg-[#f0f9f8] rounded-lg border border-[#c4ded9] text-[11px] text-[#0a362f]">
-                    <strong>MEDISAVE Community Pricing Rationale:</strong> {medicine.pricingRationale}
-                  </div>
-                )}
               </div>
 
-              {/* Quantity Picker & Action Buttons */}
-              <div className="pt-4 border-t border-[#e4e2dd] space-y-3.5">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-[#171717] uppercase tracking-wider">
-                    Quantity:
-                  </span>
-                  <div className="flex items-center border border-[#e4e2dd] rounded-lg bg-white overflow-hidden shadow-2xs">
-                    <button
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      disabled={quantity <= 1}
-                      className="px-2.5 py-1 text-[#525252] hover:bg-[#f2f1ec] disabled:opacity-40 transition cursor-pointer"
-                    >
-                      <MinusIcon className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="px-3 text-xs font-bold text-[#171717]">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() =>
-                        setQuantity((q) => Math.min(availableQty, q + 1))
-                      }
-                      disabled={quantity >= availableQty}
-                      className="px-2.5 py-1 text-[#525252] hover:bg-[#f2f1ec] disabled:opacity-40 transition cursor-pointer"
-                    >
-                      <PlusIcon className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <span className="text-xs text-[#737373]">
-                    (Max {availableQty} packs available)
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    onClick={handleAddToCart}
-                    className="w-full"
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-[#e4e2dd] space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    to="/buy"
+                    className="flex-1"
                   >
-                    <ShoppingBagIcon className="w-4 h-4" />
-                    Add to Request
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={handleBuyNow}
-                    className="w-full"
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full"
+                    >
+                      ← Back to Donations
+                    </Button>
+                  </Link>
+                  <Link
+                    to="/partner"
+                    className="flex-1"
                   >
-                    Request Now (₹{price * quantity})
-                  </Button>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full bg-[#0f4c42] hover:bg-[#0a362f]"
+                    >
+                      <ShieldCheckIcon className="w-4 h-4 text-[#a7f3d0]" />
+                      Partner Redistribution Portal
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -420,9 +327,9 @@ export default function MedicineDetails() {
                 Medicine Information
               </button>
               <button
-                onClick={() => setActiveTab("seller")}
+                onClick={() => setActiveTab("donor")}
                 className={`py-3.5 px-4 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
-                  activeTab === "seller"
+                  activeTab === "donor"
                     ? "border-[#0f4c42] text-[#0f4c42] bg-white"
                     : "border-transparent text-[#737373] hover:text-[#171717]"
                 }`}
@@ -462,7 +369,7 @@ export default function MedicineDetails() {
                 </div>
               )}
 
-              {activeTab === "seller" && (
+              {activeTab === "donor" && (
                 <div className="space-y-3.5 max-w-3xl text-left">
                   <h3 className="text-sm sm:text-base font-bold text-[#171717]">
                     Community Donor Profile
@@ -477,7 +384,7 @@ export default function MedicineDetails() {
                           {sellerName}
                         </h4>
                         <Badge variant="verified" size="sm">
-                          Verified Donor
+                          Verified Community Donor
                         </Badge>
                       </div>
                       <p className="text-xs text-[#737373] mt-0.5">
@@ -486,7 +393,7 @@ export default function MedicineDetails() {
                     </div>
                   </div>
                   <p className="text-xs text-[#737373]">
-                    Listing verified and cleared for community exchange following coordinator review of packaging and batch details.
+                    Listing reviewed and cleared for community exchange following coordinator review of packaging integrity and expiry parameters.
                   </p>
                 </div>
               )}
@@ -499,7 +406,7 @@ export default function MedicineDetails() {
                   <ul className="space-y-2 text-xs text-[#525252]">
                     <li className="flex items-start gap-2">
                       <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
-                      <span><strong>Minimum Expiry Window:</strong> All medicines listed on MEDISAVE have a minimum 90-day safety buffer remaining.</span>
+                      <span><strong>Minimum Expiry Window:</strong> All medicines listed on MEDISAVE have a minimum 90-day safety buffer remaining before expiry.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
@@ -507,7 +414,7 @@ export default function MedicineDetails() {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckIcon className="w-4 h-4 text-[#0f4c42] shrink-0 mt-0.5" />
-                      <span><strong>Prescription Verification:</strong> Schedule H and H1 medications require physical or digital doctor prescription approval before checkout.</span>
+                      <span><strong>Physical Handover Verification:</strong> Donations are accepted in person using secure 6-digit OTP confirmation to prevent unauthorized redistribution.</span>
                     </li>
                   </ul>
                 </div>
@@ -520,7 +427,7 @@ export default function MedicineDetails() {
         {relatedMedicines.length > 0 && (
           <div className="mt-12 text-left space-y-4">
             <h3 className="text-lg sm:text-xl font-bold text-[#171717]">
-              Other medicines in {medicine.category}
+              Other donations in {medicine.category}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
               {relatedMedicines.map((item) => (

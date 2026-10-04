@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { PillIcon, ShieldCheckIcon, MailIcon, MapPinIcon } from "./common/Icons";
+import { PillIcon, ShieldCheckIcon, MapPinIcon } from "./common/Icons";
 
 export default function Footer() {
   return (
@@ -17,107 +17,109 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-[#a3a3a3] text-xs leading-relaxed max-w-sm">
-              A community initiative connecting individuals with surplus,
-              unexpired, and verified sealed medicines to make essential healthcare accessible and reduce pharmaceutical waste.
+              Community Medicine Donation & Expiry Awareness Platform. Connecting individuals holding surplus, unexpired, sealed medicines with verified community healthcare partners.
             </p>
             <div className="flex items-center gap-2 text-xs text-[#a7f3d0] font-medium pt-1">
               <ShieldCheckIcon className="w-3.5 h-3.5" />
-              <span>College Community Health Engagement Initiative</span>
+              <span>Verified Non-Profit Healthcare Redistribution</span>
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Platform Links */}
           <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Marketplace
+              Platform
             </h4>
             <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
               <li>
                 <Link to="/buy" className="hover:text-white transition">
-                  Browse Medicines
+                  Browse Donations
                 </Link>
               </li>
               <li>
                 <Link to="/sell" className="hover:text-white transition">
-                  List Unused Medicine
+                  Donate Medicine
                 </Link>
               </li>
               <li>
-                <Link to="/buy?category=Pain+%26+Fever" className="hover:text-white transition">
-                  Pain & Fever
+                <Link to="/dashboard" className="hover:text-white transition">
+                  My Medicine Cabinet
                 </Link>
               </li>
               <li>
-                <Link to="/buy?category=Antibiotics" className="hover:text-white transition">
-                  Antibiotics (Rx)
-                </Link>
-              </li>
-              <li>
-                <Link to="/buy?category=Vitamins+%26+Supplements" className="hover:text-white transition">
-                  Vitamins & Supplements
+                <Link to="/disposal-guide" className="hover:text-white transition">
+                  Safe Disposal Guide
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Community & Account Links */}
+          {/* Account & Portals */}
           <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Account & Portal
+              Portals
             </h4>
             <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
               <li>
                 <Link to="/dashboard" className="hover:text-white transition">
-                  Member Dashboard
+                  Donor Hub
+                </Link>
+              </li>
+              <li>
+                <Link to="/partner" className="hover:text-white transition">
+                  Partner Portal
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin" className="hover:text-white transition">
+                  Coordinator Queue
                 </Link>
               </li>
               <li>
                 <Link to="/profile" className="hover:text-white transition">
-                  Profile & Settings
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="hover:text-white transition">
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link to="/signup" className="hover:text-white transition">
-                  Join Community
+                  Account Settings
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact & Initiative Info */}
+          {/* Awareness & Safety */}
           <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Initiative Info
+              Safety & Standards
             </h4>
             <ul className="space-y-1.5 text-xs text-[#a3a3a3]">
-              <li className="flex items-center gap-2">
+              <li>
+                <Link to="/disposal-guide" className="hover:text-white transition">
+                  Household Neutralization
+                </Link>
+              </li>
+              <li>
+                <Link to="/disposal-guide#amr-prevention" className="hover:text-white transition">
+                  AMR Prevention
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-white transition">
+                  Donation Standards
+                </Link>
+              </li>
+              <li className="flex items-center gap-2 pt-1 text-[#737373]">
                 <MapPinIcon className="w-3.5 h-3.5 text-[#a7f3d0] shrink-0" />
-                <span>Pune, Maharashtra, India</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <MailIcon className="w-3.5 h-3.5 text-[#a7f3d0] shrink-0" />
-                <span>support@medisave.org</span>
-              </li>
-              <li className="pt-1 text-[11px] text-[#737373]">
-                Operating under Community Verification Guidelines.
+                <span>Pune Community Network</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Academic & Regulatory Safety Disclaimer */}
+        {/* Regulatory & Safety Disclaimer */}
         <div className="mt-10 pt-5 border-t border-[#262626] text-[11px] text-[#737373] leading-relaxed space-y-3">
           <p>
-            <strong className="text-[#a3a3a3]">Academic Project Disclaimer:</strong> MEDISAVE is a student engagement initiative developed for community health awareness and responsible medicine disposal research. It does not replace medical advice from licensed physicians or registered pharmacists. Always consult a qualified medical professional before taking any medication.
+            <strong className="text-[#a3a3a3]">Healthcare Notice:</strong> MEDISAVE is a community medicine donation and expiry awareness platform. It facilitates the non-profit redistribution of eligible unused medicines through verified healthcare partners and promotes responsible disposal of expired drugs. Always consult a licensed medical practitioner or registered pharmacist for medical advice.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between text-[#737373] text-[11px] pt-3 border-t border-[#262626] gap-2">
             <div>
-              © 2026 MEDISAVE Project. All rights reserved.
+              © 2026 MEDISAVE Platform. All rights reserved.
             </div>
             <div className="flex gap-4">
               <Link to="/terms" className="hover:text-white transition">

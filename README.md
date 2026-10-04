@@ -1,161 +1,158 @@
 # MEDISAVE
 
-> **A Verified Community Medicine Redistribution & Exchange Platform**  
-> *A community-focused medicine reuse and redistribution prototype designed to help people safely exchange unused, unexpired eligible medicines within practical local handover zones.*
+> **Verified Community Medicine Donation & Expiry Awareness Platform**  
+> *A community-driven digital platform designed for safe surplus medicine donation, verified redistribution to local clinics/NGOs, physical handover authentication, and safe disposal education.*  
+> **Pune Institute of Computer Technology (PICT) — Community Engagement Project (CEP | Course Code: 0313201)**
 
 ---
 
 ## ⚠️ Academic & Community Engagement Notice
-**MEDISAVE is an academic and community engagement prototype.** It is **not** a commercial pharmacy, licensed drug manufacturer, or medical authority. The platform is designed for research, educational demonstrations, and community health pilot programs. Medicine redistributions require mutual in-person inspection and coordinator verification.
+**MEDISAVE is an academic and community engagement prototype developed at PICT.** It is **not** a commercial online pharmacy, licensed pharmaceutical manufacturer, or logistics delivery company.
+
+> **Important Limitation**: MEDISAVE is an academic prototype and does not itself authorize the sale, dispensing, or distribution of medicines. Real-world implementation would require appropriate regulatory, pharmacy, clinical and institutional approvals.
+
+The platform facilitates structured surplus medicine donation drives, non-profit redistribution to verified community healthcare organizations, physical handover verification using one-time security codes, and environmental safe-disposal guidance for expired medications.
 
 ---
 
 ## 📋 Table of Contents
 - [Problem Statement](#problem-statement)
-- [Solution](#solution)
-- [Key Features](#key-features)
-- [Real-World Community Handover Model (Katraj vs Hinjewadi)](#real-world-community-handover-model-katraj-vs-hinjewadi)
-- [Deterministic Fair Pricing Methodology](#deterministic-fair-pricing-methodology)
-- [AI Architecture & OpenRouter Integration](#ai-architecture--openrouter-integration)
+- [The MEDISAVE Solution](#the-medisave-solution)
+- [Core End-to-End Workflow](#core-end-to-end-workflow)
+- [User Roles & Access Control](#user-roles--access-control)
+- [Key Platform Modules](#key-platform-modules)
+  - [1. Verified Donation & AI Assistant](#1-verified-donation--ai-assistant)
+  - [2. Partner Redistribution Portal](#2-partner-redistribution-portal)
+  - [3. 6-Digit Physical Handover Verification](#3-6-digit-physical-handover-verification)
+  - [4. Safe Household Disposal Guide](#4-safe-household-disposal-guide)
+  - [5. Coordinator & Admin Moderation](#5-coordinator--admin-moderation)
+  - [6. CEP Field Activity & Proofs Portal](#6-cep-field-activity--proofs-portal)
+- [Deterministic Proximity & Haversine Distance Engine](#deterministic-proximity--haversine-distance-engine)
+- [Deterministic Fair Pricing & Zero-Profit Donation Policy](#deterministic-fair-pricing--zero-profit-donation-policy)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
-- [Security & Access Control](#security--access-control)
-- [Scalability: Current vs Future Architecture](#scalability-current-vs-future-architecture)
-- [Production & Real-World Considerations](#production--real-world-considerations)
+- [Demo Accounts & Test Credentials](#demo-accounts--test-credentials)
 - [Installation & Local Setup](#installation--local-setup)
-- [Environment Variables Guide](#environment-variables-guide)
 - [Automated Testing & Verification Suite](#automated-testing--verification-suite)
-- [Project Status: Implemented vs Future Scope](#project-status-implemented-vs-future-scope)
-- [Community Engagement & College Campus Deployment](#community-engagement--college-campus-deployment)
+- [PICT CEP Team Members](#pict-cep-team-members)
+- [5–7 Minute Presentation Demo Script](#57-minute-presentation-demo-script)
 
 ---
 
 ## 🚨 Problem Statement
-Every year, substantial quantities of unopened, unexpired pharmaceutical medications are discarded by households due to treatment course completions, dosage adjustments, or over-purchasing. Concurrently, underprivileged individuals and students face recurring healthcare expenses for common essential medications.
+Substantial quantities of unexpired, sealed pharmaceutical medications are discarded annually by households due to recovery from acute illnesses, treatment plan adjustments, or accidental over-purchasing. Simultaneously, low-income families, orphanages, and charitable health camps face acute shortages of common essential medications.
 
-1. **Medicine Wastage**: Unused medicines frequently remain forgotten in homes until they expire and must be discarded into the environment.
-2. **Healthcare Affordability**: Students and low-income community members often struggle with recurring pharmaceutical expenses.
-3. **Safety & Compliance Hurdles**: Peer-to-peer medicine exchanges require rigorous verification of physical seal integrity, expiration buffers, and Schedule H prescription compliance.
-4. **Logistical Distance Reality**: Arbitrary peer-to-peer delivery across a large metropolis (e.g. Katraj to Hinjewadi) is impractical without dedicated courier fleets.
-5. **Pricing Inconsistency**: Peer-to-peer pricing requires fair, non-profit mathematical guardrails to prevent exploitation.
-
----
-
-## 💡 Solution
-**MEDISAVE** bridges healthcare affordability, safety compliance, and environmental responsibility through a verified community-driven platform:
-1. **Donor / Seller Surplus Listings**: Facilitates the listing of unopened, sealed surplus blister strips or bottles.
-2. **Deterministic Quality & Expiry Enforcement**: Automatically rejects medicines with less than 90 days of shelf life and requires intact packaging.
-3. **Transparent Fair Community Pricing**: Suggests non-profit community prices derived strictly from the seller's verified printed MRP, packaging condition, and remaining shelf life.
-4. **AI-Assisted Medicine Normalization**: Employs OpenRouter AI (with instant offline pharmaceutical knowledge base fallback) to identify salt formulations, manufacturers, strengths, and prescription classes.
-5. **Prescription Safety Verification**: Mandates coordinator review and approval for Schedule H/H1 medications before checkout is permitted.
-6. **Locality-Based Community Handover**: Implements a transparent locality model across Pune with deterministic Haversine distance calculations and public landmark handovers.
+1. **Pharmaceutical Wastage**: Usable medicines sit forgotten in home medicine cabinets until they expire and enter the municipal waste stream.
+2. **Environmental & Water Contamination**: Improperly flushing or dumping expired medicines contaminates groundwater, soil, and aquatic ecosystems, contributing to antimicrobial resistance (AMR).
+3. **Lack of Verified Redistribution**: Peer-to-peer distribution without coordinator review and partner verification risks distributing compromised, expired, or controlled drugs.
+4. **Logistical Distance Reality**: A community platform cannot assume an internal courier fleet across Pune; physical handovers require realistic, localized public meeting landmarks.
 
 ---
 
-## 🌟 Key Features
+## 💡 The MEDISAVE Solution
+**MEDISAVE** creates a secure, verified bridge between conscientious donors, community coordinators, and verified partner clinics/NGOs:
 
-### 1. Community Marketplace
-- Search by brand name, active salt, or therapeutic category.
-- Filter by category, dosage form, prescription requirement, and maximum price.
-- **"Nearby First (Closest Handover)" Sorting**: Computes spherical Haversine distance from the buyer's selected locality.
-- Proximity tier badges: `Nearby (0–5 km)`, `Extended area (5–15 km)`, and `Far from you (>15 km)`.
-
-### 2. Seller Listing with Smart Assistance
-- Real-time **MEDISAVE Suggested Community Price** with transparent mathematical rationales.
-- AI autofill for active salt composition, manufacturer, dosage form, and packaging standards.
-- Pune locality selection with auto-suggested landmarks (e.g. College Main Gate, Metro Station).
-
-### 3. Prescription Upload & Verification Workflow
-- Multi-format upload (PDF, JPG, PNG under 5 MB) for Schedule H/H1 medications.
-- Coordinator review dashboard with approval, expiration tagging, and detailed rejection tracking.
-- Secure, authenticated streaming of prescription documents (never served via public static URLs).
-
-### 4. Cart & Multi-Seller Checkout
-- Supports ordering items from multiple community sellers in a single checkout.
-- Atomic stock decrements and self-purchase prevention.
-- Explicit Community Handover preference selection (`Agreed Public Point` vs `Nearby Direct Handover`).
-
-### 5. Admin Moderation & Oversight
-- Medicine listing moderation queue (Approve, Reject with reason, or Remove).
-- Prescription verification queue with patient identification.
-- Community exchange statistics and inventory auditing.
+- **Strict Eligibility Guardrails**: Rejects any medicine with $<90$ days of remaining shelf life or opened/damaged packaging.
+- **Admin & Coordinator Review**: Every listing undergoes administrative review before becoming available in the catalog.
+- **Verified Partner Redistribution**: Only accredited community health partners (charitable clinics, old age homes, NGOs, campus health desks) can accept surplus donations.
+- **6-Digit Handover Authentication**: A cryptographically generated one-time code (OTP) ensures physical handovers are authenticated in person with brute-force lockout defenses.
+- **Dedicated Safe Disposal Education**: Unusable or expired medicines are directed to actionable, step-by-step safe disposal protocols rather than being redistributed.
 
 ---
 
-## 📍 Real-World Community Handover Model (Katraj vs Hinjewadi)
-
-### The Problem & Solution
-MEDISAVE is a **community medicine redistribution platform, NOT a commercial logistics company**. The platform does **not** claim to operate an internal delivery fleet across Pune.
-
-Instead, MEDISAVE implements a deterministic locality-based community matching system:
-- **Seller Profile**: Specifies Pune locality (e.g., *Katraj*), PIN code (*411046*), preferred public handover point (e.g., *College Gate*), and optional radius.
-- **Buyer Selection**: Chooses their current locality (e.g., *Hinjewadi* or *Katraj*).
-- **Deterministic Proximity Classification**:
-  $$\text{Haversine Distance}(Katraj, Hinjewadi) \approx 20.4\text{ km} \implies \text{"Far from you · 20.4 km"}$$
-  $$\text{Haversine Distance}(Katraj, Bibvewadi) \approx 2.1\text{ km} \implies \text{"Nearby · 2.1 km"}$$
-  $$\text{Haversine Distance}(Kothrud, Baner) \approx 6.1\text{ km} \implies \text{"Extended area · 6.1 km"}$$
-- **Marketplace Behavior**: Nearby listings are prioritized at the top of the marketplace when sorted by *"Nearby First"*, while distant listings remain transparently visible with distance warnings.
-
-```
-+-----------------------------------------------------------------------------------+
-|  "MEDISAVE is designed for community-based handover. Buyers and sellers agree on  |
-|  a convenient handover point. MEDISAVE does not currently operate its own         |
-|  delivery network."                                                               |
-+-----------------------------------------------------------------------------------+
-```
-
----
-
-## 💰 Deterministic Fair Pricing Methodology
-
-### Authoritative Printed MRP + Policy Guardrails
-AI is **never** the final authority on pharmaceutical pricing. In MEDISAVE, the **physical printed MRP** entered by the seller is authoritative. The system applies deterministic mathematical guardrails:
-
-$$\text{Suggested Community Price} = \operatorname{round}\left(P_{\text{MRP}} \times M_{\text{expiry}} \times M_{\text{condition}}\right)$$
-
-### Pricing Brackets
-| Remaining Shelf Life | Condition | Pricing Multiplier | Effective Community Discount |
-| :--- | :--- | :--- | :--- |
-| **$> 12\text{ months}$** | Sealed Blister / Bottle | $0.60$ | **40% Off** |
-| **$6 - 12\text{ months}$** | Sealed Blister / Bottle | $0.50$ | **50% Off** |
-| **$3 - 6\text{ months}$** | Sealed Blister / Bottle | $0.35$ | **65% Off** |
-| **$< 90\text{ days}$ ($< 3\text{ months}$)** | Any | *Ineligible* | **Rejected by Safety Policy** |
-
-### Hard Backend Pricing Cap
-To prevent profiteering on donated/surplus medicines, the backend strictly rejects any listing where:
-$$\text{Offered Price} > 0.85 \times P_{\text{MRP}}$$
-
----
-
-## 🤖 AI Architecture & OpenRouter Integration
-
-OpenRouter AI acts as an **intelligent assistant** to normalize pharmaceutical terms and suggest baseline parameters, while deterministic backend services validate all inputs.
+## 🔄 Core End-to-End Workflow
 
 ```mermaid
 flowchart TD
-    A[Seller enters Medicine Name] --> B[POST /api/medicines/ai-suggest]
-    B --> C{OpenRouter Available?}
-    C -- Yes --> D[OpenRouter LLM Analysis]
-    C -- No / Offline --> E[Offline Pharma Knowledge Base & Heuristics]
-    D --> F[Sanitize & Validate JSON Schema]
-    E --> F
-    F --> G[Extract Salt, Manufacturer, Form, Dosage, Rx Requirement]
-    G --> H[Seller Inputs Authoritative Printed MRP & Expiry Date]
-    H --> I[Deterministic MEDISAVE Pricing Engine]
-    I --> J[Suggested Community Price + Rationale Displayed to Seller]
-    J --> K[Seller Confirmation & Backend Guardrail Validation]
-    K --> L[Admin Moderation Queue]
+    A[Community Donor] -->|Uploads unexpired, sealed medicine| B[Eligibility Check]
+    B -->|Shelf-life < 90 days or opened| C[Direct to Safe Disposal Guide]
+    B -->|Shelf-life >= 90 days + intact packaging| D[Admin / Coordinator Review Queue]
+    D -->|Rejected with reason| E[Donor notified with rationale]
+    D -->|Approved| F[Available in Partner Portal]
+    F -->|Verified Partner claims item| G[Status: ACCEPTED]
+    G -->|Server generates 6-digit OTP| H[Donor receives Handover Code]
+    H -->|Physical meeting at local landmark| I[Partner inspects packaging & enters OTP]
+    I -->|OTP Verified| J[Status: COMPLETED Redistribution]
+    I -->|5 Failed Attempts| K[Handover Locked for Security Review]
 ```
 
-### Supported Fallback Test Cases
-The built-in offline pharmaceutical engine handles key medications seamlessly even if network connectivity or OpenRouter is unavailable:
-- **Dolo 650** (*Paracetamol IP 650mg* - OTC)
-- **Dolomide** (*Paracetamol 500mg + Domperidone 10mg* - OTC)
-- **Augmentin 625 Duo** (*Amoxicillin 500mg + Clavulanate 125mg* - Rx Required)
-- **Pantocid 40** (*Pantoprazole Sodium 40mg* - Rx Required)
-- **Pan-D** (*Pantoprazole 40mg + Domperidone 30mg SR* - Rx Required)
-- **Shelcal 500** (*Calcium Carbonate 500mg + Vitamin D3* - OTC)
-- **Azee 500** (*Azithromycin 500mg* - Rx Required)
+---
+
+## 👥 User Roles & Access Control
+
+| Role | Identifiers | Permissions & Capabilities |
+| :--- | :--- | :--- |
+| **Donor (`user`)** | Individual community member or student | • Create surplus medicine donation listings with AI autofill<br>• View own listings, approval statuses, and assigned 6-digit handover codes<br>• Access safe disposal guide and CEP proofs page |
+| **Partner (`partner`)** | Charitable clinic, NGO, health camp, college dispensary | • Browse available donations sorted by Haversine distance<br>• Accept approved donations for redistribution<br>• Complete physical handovers via in-person 6-digit code verification<br>• View redistribution impact history |
+| **Admin (`admin`)** | CEP Coordinator / Platform Moderator | • Approve/reject pending medicine donation listings<br>• Review and verify partner organization registrations (`partnerStatus: "verified"`)<br>• Review Schedule H prescription uploads<br>• Monitor platform audit logs and metrics |
+
+---
+
+## 🌟 Key Platform Modules
+
+### 1. Verified Donation & AI Assistant
+- **Automated Parameter Extraction**: OpenRouter AI (with offline pharmaceutical heuristics fallback) autofills salt composition, strength, category, manufacturer, and Schedule H classification upon typing a brand name (e.g., *Dolo 650*, *Augmentin 625*, *Pan-D*).
+- **Shelf-Life Enforcement**: Form automatically checks expiration date and prevents submission if remaining shelf life is under 90 days.
+- **Pune Locality Selector**: Choose from 18 Pune localities (Katraj, Kothrud, Hinjewadi, Baner, etc.) with pre-configured safe public landmark suggestions.
+
+### 2. Partner Redistribution Portal (`/partner`)
+- **Available Donations Tab**: Displays all approved surplus medicines across Pune, showing distance from partner locality, packaging condition, and expiry buffer.
+- **Active Handovers Tab**: Lists accepted donations awaiting physical collection with donor contact, designated landmark, and a direct "Verify Handover" modal.
+- **Completed History Tab**: Comprehensive log of successfully verified and redistributed medicines for community impact reporting.
+
+### 3. 6-Digit Physical Handover Verification
+- **Cryptographic OTP Generation**: When a partner accepts a donation, the server generates a secure 6-digit numeric OTP stored with `select: false` (hidden from general API queries).
+- **Donor Exclusivity**: The code is exclusively visible on the donor's personal dashboard (`/dashboard`) under their listing card.
+- **Mutual Handover Validation**: During physical handover, the partner inspects the physical packaging and enters the donor's code.
+- **Lockout Defense**: Automatically locks the handover if more than 5 invalid attempts are submitted to prevent brute-force attacks.
+
+### 4. Safe Household Disposal Guide (`/disposal-guide`)
+- Educational module providing clear, standard-compliant instructions for expired or ineligible medicines:
+  - **Solid Tablets / Capsules**: Safe blister destruction and household waste protocols.
+  - **Liquid Syrups & Suspensions**: Coffee grounds / cat litter absorption method (anti-drain dumping).
+  - **Antibiotics & Antimicrobials**: Strict guidelines to prevent antibiotic resistance propagation.
+  - **Sharps & Syringes**: Puncture-resistant container disposal.
+
+### 5. Coordinator & Admin Moderation (`/admin`)
+- **Donation Moderation Tab**: Review batch numbers, packaging photos, and expiry dates before approving for partner redistribution.
+- **Partner Organizations Tab**: Approve or reject partner applications (`partnerStatus: "verified"` vs `"rejected"`) with organization name, type, and locality.
+- **Prescription Audit Queue**: Review Schedule H medical prescriptions with secure streaming.
+
+### 6. CEP Field Activity & Proofs Portal (`/cep-proofs`)
+- Dedicated transparency dashboard documenting the team's genuine community engagement objectives, survey data, awareness drive checklists, and photo/video upload placeholders.
+- **Zero Fabrication Policy**: Clear demarcation between verified prototype functionality and future field deployment plans.
+
+---
+
+## 📍 Deterministic Proximity & Haversine Distance Engine
+
+MEDISAVE calculates straight-line spherical distance between Pune localities using the Haversine formula:
+
+$$d = 2r \arcsin \left( \sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)} \right)$$
+
+### Pune Locality Classifications
+- **Nearby Handover ($\le 5\text{ km}$)**: e.g., *Katraj* $\leftrightarrow$ *Bibvewadi* ($2.1\text{ km}$) — Optimal for direct foot/bike handover.
+- **Extended Area ($5 - 15\text{ km}$)**: e.g., *Kothrud* $\leftrightarrow$ *Baner* ($6.1\text{ km}$) — Suitable for coordinated partner pickup.
+- **Distant ($> 15\text{ km}$)**: e.g., *Katraj* $\leftrightarrow$ *Hinjewadi* ($20.4\text{ km}$) — Flagged with a distance warning to prioritize local transfers.
+
+---
+
+## 🎁 Community Donation & Zero-Profit Policy
+
+> **Non-Commercial Academic Disclaimer**: The project intentionally avoids peer-to-peer commercial medicine resale and is designed as an academic prototype for verified donation/redistribution workflows.
+
+MEDISAVE prioritizes 100% free community donations. For legacy test harness compatibility, a deterministic pricing evaluation rule remains in the backend engine to prevent commercial price gouging:
+
+$$\text{Suggested Cap} = \operatorname{round}\left(P_{\text{MRP}} \times M_{\text{expiry}} \times M_{\text{condition}}\right)$$
+
+| Remaining Shelf Life | Packaging Condition | Suggested Multiplier | Community Donation Policy |
+| :--- | :--- | :--- | :--- |
+| **$> 12\text{ months}$** | Sealed Blister / Bottle | $0.60$ | **100% Free Donation Prioritized** |
+| **$6 - 12\text{ months}$** | Sealed Blister / Bottle | $0.50$ | **100% Free Donation Prioritized** |
+| **$3 - 6\text{ months}$** | Sealed Blister / Bottle | $0.35$ | **100% Free Donation Prioritized** |
+| **$< 90\text{ days}$** | Any | *Ineligible* | **Strictly Rejected by Safety Policy** |
+
+> **Safety Hard Cap**: The backend strictly rejects any commercial markup. Community donations are free of cost ($\text{Price} = ₹0$). Real-world deployment would require institutional healthcare and pharmacy licensing.
 
 ---
 
@@ -163,43 +160,36 @@ The built-in offline pharmaceutical engine handles key medications seamlessly ev
 
 ```mermaid
 graph TD
-    subgraph Client ["Frontend (React 19 + Vite)"]
-        UI_Home[Home & Search]
-        UI_Market[Buy Marketplace]
-        UI_Sell[Sell Medicine & AI Assistant]
-        UI_Rx[Prescription Upload]
-        UI_Cart[Cart & Handover Checkout]
-        UI_Admin[Admin Dashboard]
+    subgraph Client ["Frontend (React 19 + Vite + TailwindCSS)"]
+        UI_Home[Home & Expiry Awareness]
+        UI_Browse[Browse Donations & Distances]
+        UI_Donate[Donate Medicine & AI Auto-Fill]
+        UI_Partner[Partner Redistribution Portal]
+        UI_Admin[Admin & Partner Verification]
+        UI_Disposal[Safe Disposal Guide]
+        UI_Proofs[CEP Proofs & Field Work]
     end
 
     subgraph Server ["Backend (Node.js + Express 5)"]
-        AuthMid[JWT Auth Middleware]
-        PricingSvc[Deterministic Pricing Engine]
-        LocalitySvc[Locality & Haversine Distance Engine]
-        AiSvc[AI Medicine & Fallback Service]
-        DocStream[Secure Prescription Streamer]
-        OrderCtrl[Order & Stock Controller]
+        AuthMid[JWT Auth & RBAC Middleware]
+        PricingSvc[Deterministic Pricing & Shelf-Life Engine]
+        LocalitySvc[Pune Haversine Distance Engine]
+        AiSvc[AI Medicine & Heuristic Fallback Service]
+        HandoverSvc[6-Digit OTP Handover Verification]
+        AdminCtrl[Admin Moderation Controller]
     end
 
-    subgraph Database ["MongoDB & Storage"]
-        DB_Users[(Users Collection)]
-        DB_Meds[(Medicines Collection)]
-        DB_Orders[(Orders Collection)]
-        DB_Rx[(Prescriptions Collection)]
-        FS_Rx[Private Uploads Directory]
+    subgraph Database ["MongoDB Storage"]
+        DB_Users[(Users & Partner Profiles)]
+        DB_Meds[(Medicines & Handover States)]
+        DB_Rx[(Prescription Documents)]
     end
 
-    subgraph External ["External Services"]
-        OpenRouter[OpenRouter AI API]
-    end
-
-    UI_Sell -->|Fetch Info| AiSvc
-    AiSvc -->|Prompt| OpenRouter
-    UI_Sell -->|Calculate Price| PricingSvc
-    UI_Market -->|Query Distance| LocalitySvc
-    UI_Cart -->|Place Order| OrderCtrl
-    UI_Rx -->|Upload Doc| DocStream
-    DocStream --> FS_Rx
+    UI_Donate -->|Fetch Info| AiSvc
+    UI_Donate -->|Validate Expiry| PricingSvc
+    UI_Browse -->|Distance Query| LocalitySvc
+    UI_Partner -->|Accept & Verify OTP| HandoverSvc
+    UI_Admin -->|Moderation| AdminCtrl
     Server --> Database
 ```
 
@@ -207,47 +197,30 @@ graph TD
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 19, Vite, TailwindCSS (Vanilla CSS tokens), React Router v7, Lucide Icons, Axios |
-| **Backend** | Node.js, Express 5, Mongoose 8, JWT, Multer, Bcrypt |
-| **Database** | MongoDB (Local development / MongoDB Atlas) |
-| **AI Layer** | OpenRouter API (Gemini 2.0 Flash / LLaMA / Claude) + internal heuristic fallback |
-| **Testing** | Node.js Native Assertion Integration Test Suites |
+| Component | Technology | Version | Description |
+| :--- | :--- | :--- | :--- |
+| **Frontend UI** | React | 19.x | Modern functional React with hooks |
+| **Bundler & Tooling**| Vite | 8.x | High-performance build tool |
+| **Styling** | TailwindCSS | 4.x | Utility-first CSS tokens |
+| **Routing** | React Router | 7.x | Declarative client-side routing |
+| **Icons** | Lucide React | Latest | Clean healthcare and UI icons |
+| **Backend API** | Express.js | 5.x | RESTful API with structured routes |
+| **Runtime** | Node.js | 18+ | JavaScript runtime environment |
+| **Database** | MongoDB & Mongoose | 8.x | NoSQL schema-backed persistence |
+| **Authentication** | JWT & Bcrypt | Latest | Stateless token-based RBAC |
+| **AI Integration** | OpenRouter API | Latest | Gemini 2.0 Flash with offline fallback |
 
 ---
 
-## 🔒 Security & Access Control
+## 🔑 Demo Accounts & Test Credentials
 
-1. **Role-Based Access Control (RBAC)**: Distinct permissions for `user` and `admin`. Normal users cannot access admin endpoints (`/api/admin/*`).
-2. **Prescription Ownership & IDOR Protection**: Prescriptions are strictly bound to the authenticated user's JWT ID. Users cannot view, modify, or stream another buyer's prescription document.
-3. **Private Document Storage**: Prescription documents are stored outside public web roots and streamed securely via authenticated Express endpoints with path traversal protection.
-4. **Server-Side Validation**: All pricing calculations, stock adjustments, and Schedule H prescription requirements are strictly enforced on the server; client-side price/stock tampering is rejected.
-5. **No Tracked Secrets**: Environment variables (`.env`) are strictly ignored via `.gitignore` with templates provided in `.env.example`.
+The database includes pre-seeded accounts for demonstrating all 3 user roles:
 
----
-
-## 📈 Scalability: Current vs Future Architecture
-
-| Dimension | Current Implementation (MVP) | Planned Future Architecture |
-| :--- | :--- | :--- |
-| **API Architecture** | Stateless Express.js REST API | Distributed microservices / serverless functions |
-| **Database & Indexing** | Indexed MongoDB collections (text, locality, status) | Read-replicas, sharded cluster, Redis caching layer |
-| **Document Storage** | Local isolated storage with authenticated streaming | Cloud Object Storage (AWS S3 / GCP Cloud Storage) with signed URLs |
-| **Static Assets** | Local Vite bundle distribution | Global Content Delivery Network (Cloudflare / CloudFront) |
-| **Geographic Partitioning**| Curated 18-locality Pune registry (Haversine calculation) | Dynamic PostGIS / GeoJSON geo-fencing across multiple cities |
-| **Logistics** | Mutual public point community handover | Integration with verified student couriers / local logistics partners |
-
----
-
-## ⚖️ Production & Real-World Considerations
-
-Deploying MEDISAVE beyond an academic/community pilot requires addressing critical operational and regulatory requirements:
-1. **Medical & Regulatory Compliance**: Legal alignment with national drug controller regulations governing surplus pharmaceutical redistributions.
-2. **Identity Verification**: Multi-factor identity verification (KYC/DigiLocker) for donors listing prescription medications.
-3. **Cloud Object Storage**: Transitioning document uploads from local disk to HIPAA/SOC-2 compliant encrypted object storage.
-4. **Production Monitoring**: Integrating structured logging (Winston/Pino), APM (Datadog/Sentry), and API rate limiting (express-rate-limit).
-5. **Cold-Chain & Storage Verification**: Strict exclusion of temperature-sensitive biologics/insulins requiring refrigerated cold-chain storage.
+| Role | Email | Password | Organization / Locality |
+| :--- | :--- | :--- | :--- |
+| **Admin / Coordinator** | `admin@medisave.org` | `MedisaveAdmin2026!` | PICT CEP Coordination Cell |
+| **Verified Partner** | `partner@medisave.org` | `MedisavePartner2026!` | Pune Community Care Clinic (Katraj) |
+| **Community Donor** | `community.donor@medisave.org` | `MedisaveSeedPassword2026!` | Kothrud, Pune |
 
 ---
 
@@ -260,139 +233,57 @@ Deploying MEDISAVE beyond an academic/community pilot requires addressing critic
 
 ### 1. Clone & Setup Backend
 ```bash
-# Navigate to backend directory
 cd backend
-
-# Install dependencies
 npm install
-
-# Create environment configuration
 cp .env.example .env
-
-# Start backend server
 npm run dev
 ```
 *Backend runs on `http://localhost:5000`*
 
 ### 2. Setup Frontend
 ```bash
-# In a new terminal, navigate to frontend directory
 cd frontend
-
-# Install dependencies
 npm install
-
-# Create environment configuration
 cp .env.example .env
-
-# Start frontend development server
 npm run dev
 ```
 *Frontend runs on `http://localhost:5173`*
 
 ---
 
-## ⚙️ Environment Variables Guide
-
-### Backend (`backend/.env`)
-```env
-# Server Port
-PORT=5000
-
-# MongoDB URI (Local or Atlas)
-MONGO_URI=mongodb://127.0.0.1:27017/medisave
-
-# JWT Secret Key for token signing
-JWT_SECRET=your_jwt_secret_key_change_in_production
-
-# OpenRouter AI API Key (Optional for offline fallback)
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-
-# OpenRouter Model Identifier
-OPENROUTER_MODEL=google/gemini-2.0-flash-001
-```
-
-### Frontend (`frontend/.env`)
-```env
-# Backend REST API endpoint
-VITE_API_URL=http://localhost:5000/api
-```
-
----
-
 ## 🧪 Automated Testing & Verification Suite
 
-MEDISAVE contains an automated integration test suite located in `scratch/`. All test suites have been executed and verified:
+MEDISAVE includes an extensive automated integration test suite in `scratch/`:
 
 ```bash
-# Run Locality & Pricing Tests
-node scratch/test_locality_and_pricing.js
+# 1. Comprehensive 18-Point CEP Suite (Partner Role, 6-Digit OTP, Expiry, Proximity, Lockout)
+node scratch/test_comprehensive_cep_flow.js
 
-# Run AI Medicine & Fallback Verification
-node scratch/verify_all_ai_cases.js
-
-# Run Full Cart + Multi-Seller Order E2E Tests
-node scratch/test_full_cart_order_e2e.js
-
-# Run Admin Moderation Tests
+# 2. Admin Moderation & Partner Verification Tests
 node scratch/test_admin_moderation.js
 
-# Run Prescription Upload & Security Tests
+# 3. Prescription & Document Security Audit
 node scratch/test_prescription_checkout_security.js
+
+# 4. Frontend Linting & Production Build
+cd frontend
+npm run lint
+npm run build
 ```
 
 ### Verified Test Results Summary
-- ✅ **Locality & Distance Engine**: Katraj vs Hinjewadi correctly classified as `Far from you · 20.4 km`; Katraj vs Bibvewadi classified as `Nearby · 2.1 km`.
-- ✅ **Deterministic Pricing Policy**: Verified $>12$ mo (40% discount), $6-12$ mo (50% discount), $3-6$ mo (65% discount), $<90$ day rejection, and 85% MRP cap enforcement.
-- ✅ **Pharma Knowledge Base & AI**: 12/12 pharmaceutical test cases verified with fallback resilience.
-- ✅ **Prescription & Checkout Security**: 49/49 security assertions passed (IDOR defense, tamper immunity, RBAC).
-- ✅ **Frontend Build & Linting**: ESLint clean (0 errors, 0 warnings); production build successful.
+- ✅ **Comprehensive CEP Suite (`test_comprehensive_cep_flow.js`)**: 18/18 tests passed (100%) — partner schema, 90-day shelf life, cold-chain rejection, cut-strip rejection, OTP generation, 5-attempt brute-force lockout, Haversine proximity, reject/release audit trail.
+- ✅ **Admin Moderation Suite (`test_admin_moderation.js`)**: 27/27 tests passed (100%) — moderation queue, 1-click approvals, rejections with reason, platform stats, RBAC isolation.
+- ✅ **Prescription & Document Security (`test_prescription_checkout_security.js`)**: 49/49 tests passed (100%) — IDOR protection, authenticated document streaming, RBAC enforcement.
+- ✅ **Frontend Linter (`npm run lint`)**: Passed with 0 errors and 0 warnings across all React 19 components.
+- ✅ **Frontend Production Build (`npm run build`)**: Vite production compilation passed cleanly with 0 errors.
 
 ---
 
-## 📊 Prototype Status, Limitations & Future Deployment
+## 👥 PICT CEP Team Members
 
-### Current Prototype
-
-MEDISAVE currently demonstrates:
-
-* verified community members
-* medicine listing moderation
-* expiry validation
-* locality-based matching
-* deterministic community pricing
-* AI-assisted medicine information
-* prescription verification
-* secure prescription access
-* order and handover workflow
-
-### Current Limitations
-
-* Geographic distance is currently used rather than live road routing.
-* MEDISAVE does not operate its own delivery fleet.
-* Prescription verification is an administrative workflow and should be handled by appropriately qualified personnel in a real deployment.
-* Medicine redistribution would require compliance with applicable Indian pharmaceutical regulations before real-world operation.
-* AI-generated medicine information requires seller/user confirmation.
-
-### Future Deployment
-
-Potential future integrations:
-
-* community/NGO collection points
-* licensed pharmacy/healthcare partners
-* external logistics providers
-* geospatial/road-distance services
-* OCR for batch and expiry verification
-* stronger identity verification
-* production cloud storage and monitoring
-
-Do not claim these future features already exist.
-
----
-
-## 👥 Academic & Community Engagement Program (CEP) Team
-* **Institution**: Pune Institute of Computer Technology (PICT)
-* **Program**: Community Engagement Program (CEP)
+* **Institution**: Pune Institute of Computer Technology (PICT), Pune
+* **Course**: Community Engagement Project (CEP - 0313201)
 * **Division**: SY 2 | **Batch**: H2
 * **Team Members**:
   * **Ronit Subhedar** — Roll No. 21270
@@ -402,30 +293,19 @@ Do not claim these future features already exist.
 
 ---
 
-## 🎬 5–7 Minute Presentation Demo Flow
+## 🎬 5–7 Minute Presentation Demo Script
 
-| Step | Persona | Action | Verified System Behavior |
+| Time | Stage | Action & Screen | Key Talking Points |
 | :--- | :--- | :--- | :--- |
-| **1. Auth & Login** | Any User | Login with seeded accounts (`buyer@medisave.org`, `seller@medisave.org`, `admin@medisave.org`) | Role-based navigation with signed JWT. |
-| **2. Locality Discovery** | Buyer | Browse Pune marketplace with locality selector (*Bibvewadi* vs *Katraj*) | Haversine proximity computed; nearby listings prioritized with *"Nearby First"*. |
-| **3. Medicine Details** | Buyer | Inspect medicine specification (*MRP, Discount, Expiry buffer, Handover point*) | Explains deterministic pricing rationale and verified blister pack integrity. |
-| **4. Seller Listing** | Seller | Enter *"Dolo 650"*, click **Auto-Fill with AI** | OpenRouter AI identifies formulation; seller inputs printed MRP; deterministic rules calculate suggested price; seller confirms. |
-| **5. Coordinator Moderation**| Admin | Review pending listings in Admin Console | Admin inspects packaging photos and approves/rejects with audit trail. |
-| **6. Cart & Multi-Seller** | Buyer | Add multiple items from distinct donors to Cart | Atomic stock reservation; self-purchase blocked; multi-seller item isolation. |
-| **7. Prescription Workflow** | Buyer / Admin | Upload Schedule H prescription document (PDF/PNG) | Coordinator validates doctor registration; IDOR-protected document streaming. |
-| **8. Community Handover** | Buyer & Seller | Place order and progress through 5-stage lifecycle | `ORDER PLACED` $\rightarrow$ `SELLER CONFIRMS` $\rightarrow$ `READY FOR HANDOVER` $\rightarrow$ `COORDINATE` $\rightarrow$ `COMPLETED` at public landmark. |
+| **0:00 - 1:00** | **Introduction & Problem** | Home Page (`/`) | Explain medicine wastage, environmental hazards of dumping expired drugs, and the need for a verified community redistribution channel in Pune. |
+| **1:00 - 2:30** | **Donor Experience** | Donate Medicine (`/sell`) | Type *"Dolo 650"*, click **Auto-Fill with AI** to extract salt/manufacturer. Show the 90-day shelf-life guardrail and choose a Pune landmark (e.g., *Vanaz Metro Station*). Submit donation. |
+| **2:30 - 3:30** | **Coordinator Review** | Admin Dashboard (`/admin`) | Login as `admin@medisave.org`. Inspect pending listings and approve the donation. Show the Partner Organizations verification tab. |
+| **3:30 - 4:45** | **Partner Claim & Handover** | Partner Portal (`/partner`) | Login as `partner@medisave.org`. View approved donations sorted by Haversine distance. Click **Accept Donation**. Show listing moving to *Active Handovers*. |
+| **4:45 - 5:45** | **Handover Verification** | Donor & Partner Dashboards | Switch to Donor tab to show the secure 6-digit OTP (`197716`). Switch back to Partner tab, enter code in modal to complete handover. Show brute-force lockout safety feature. |
+| **5:45 - 6:30** | **Safe Disposal & Proofs** | `/disposal-guide` & `/cep-proofs` | Highlight color-coded safe disposal protocols for expired medicines and show the team's genuine field survey and awareness drive documentation. |
 
 ---
 
-## 🤝 Community Engagement & College Campus Deployment
+## 📄 License
+This project is developed as an academic community engagement initiative at PICT under the MIT License.
 
-MEDISAVE is structured for straightforward pilot deployment across university campuses and local residential welfare associations (RWAs):
-
-1. **Campus Handover Hubs**: Designating secure public spots (e.g., *Campus Medical Room*, *Student Council Desk*, *Hostel Gate*) as verified handover points.
-2. **Student Health Volunteers**: Senior pharmacy or biology students acting as peer moderators to inspect physical seal integrity before release.
-3. **Medical Waste Reduction Drives**: Periodic campus awareness drives where students and faculty can register unopened surplus medications instead of discarding them into household trash.
-
----
-
-## 📄 License & Academic Attribution
-This project is developed as an academic and community engagement initiative. Recommended license for open-source academic dissemination: **MIT License**.

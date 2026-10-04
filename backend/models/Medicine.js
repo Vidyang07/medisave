@@ -54,6 +54,16 @@ const medicineSchema = new mongoose.Schema(
       required: [true, "Offered community price is required"],
       min: [0, "Price cannot be negative"],
     },
+    listingType: {
+      type: String,
+      enum: ["free_donation", "subsidized_community_rate"],
+      default: "free_donation",
+    },
+    targetBeneficiary: {
+      type: String,
+      enum: ["General Community", "Local Old Age Home", "Student Health Center", "Slum Health Camp"],
+      default: "General Community",
+    },
     originalMrp: {
       type: Number,
       min: [0, "Original MRP cannot be negative"],
@@ -133,13 +143,47 @@ const medicineSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected", "sold"],
+      enum: ["pending", "approved", "rejected", "accepted", "completed", "cancelled", "sold"],
       default: "pending",
     },
     rejectionReason: {
       type: String,
       default: "",
       trim: true,
+    },
+    acceptedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    acceptedAt: {
+      type: Date,
+      default: null,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+    handoverCode: {
+      type: String,
+      default: null,
+      select: false, // Don't expose by default in general queries
+    },
+    handoverFailedAttempts: {
+      type: Number,
+      default: 0,
+    },
+    handoverLocked: {
+      type: Boolean,
+      default: false,
+    },
+    isColdChain: {
+      type: Boolean,
+      default: false,
+    },
+    isScheduleX: {
+      type: Boolean,
+      default: false,
     },
   },
   {

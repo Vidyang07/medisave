@@ -13,6 +13,8 @@ import {
   getPrescriptionDocument,
   approvePrescription,
   rejectPrescription,
+  getAdminPartners,
+  moderatePartner,
 } from "../controllers/adminController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { admin } from "../middleware/adminMiddleware.js";
@@ -30,6 +32,10 @@ router.get("/orders", getAdminOrders);
 router.get("/users", getAdminUsers);
 router.patch("/users/:id/verify", toggleUserVerification);
 router.patch("/users/:id/role", updateUserRole);
+
+// Partner verification routes
+router.get("/partners", getAdminPartners);
+router.patch("/partners/:id/verify", moderatePartner);
 
 // Prescription verification & review routes
 router.get("/prescriptions", getPrescriptions);

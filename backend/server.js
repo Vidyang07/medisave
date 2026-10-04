@@ -15,6 +15,8 @@ import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import prescriptionRoutes from "./routes/prescriptionRoutes.js";
+import ngoRequestRoutes from "./routes/ngoRequestRoutes.js";
+import cepProofRoutes from "./routes/cepProofRoutes.js";
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.use("/api/medicines", medicineRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/ngo-requests", ngoRequestRoutes);
+app.use("/api/cep-proofs", cepProofRoutes);
 
 
 const PORT = process.env.PORT || 5000;

@@ -62,7 +62,7 @@ export default function Terms() {
               3. Prescription Verification (Schedule H / H1)
             </h2>
             <p className="text-xs sm:text-sm text-[#525252] leading-relaxed">
-              Medicines categorized as prescription-only (Rx) require a verified doctor prescription uploaded by the recipient and approved by a platform coordinator prior to checkout completion. Self-medication of regulated substances is strictly discouraged.
+              Medicines categorized as prescription-only (Rx) require a verified doctor prescription uploaded by the recipient and approved by a platform coordinator prior to partner handover completion. Self-medication of regulated substances is strictly discouraged.
             </p>
           </section>
 
@@ -72,7 +72,7 @@ export default function Terms() {
               4. Community Handover and In-Person Verification
             </h2>
             <p className="text-xs sm:text-sm text-[#525252] leading-relaxed">
-              Recipients and donor sellers must physically inspect packaging, batch numbers, and expiry stamps during physical handover. If any seal damage is identified, either party may cancel the transaction with full inventory restoration.
+              Recipients and donors must physically inspect packaging, batch numbers, and expiry stamps during physical handover. If any seal damage is identified, either party may cancel the transaction with full inventory restoration.
             </p>
           </section>
 

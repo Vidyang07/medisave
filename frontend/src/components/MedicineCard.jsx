@@ -1,17 +1,11 @@
 import { Link } from "react-router-dom";
-import { useCart } from "../context/useCart";
-import { useToast } from "../context/useToast";
 import {
   ShieldCheckIcon,
-  ShoppingBagIcon,
   ClockIcon,
   MapPinIcon,
 } from "./common/Icons";
 
 export default function MedicineCard({ medicine }) {
-  const { addToCart } = useCart();
-  const { showToast } = useToast();
-
   if (!medicine) return null;
 
   const medId = medicine._id || medicine.id;
@@ -21,10 +15,10 @@ export default function MedicineCard({ medicine }) {
   const strength = medicine.strength || "";
   const dosageForm = medicine.dosageForm || "Tablet";
   const category = medicine.category || "General Health";
-  const price = medicine.price !== undefined ? medicine.price : 0;
-  const originalMrp = medicine.originalMrp || price;
   const image = medicine.image || "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80";
   const isPrescriptionRequired = Boolean(medicine.isPrescriptionRequired);
+  const quantity = medicine.quantity || 1;
+  const unit = medicine.unit || "packs";
 
   // Handover and Locality Information
   const locality = medicine.locality || medicine.seller?.address || "Pune";
@@ -34,41 +28,14 @@ export default function MedicineCard({ medicine }) {
   // Formatted expiry display
   const expiryDisplay = medicine.expiryText || (medicine.expiryDate ? new Date(medicine.expiryDate).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "");
 
-  const discountPercent = originalMrp > price
-    ? Math.round(((originalMrp - price) / originalMrp) * 100)
-    : 0;
-
-  const handleQuickAdd = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(
-      {
-        ...medicine,
-        id: medId,
-        name: title,
-        brandName: title,
-        company,
-        strength,
-        price,
-        originalMrp,
-        image,
-        isPrescriptionRequired,
-        locality,
-        handoverPoint,
-      },
-      1
-    );
-    showToast(`Added ${title} to cart`, "success");
-  };
-
   // Proximity tier style helper
   const getProximityBadge = () => {
     if (!proximity || proximity.distanceKm === null) return null;
 
     if (proximity.tier === "nearby") {
       return (
-        <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
-          <MapPinIcon className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-2xs">
+          <MapPinIcon className="w-3 h-3 text-emerald-200" />
           Nearby · {proximity.distanceKm} km
         </span>
       );
@@ -84,7 +51,7 @@ export default function MedicineCard({ medicine }) {
     return (
       <span className="inline-flex items-center gap-1 bg-amber-700 text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-2xs">
         <MapPinIcon className="w-3 h-3" />
-        Far from you · {proximity.distanceKm} km
+        {proximity.distanceKm} km away
       </span>
     );
   };
@@ -181,38 +148,23 @@ export default function MedicineCard({ medicine }) {
         </div>
       </div>
 
-      {/* Card Footer: Pricing & Action CTA */}
+      {/* Card Footer: 100% Free Donation Status & Action CTA */}
       <div className="p-3.5 sm:p-4 pt-2.5 border-t border-[#eceae5] bg-[#fafaf7] flex items-center justify-between gap-2">
         <div className="flex flex-col text-left">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-base sm:text-lg font-bold text-[#171717]">₹{price}</span>
-            {originalMrp > price && (
-              <span className="text-xs text-[#737373] line-through">
-                ₹{originalMrp}
-              </span>
-            )}
-          </div>
-          {discountPercent > 0 && (
-            <span className="text-[10px] font-bold text-[#065f46] leading-none">
-              Save {discountPercent}%
-            </span>
-          )}
+          <span className="text-xs font-bold text-[#065f46] bg-[#d1fae5] px-2 py-0.5 rounded-md inline-block">
+            🎁 100% Free Donation
+          </span>
+          <span className="text-[10px] text-[#737373] mt-0.5">
+            Available: {quantity} {unit}
+          </span>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={handleQuickAdd}
-            className="p-2 rounded-lg bg-[#e8f3f1] hover:bg-[#d5ebe7] text-[#0f4c42] border border-[#c4ded9] transition cursor-pointer"
-            title="Add to cart"
-            aria-label="Add to cart"
-          >
-            <ShoppingBagIcon className="w-4 h-4" />
-          </button>
           <Link
             to={`/medicine/${medId}`}
-            className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#0f4c42] hover:bg-[#0a362f] text-white transition shadow-2xs"
+            className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-[#0f4c42] hover:bg-[#0a362f] text-white transition shadow-2xs flex items-center gap-1"
           >
-            Details
+            <span>View Details</span>
           </Link>
         </div>
       </div>

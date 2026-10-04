@@ -15,7 +15,9 @@ const SEED_MEDICINES = [
     category: "Pain & Fever",
     quantity: 15,
     unit: "Tablets (1.5 strips)",
-    price: 25,
+    price: 0,
+    listingType: "free_donation",
+    targetBeneficiary: "Local Old Age Home",
     originalMrp: 48,
     expiryDate: new Date("2027-04-30"),
     batchNumber: "GSK-P2409",
@@ -23,15 +25,15 @@ const SEED_MEDICINES = [
     isPrescriptionRequired: false,
     status: "approved",
     image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80",
-    description: "Unused, unexpired Paracetamol 500mg tablets stored in dry conditions below 25°C. Sealed blister packaging with clearly legible batch number and expiry date.",
+    description: "100% Free Community Donation: Unused, unexpired Paracetamol 500mg tablets stored in dry conditions below 25°C. Sealed blister packaging with clearly legible batch number and expiry date.",
     storageCondition: "Store in a cool, dry place away from sunlight (<25°C)",
     locality: "Katraj",
     pinCode: "411046",
-    handoverPoint: "Bharati Vidyapeeth Main Gate",
+    handoverPoint: "Bharati Vidyapeeth Main Gate / Katraj Old Age Desk",
     handoverRadiusKm: 5,
     locationCoordinates: { latitude: 18.4529, longitude: 73.8652 },
-    suggestedCommunityPrice: 28,
-    pricingRationale: "Based on MRP ₹48, intact sealed packaging and 13+ months shelf life (~60% community rate).",
+    suggestedCommunityPrice: 0,
+    pricingRationale: "100% Free Community Donation dedicated to local elderly care and low-income community members.",
   },
   {
     medicineName: "Dolo 650 Tablets",
@@ -240,7 +242,7 @@ export const seedInitialMedicines = async () => {
     let donor = await User.findOne({ email: "community.donor@medisave.org" });
     if (!donor) {
       donor = await User.create({
-        name: "Dr. Ananya Sharma (Community Health)",
+        name: "Community Health Donor",
         email: "community.donor@medisave.org",
         password: "MedisaveSeedPassword2026!",
         phone: "+91 98230 45678",
@@ -248,6 +250,40 @@ export const seedInitialMedicines = async () => {
         role: "user",
         isVerified: true,
       });
+    }
+
+    // Find or create default verified partner organization
+    let demoPartner = await User.findOne({ email: "partner@medisave.org" });
+    if (!demoPartner) {
+      demoPartner = await User.create({
+        name: "Demo Charitable Health Center",
+        email: "partner@medisave.org",
+        password: "MedisavePartner2026!",
+        phone: "+91 98230 11223",
+        address: "Katraj, Pune, Maharashtra",
+        role: "partner",
+        organizationName: "Pune Community Care Clinic",
+        organizationType: "Charitable Clinic",
+        locality: "Katraj",
+        partnerStatus: "verified",
+        isVerified: true,
+      });
+      console.log("Demo verified partner seeded: partner@medisave.org");
+    }
+
+    // Find or create default platform administrator / coordinator
+    let admin = await User.findOne({ email: "admin@medisave.org" });
+    if (!admin) {
+      admin = await User.create({
+        name: "PICT CEP Coordinator",
+        email: "admin@medisave.org",
+        password: "MedisaveAdmin2026!",
+        phone: "+91 98230 99999",
+        address: "PICT Campus, Dhankawadi, Pune",
+        role: "admin",
+        isVerified: true,
+      });
+      console.log("Admin coordinator seeded: admin@medisave.org");
     }
 
     if (medicineCount === 0) {

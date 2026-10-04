@@ -22,33 +22,33 @@ export default function Hero() {
             {/* Health Community Badge */}
             <div className="inline-flex items-center gap-2 bg-[#e8f3f1] border border-[#c4ded9] px-3.5 py-1 rounded-full text-xs font-semibold text-[#0f4c42]">
               <ShieldCheckIcon className="w-3.5 h-3.5 text-[#0f4c42]" />
-              <span>Verified Community Medicine Marketplace</span>
+              <span>Verified Community Medicine Donation Platform</span>
             </div>
 
             {/* Editorial Headline */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#171717] tracking-tight leading-[1.12]">
-              Medicines that still have value <br />
-              <span className="text-[#0f4c42]">should not go to waste.</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#171717] tracking-tight leading-[1.14]">
+              Give unused medicines <br />
+              <span className="text-[#0f4c42]">a better destination.</span>
             </h1>
 
             {/* Clear Sub-paragraph */}
             <p className="text-sm sm:text-base text-[#525252] leading-relaxed max-w-xl font-normal">
-              MEDISAVE connects individuals with unexpired, sealed surplus medicines through a verified community marketplace. Reduce medication waste and safely manage medicine listings, prescriptions, and orders with peer-to-peer verification.
+              Connect eligible unused medicines with verified community healthcare partners while keeping expiry and safe-disposal awareness at the center.
             </p>
 
             {/* Primary & Secondary Action CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link to="/buy">
+              <Link to="/sell">
                 <Button variant="primary" size="lg" className="shadow-2xs">
-                  Browse Medicines
+                  Donate Medicine
                   <ArrowRightIcon className="w-4 h-4 ml-1.5" />
                 </Button>
               </Link>
-              <Link to="/sell">
+              <a href="#how-it-works">
                 <Button variant="secondary" size="lg" className="border border-[#e4e2dd] shadow-2xs">
-                  List a Medicine
+                  Explore How It Works
                 </Button>
-              </Link>
+              </a>
             </div>
 
             {/* Key Trust Pillars */}
@@ -118,7 +118,7 @@ export default function Hero() {
                       : "text-[#525252] hover:text-[#171717]"
                   }`}
                 >
-                  Product Card
+                  Donation Card
                 </button>
                 <button
                   type="button"
@@ -168,11 +168,9 @@ export default function Hero() {
                       <p className="text-xs text-[#525252] truncate">
                         GlaxoSmithKline Pharmaceuticals
                       </p>
-                      <div className="flex items-baseline gap-2 pt-0.5">
-                        <span className="text-base font-bold text-[#0f4c42]">₹25</span>
-                        <span className="text-xs text-[#737373] line-through">MRP ₹48</span>
-                        <span className="text-[11px] font-bold text-[#15803d]">
-                          Save 48%
+                      <div className="flex items-center gap-2 pt-0.5">
+                        <span className="text-xs font-bold text-[#065f46] bg-[#ecfdf5] border border-[#a7f3d0] px-2 py-0.5 rounded">
+                          🎁 100% Free Donation
                         </span>
                       </div>
                     </div>
@@ -233,7 +231,7 @@ export default function Hero() {
                       <span>Prescription Verification Architecture</span>
                     </div>
                     <p className="text-[11px] text-purple-800 leading-relaxed">
-                      Schedule H and H1 medications require a registered physician prescription uploaded and approved by coordinators prior to checkout fulfillment.
+                      Schedule H and H1 medications require a registered physician prescription uploaded and approved by coordinators prior to verified handover and distribution.
                     </p>
                   </div>
                   <div className="p-2.5 bg-[#fafaf7] rounded-lg border border-[#eceae5] text-[11px] text-[#525252]">

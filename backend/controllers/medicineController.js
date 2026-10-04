@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import mongoose from "mongoose";
 import Medicine from "../models/Medicine.js";
 import { getAiMedicineEstimation } from "../services/aiMedicineService.js";
@@ -77,6 +78,12 @@ export const getMedicines = async (req, res) => {
     // 7. Locality Filter (if specified)
     if (locality && locality !== "All Localities" && locality !== "All") {
       query.locality = new RegExp(locality.trim(), "i");
+    }
+
+    // 8. Listing Type Filter (free_donation vs subsidized_community_rate)
+    const { listingType } = req.query;
+    if (listingType && ["free_donation", "subsidized_community_rate"].includes(listingType)) {
+      query.listingType = listingType;
     }
 
     // 8. Sorting & Proximity
@@ -220,14 +227,16 @@ export const getMedicineById = async (req, res) => {
   }
 };
 
-// @desc    Get listings created by the logged-in user
+// @desc    Get listings created by the logged-in user (donor) with handover code if accepted
 // @route   GET /api/medicines/my-listings
 // @access  Private
 export const getMyListings = async (req, res) => {
   try {
     const medicines = await Medicine.find({ seller: req.user._id })
+      .select("+handoverCode")
       .sort({ createdAt: -1 })
-      .populate("seller", "name email phone address avatar isVerified");
+      .populate("seller", "name email phone address avatar isVerified")
+      .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
       success: true,
@@ -239,6 +248,344 @@ export const getMyListings = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Server error fetching user listings",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Get available approved donations for verified partners (sorted by proximity & expiry)
+// @route   GET /api/medicines/partner/available
+// @access  Private (Verified Partner or Admin)
+export const getPartnerAvailableDonations = async (req, res) => {
+  try {
+    const { search, category, locality, sort = "nearby" } = req.query;
+    const partnerLocality = req.user.locality || "Katraj";
+
+    const query = {
+      status: "approved",
+      acceptedBy: null,
+    };
+
+    if (category && category !== "All Categories" && category !== "All") {
+      query.category = category;
+    }
+
+    if (locality && locality !== "All Localities" && locality !== "All") {
+      query.locality = new RegExp(locality.trim(), "i");
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { medicineName: searchRegex },
+        { brandName: searchRegex },
+        { genericName: searchRegex },
+        { company: searchRegex },
+        { category: searchRegex },
+        { locality: searchRegex },
+      ];
+    }
+
+    const medicines = await Medicine.find(query)
+      .populate("seller", "name email phone address locality isVerified")
+      .sort({ expiryDate: 1, createdAt: -1 });
+
+    const enriched = medicines.map((med) => {
+      const medObj = med.toObject ? med.toObject({ virtuals: true }) : med;
+      const prox = getProximityInfo(
+        partnerLocality,
+        medObj.locationCoordinates || medObj.locality
+      );
+      return {
+        ...medObj,
+        proximity: prox,
+      };
+    });
+
+    if (sort === "nearby") {
+      enriched.sort((a, b) => {
+        const distA = a.proximity?.distanceKm ?? 999;
+        const distB = b.proximity?.distanceKm ?? 999;
+        if (distA !== distB) return distA - distB;
+        return new Date(a.expiryDate) - new Date(b.expiryDate);
+      });
+    } else if (sort === "expiry-nearest") {
+      enriched.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: enriched.length,
+      partnerLocality,
+      data: enriched,
+    });
+  } catch (error) {
+    console.error("Get Partner Available Donations Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching available partner donations",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Accept a donation by a verified partner & generate 6-digit physical handover code
+// @route   POST /api/medicines/:id/accept-donation
+// @access  Private (Verified Partner or Admin)
+export const acceptDonationByPartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid medicine ID format",
+      });
+    }
+
+    const medicine = await Medicine.findById(id);
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "Medicine not found",
+      });
+    }
+
+    if (medicine.status !== "approved" || medicine.acceptedBy) {
+      return res.status(400).json({
+        success: false,
+        message: `This donation is no longer available for acceptance (Status: ${medicine.status})`,
+      });
+    }
+
+    // Prevent self-dealing if donor is also a partner
+    if (medicine.seller.toString() === req.user._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot accept your own donation listing",
+      });
+    }
+
+    // Generate cryptographically secure random 6-digit numeric OTP handover code
+    const generatedCode = crypto.randomInt(100000, 1000000).toString();
+
+    medicine.status = "accepted";
+    medicine.acceptedBy = req.user._id;
+    medicine.acceptedAt = new Date();
+    medicine.handoverCode = generatedCode;
+    medicine.handoverFailedAttempts = 0;
+    medicine.handoverLocked = false;
+
+    await medicine.save();
+
+    const populated = await Medicine.findById(medicine._id)
+      .populate("seller", "name email phone address locality isVerified")
+      .populate("acceptedBy", "name organizationName organizationType locality phone email");
+
+    return res.status(200).json({
+      success: true,
+      message: "Donation successfully accepted! The donor can now view their 6-digit physical handover code.",
+      data: populated,
+    });
+  } catch (error) {
+    console.error("Accept Donation Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error accepting donation",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Reject / release an accepted donation with a reason by verified partner
+// @route   POST /api/medicines/:id/reject-donation
+// @access  Private (Verified Partner or Admin)
+export const rejectDonationByPartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid medicine ID format",
+      });
+    }
+
+    const medicine = await Medicine.findById(id);
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "Medicine not found",
+      });
+    }
+
+    if (medicine.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot reject an already completed handover",
+      });
+    }
+
+    // Reset donation back to approved status so other partners can accept, or store rejection reason
+    medicine.status = "approved";
+    medicine.acceptedBy = null;
+    medicine.acceptedAt = null;
+    medicine.handoverCode = null;
+    medicine.handoverFailedAttempts = 0;
+    medicine.handoverLocked = false;
+    if (reason) {
+      medicine.rejectionReason = reason.trim();
+    }
+
+    await medicine.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Donation released back to available pool.",
+      data: medicine,
+    });
+  } catch (error) {
+    console.error("Reject Donation Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error rejecting donation",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Verify 6-digit physical handover code and mark donation completed
+// @route   POST /api/medicines/:id/verify-handover
+// @access  Private (Verified Partner who accepted the donation, or Admin)
+export const verifyDonationHandover = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid medicine ID format",
+      });
+    }
+
+    if (!code || !code.toString().trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter the 6-digit physical handover code provided by the donor",
+      });
+    }
+
+    const medicine = await Medicine.findById(id).select("+handoverCode");
+    if (!medicine) {
+      return res.status(404).json({
+        success: false,
+        message: "Medicine not found",
+      });
+    }
+
+    if (medicine.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Physical handover has already been verified and completed",
+      });
+    }
+
+    if (medicine.status !== "accepted") {
+      return res.status(400).json({
+        success: false,
+        message: `Donation cannot be verified in current status: "${medicine.status}"`,
+      });
+    }
+
+    // Verify authorized partner
+    const isAssignee = medicine.acceptedBy && medicine.acceptedBy.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAssignee && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: Only the partner organization assigned to this donation can verify handover",
+      });
+    }
+
+    // Check failed attempts lockout
+    if (medicine.handoverLocked || medicine.handoverFailedAttempts >= 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification locked due to 5 consecutive failed attempts. Please contact platform administrator.",
+      });
+    }
+
+    const inputCode = code.toString().trim();
+    if (inputCode !== medicine.handoverCode) {
+      medicine.handoverFailedAttempts = (medicine.handoverFailedAttempts || 0) + 1;
+      if (medicine.handoverFailedAttempts >= 5) {
+        medicine.handoverLocked = true;
+      }
+      await medicine.save();
+
+      const remaining = 5 - medicine.handoverFailedAttempts;
+      return res.status(400).json({
+        success: false,
+        message: `Invalid handover code. ${remaining > 0 ? `${remaining} attempt(s) remaining before lockout.` : "Verification is now locked due to security policy."}`,
+        attemptsRemaining: Math.max(0, remaining),
+      });
+    }
+
+    // Code matches! Complete handover
+    medicine.status = "completed";
+    medicine.completedAt = new Date();
+    medicine.handoverFailedAttempts = 0;
+    await medicine.save();
+
+    const populated = await Medicine.findById(medicine._id)
+      .populate("seller", "name email phone address locality isVerified")
+      .populate("acceptedBy", "name organizationName organizationType locality phone email");
+
+    return res.status(200).json({
+      success: true,
+      message: "Physical handover successfully verified! Medicine marked as completed and catalog updated.",
+      data: populated,
+    });
+  } catch (error) {
+    console.error("Verify Handover Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error verifying handover code",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Get donations accepted by the logged-in partner
+// @route   GET /api/medicines/partner/my-accepted
+// @access  Private (Verified Partner or Admin)
+export const getPartnerAcceptedDonations = async (req, res) => {
+  try {
+    const { status } = req.query;
+    const query = { acceptedBy: req.user._id };
+
+    if (status && ["accepted", "completed"].includes(status)) {
+      query.status = status;
+    }
+
+    const medicines = await Medicine.find(query)
+      .sort({ acceptedAt: -1, createdAt: -1 })
+      .populate("seller", "name email phone address locality isVerified")
+      .populate("acceptedBy", "name organizationName organizationType locality phone email");
+
+    return res.status(200).json({
+      success: true,
+      count: medicines.length,
+      data: medicines,
+    });
+  } catch (error) {
+    console.error("Get Partner Accepted Donations Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching accepted partner donations",
       error: error.message,
     });
   }
@@ -298,6 +645,8 @@ export const createMedicine = async (req, res) => {
       handoverRadiusKm,
       pricingRationale,
       suggestedCommunityPrice,
+      listingType,
+      targetBeneficiary,
     } = req.body;
 
     const finalName = medicineName || brandName;
@@ -316,7 +665,9 @@ export const createMedicine = async (req, res) => {
     const numMrp =
       originalMrp !== undefined && originalMrp !== "" && Number(originalMrp) > 0
         ? Number(originalMrp)
-        : Math.round(numPrice * 1.5);
+        : numPrice > 0
+        ? Math.round(numPrice * 1.5)
+        : 50;
 
     if (isNaN(numQty) || numQty < 1) {
       return res.status(400).json({
@@ -347,7 +698,36 @@ export const createMedicine = async (req, res) => {
     if (expiry <= today) {
       return res.status(400).json({
         success: false,
-        message: "Medicine must not be expired. Only unexpired medicines can be listed.",
+        message: "Medicine must not be expired. Only unexpired medicines can be donated. Please refer to the Safe Disposal Guide.",
+      });
+    }
+
+    // 3.1 Safety checks: Cold-chain, Schedule X, and Opened Packages
+    if (req.body.isColdChain) {
+      return res.status(400).json({
+        success: false,
+        message: "Cold-chain medicines requiring specialized temperature maintenance cannot be accepted for community redistribution. Eligibility rules implemented for this academic prototype.",
+      });
+    }
+
+    if (req.body.isScheduleX) {
+      return res.status(400).json({
+        success: false,
+        message: "Schedule X narcotics and heavily controlled substances cannot be listed on MEDISAVE. Eligibility rules implemented for this academic prototype.",
+      });
+    }
+
+    const cond = (packageCondition || "").toLowerCase();
+    if (
+      cond.includes("opened") ||
+      cond.includes("cut strip") ||
+      cond.includes("broken") ||
+      cond.includes("unsealed") ||
+      cond.includes("punctured")
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Opened, cut, or unsealed packages are strictly ineligible for community redistribution. Please refer to the Safe Disposal Guide.",
       });
     }
 
@@ -412,6 +792,8 @@ export const createMedicine = async (req, res) => {
       locationCoordinates: resolvedCoords,
       pricingRationale: pricingRationale || suggestedCalc.rationale,
       suggestedCommunityPrice: suggestedCommunityPrice !== undefined ? Number(suggestedCommunityPrice) : suggestedCalc.suggestedPrice,
+      listingType: listingType || (numPrice === 0 ? "free_donation" : "subsidized_community_rate"),
+      targetBeneficiary: targetBeneficiary || "General Community",
     });
 
     const populatedMedicine = await Medicine.findById(medicine._id).populate(

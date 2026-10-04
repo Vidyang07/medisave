@@ -36,8 +36,30 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "partner", "admin"],
       default: "user",
+    },
+    organizationName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    organizationType: {
+      type: String,
+      enum: ["NGO", "Charitable Clinic", "Community Health Center", "Pharmacy", "Old Age Home", "Other", ""],
+      default: "",
+    },
+    locality: {
+      type: String,
+      default: "Katraj",
+      trim: true,
+    },
+    partnerStatus: {
+      type: String,
+      enum: ["none", "pending", "verified", "rejected"],
+      default: function () {
+        return this.role === "partner" ? "pending" : "none";
+      },
     },
     avatar: {
       type: String,
